@@ -1,0 +1,37 @@
+# Generated binaries and caches
+.build/
+__pycache__/
+*.pyc
+windows/bin/
+.DS_Store
+
+# Private operational state and VM storage never belong in source control
+/state/
+**/evidence/state/
+*.sock
+*.ipsw
+*.img
+*.qcow2
+*.vzstate
+
+# Local experimental evidence and machine inventories (retained locally)
+VERIFICATION.json
+windows/evidence.zip
+windows/evidence/
+windows/RESULTS.md
+linux/evidence/
+macos/VM_EVIDENCE/
+macos/*RESULT*.json
+macos/VM_RESULTS.md
+build/
+dist/
+*.egg-info/
+.venv/
+
+# Additional private images and guest account exports
+*.vhd
+*.vhdx
+*.vmdk
+*.hdd
+*.pvm
+**/guest-credential.json

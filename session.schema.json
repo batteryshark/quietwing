@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Desktop Session Helper descriptor v1",
+  "type": "object",
+  "required": ["schemaVersion", "id", "platform", "generation", "state", "capabilities", "connection", "lifecycle"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"},
+    "platform": {"enum": ["linux", "windows", "macos"]},
+    "generation": {"type": ["string", "null"]},
+    "state": {"type": "string"},
+    "capabilities": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "connection": {"type": "object", "required": ["kind", "protocolVersion"], "properties": {"kind": {"const": "local-cli"}, "protocolVersion": {"const": 1}}, "additionalProperties": false},
+    "lifecycle": {"type": "object", "required": ["acquire", "release"], "properties": {"acquire": {"enum": ["start", "attach"]}, "release": {"enum": ["stop-owned", "detach-owned", "save-and-stop"]}}, "additionalProperties": false}
+  },
+  "additionalProperties": false
+}
