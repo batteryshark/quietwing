@@ -2,6 +2,8 @@
 
 The default backend is a real macOS guest on Apple's Virtualization.framework. The locally provisioned `minimal` test instance is reusable; the package does not include a VM image. This instance runs with 2 virtual CPUs, 4 GiB RAM and a 64 GiB sparse disk. No VM manager is installed. Its owned view stays completely offscreen; capture and input target only that view. Host focus/cursor/Sharing/TCC settings are untouched. Audio devices are absent, verified in both VM configuration and the running guest.
 
+Validated host/build environment: Apple Silicon, macOS 27.0.1, SDK 27 and Swift 6.4. Older macOS/toolchain combinations have not been accepted; see [provisioning prerequisites](PROVISIONING.md) for the API lower bounds and build-target limitation.
+
 From this project's root:
 
 ```sh
