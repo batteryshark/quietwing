@@ -29,6 +29,7 @@ try:
   actual=raw.decode('utf-16') if raw.startswith((b'\xff\xfe',b'\xfe\xff')) else raw.decode('utf-8-sig');assert actual=='# WINDOWS_INSTALLED_EDITOR café Ω',repr(actual)
   frame=call('screenshot');shutil.copyfile(frame['path'],OUT/'after.png');call('session',['stop'])
   ip=Path(prior['ipc'])
+  viewer=read(ip/'viewer-stopped.json');assert not viewer['restored'] and not viewer['visible'] and not viewer['minimized']
   for n in ['parent.json','parent-observations.jsonl','viewer-stopped.json']:shutil.copyfile(ip/n,OUT/n)
   result={'ok':True,'generation':prior['generation'],'actualText':actual,'bytesHex':raw.hex(),'appGone':adapter.process(prior['appPid']) is None,'workerGone':adapter.process(prior['workerPid']) is None,'viewer':read(ip/'viewer-stopped.json'),'childActive':adapter.native_state(adapter.provider()[1]['childSessionId'])==0}
   save(OUT/'result.json',result);print(json.dumps(result))

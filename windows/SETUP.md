@@ -106,7 +106,7 @@ Use the supplied companion wheel in its own venv; no cctl installation is requir
 
 ```powershell
 python -m venv "$root\helper-venv"
-& "$root\helper-venv\Scripts\python.exe" -m pip install --no-index --no-deps C:\path\quietwing-0.3.0-py3-none-any.whl
+& "$root\helper-venv\Scripts\python.exe" -m pip install --no-index --no-deps C:\path\quietwing-0.3.1-py3-none-any.whl
 $helper = "$root\helper-venv\Scripts\quietwing.exe"
 $env:DESKHELPER_PARADESK_DATA = "$root\data"
 $env:DESKHELPER_STATE_ROOT = "$root\helper-state"
@@ -127,7 +127,7 @@ The caller needs permission to register Limited Interactive tasks for the alread
 
 ## Cleanup and recovery
 
-Normal `quietwing stop` ends only the helper worker and its job-owned apps, removes its temporary tasks, and restores original viewer visibility. Save work in those apps before stop. The native child and its existing authentication remain alive. A worker crash also closes its owned job and triggers viewer restoration; follow with stop to clean registrations. If generation changes, obtain a new descriptor explicitly rather than retrying an old action against a replacement.
+Normal `quietwing stop` ends only the helper worker and its job-owned apps, removes its temporary tasks, and leaves the viewer's current visibility unchanged. A viewer hidden by `--hide-viewer` remains hidden. Save work in those apps before stop. The native child and its existing authentication remain alive. A worker crash also closes its owned job and leaves the viewer hidden; follow with stop to clean registrations. If generation changes, obtain a new descriptor explicitly rather than retrying an old action against a replacement.
 
 If the provider locks/disconnects/exits, the companion fails closed and never reconnects. Leave the native session alone until the human is available to restore it and authenticate if needed. Do not guess credentials or repeatedly trigger prompts. `--quit` exits the provider and loses the connection even though the native child may remain; it is not routine helper cleanup.
 

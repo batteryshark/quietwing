@@ -79,7 +79,7 @@ try:
     for meta in attachments:
         assert adapter.process(meta['workerPid']) is None
         ip=Path(meta['ipc']);initial=read(ip/'parent.json');final=read(ip/'viewer-stopped.json')
-        assert initial['viewerVisible']==final['visible'] and not final['minimized'],(initial,final)
+        assert not final['restored'] and not final['visible'] and not final['minimized'],(initial,final)
         for file in ['parent.json','parent-observations.jsonl','viewer-stopped.json','binding.json']:
             shutil.copyfile(ip/file,OUT/(meta['generation']+'-'+file))
     hashes={file:hashlib.sha256((HERE/file).read_bytes()).hexdigest() for file in ['adapter.py','Worker.cs','NativeSupport.cs','generation_acceptance.py','test_adapter.py']}

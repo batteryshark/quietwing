@@ -4,7 +4,7 @@ include linux/INTEGRATION.md macos/INTEGRATION_RESULTS.md windows/INTEGRATION.md
 include linux/acceptance.py linux/generation_acceptance.py linux/integration_acceptance.py
 include windows/acceptance.py windows/generation_acceptance.py windows/integration_acceptance.py
 include windows/reconnect_acceptance.py windows/package_acceptance.py windows/editor_acceptance.py
-include windows/harness_prepare.py windows/harness_verify.py windows/test_adapter.py
+include windows/harness_prepare.py windows/harness_verify.py windows/test_adapter.py windows/test_viewer.py
 include tests/MetalGuestProbe.swift tests/verify_vm_boundary.py
 include windows/cleanup_test_controller.py
 

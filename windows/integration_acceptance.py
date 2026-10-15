@@ -76,7 +76,7 @@ try:
     assert all(before.get(k)==after.get(k) for k in fields)
     for meta in owned:
         ip=Path(meta['ipc']);original=read(ip/'parent.json');restored=read(ip/'viewer-stopped.json')
-        assert restored['visible']==original['viewerVisible'] and not restored['minimized']
+        assert not restored['restored'] and not restored['visible'] and not restored['minimized']
         assert adapter.process(meta['workerPid']) is None
         for name in ['binding.json','parent.json','parent-observations.jsonl','viewer-stopped.json']:
             shutil.copyfile(ip/name,OUT/(meta['generation']+'-'+name))

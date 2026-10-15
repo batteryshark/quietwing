@@ -41,7 +41,8 @@ There is no common live viewer, takeover button, or agent pause command yet.
 Mac's VM view is offscreen and Linux's display has no viewer by default. Windows
 has ParaDesk's viewer, but the helper has no supported show/hide toggle during
 work. Keep it connected and unminimized. Use screenshots to inspect without
-competing with the agent's input.
+competing with the agent's input. A hidden Windows viewer stays hidden after stop
+or worker exit; reveal it only deliberately through ParaDesk's own UI.
 
 ## Save and finish
 
@@ -49,7 +50,7 @@ competing with the agent's input.
 | --- | --- | --- |
 | Mac | Save the whole VM session, stop its owner, release RAM. Guest apps remain in saved memory. | No automatic idle save/stop. |
 | Linux | End owned apps and release display/audio resources. Keep retained session files. | Fixed 30-minute TTL from creation, even while active. `--ttl` can set a longer bounded run, up to 86400 seconds. |
-| Windows | End owned apps/workers and restore original viewer visibility. Keep the authenticated child alive. | Worker exits and closes owned apps after 30 minutes without requests; not configurable yet. |
+| Windows | End owned apps/workers without showing the viewer. Keep its current visibility and the authenticated child alive. | Worker exits and closes owned apps after 30 minutes without requests; not configurable yet. |
 
 Save Linux and Windows documents before stopping or going idle. Linux's TTL is
 not refreshed by activity. Its cctl `acquire_args` can set `--ttl` and

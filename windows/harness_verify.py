@@ -26,7 +26,7 @@ events=[json.loads(s) for s in (load().state_dir/'events.jsonl').read_text().spl
 assert {'apps','screenshot','click','type_text','key'}<={e['tool'] for e in events if e['ok']}
 assert all(e['target']==target for e in events)
 call('session',['stop'])
-ip=Path(prior['ipc']);original=adapter.read(ip/'parent.json');restored=adapter.read(ip/'viewer-stopped.json');assert original['viewerVisible']==restored['visible'] and not restored['minimized']
+ip=Path(prior['ipc']);original=adapter.read(ip/'parent.json');restored=adapter.read(ip/'viewer-stopped.json');assert not restored['restored'] and not restored['visible'] and not restored['minimized']
 assert adapter.process(app_pid) is None and adapter.process(prior['workerPid']) is None
 provider=adapter.provider()[1];assert all(provider.get(k)==v for k,v in prior['providerBefore'].items()) and adapter.native_state(provider['childSessionId'])==0
 for n in ['parent.json','parent-observations.jsonl','viewer-stopped.json']:shutil.copyfile(ip/n,OUT/n)

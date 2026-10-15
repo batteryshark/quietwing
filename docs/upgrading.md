@@ -11,7 +11,7 @@ Install the reviewed wheel in a new private environment:
 
 ```sh
 python3 -m venv /absolute/path/to/quietwing-env
-/absolute/path/to/quietwing-env/bin/python -m pip install /path/to/quietwing-0.3.0-py3-none-any.whl
+/absolute/path/to/quietwing-env/bin/python -m pip install /path/to/quietwing-0.3.1-py3-none-any.whl
 /absolute/path/to/quietwing-env/bin/quietwing --version
 ```
 
@@ -29,3 +29,9 @@ Computer-ctrl must include the QuietWing update: the target command default is
 now `quietwing`. A changed configuration gets its own controller paths. Retire
 old controllers after work is finished, then explicitly start the configured
 target. Check status and fresh capture before input.
+
+Version 0.3.1 keeps a hidden Windows viewer hidden during cleanup. The change
+applies to newly compiled workers/observers; upgrading the package cannot rewrite
+an attachment already running 0.3.0 code. Finish those attachments during a safe
+work window before upgrading. Their old cleanup still restores visibility. Keep
+the ParaDesk provider and authenticated child running; no sign-out is required.

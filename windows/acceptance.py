@@ -35,10 +35,10 @@ try:
  original=read(ROOT/'binding.json');tampered=dict(original);tampered['workerBirthTicks']+=1;save(ROOT/'binding.json',tampered)
  try:call('status','--id',NAME,ok=False)
  finally:save(ROOT/'binding.json',original)
- # Simulate only the owned worker crashing; its job must close and guardian restore.
+ # Simulate only the owned worker crashing; its job must close and the viewer must remain hidden.
  script=f"$p=Get-Process -Id {b['workerPid']};if($p.StartTime.ToUniversalTime().Ticks -ne {b['workerBirthTicks']}){{throw 'birth mismatch'}};Stop-Process -Id $p.Id"
  subprocess.run(['powershell.exe','-NoProfile','-NonInteractive','-Command',script],check=True,capture_output=True)
- restored=wait(old/'viewer-stopped.json');assert restored['visible'] and not restored['minimized'],restored
+ restored=wait(old/'viewer-stopped.json');assert not restored['restored'] and not restored['visible'] and not restored['minimized'],restored
  time.sleep(.4)
  # A harmless stale capture request must never enter the next attachment generation.
  stale=OUT/'must-not-exist.png';stale.unlink(missing_ok=True)
@@ -47,7 +47,7 @@ try:
  call('attach','--id',NAME,'--hide-viewer');new=read(ROOT/'binding.json');assert new['ipc']!=str(old)
  call('status','--id',NAME);time.sleep(.25);assert not stale.exists()
  call('stop','--id',NAME)
- result={'ok':True,'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'fixture':state,'argv':argv,'genericApp':app,'oldIpc':str(old),'newIpc':new['ipc'],'crashRestore':restored,'staleCaptureReplayed':stale.exists()}
+ result={'ok':True,'finishedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'fixture':state,'argv':argv,'genericApp':app,'oldIpc':str(old),'newIpc':new['ipc'],'crashViewer':restored,'staleCaptureReplayed':stale.exists()}
  save(OUT/'result.json',result)
  for label,path in [('first',old),('second',Path(new['ipc']))]:
   for name in ['parent.json','parent-observations.jsonl','viewer-stopped.json','binding.json']:

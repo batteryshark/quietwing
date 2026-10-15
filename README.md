@@ -12,12 +12,15 @@ desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
 MCP tools, images, and automation workflow. QuietWing also works directly from
 the command line, without computer-ctrl or a particular agent harness.
 
-**Status: experimental, version 0.3.0.** The native backends passed ordinary-app
+**Status: experimental, version 0.3.1.** The native backends passed ordinary-app
 and lifecycle acceptance in 0.2, including actual Codex and OpenCode workflows
 on all three operating systems. Version 0.3 introduces the QuietWing name,
-package, and repository tooling. The published 0.3 wheel also passed fresh Windows
+package, and repository tooling. The published 0.3.0 wheel also passed fresh Windows
 native and actual Codex/OpenCode acceptance on 2026-10-15. [Current status](docs/status.md)
 distinguishes that follow-up from initial release checks and historical evidence.
+Version 0.3.1 prevents Windows cleanup from revealing the hidden viewer. Its
+regression uses static checks and simulated OS calls in CI; fresh native Windows
+and two-harness acceptance were unavailable for this patch.
 
 ## Pick your desktop
 
@@ -34,12 +37,12 @@ alone does not prepare either desktop.
 ## Install
 
 Python 3.11+ is required; there are no Python runtime dependencies.
-Download the wheel and SHA256SUMS from the [v0.3.0 release](https://github.com/batteryshark/quietwing/releases/tag/v0.3.0).
+Download the wheel and SHA256SUMS from the [v0.3.1 release](https://github.com/batteryshark/quietwing/releases/tag/v0.3.1).
 For a private environment on Mac/Linux:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install https://github.com/batteryshark/quietwing/releases/download/v0.3.0/quietwing-0.3.0-py3-none-any.whl
+.venv/bin/python -m pip install https://github.com/batteryshark/quietwing/releases/download/v0.3.1/quietwing-0.3.1-py3-none-any.whl
 .venv/bin/quietwing --version
 .venv/bin/quietwing doctor
 ```

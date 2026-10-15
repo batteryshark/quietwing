@@ -1,6 +1,6 @@
 # QuietWing contract
 
-This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.3.0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
+This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.3.1; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
 
 ## Commands
 
@@ -31,6 +31,6 @@ Normal control commands do not prompt for login or change host credentials, fire
 
 Bind a client to the returned generation, then pass `--expect-generation TOKEN` to status, capture, input, exec and stop. A mismatch returns `generation_changed` before delivering the operation; it never causes an implicit rebind. The backend enforces the check within its lifetime/dispatch protection, not merely before issuing another independently targeted command. Old clients may omit the precondition, but computer-ctrl always supplies it after binding. Create/attach is an explicit new binding decision; start does not accept a stale generation as permission to recreate anything.
 
-`exec` starts an application and reports launch metadata; it does not promise synchronous stdout or completion. Caller exit preserves the work instance. Windows stop detaches only owned workers/apps and retains the external login; Linux stops its owned private desktop; Mac saves and stops its guest. Interrupted mutations are not automatically replayed. New Mac guest provisioning remains explicit and separate from routine control.
+`exec` starts an application and reports launch metadata; it does not promise synchronous stdout or completion. Caller exit preserves the work instance. Windows stop detaches only owned workers/apps and retains the external login and current viewer visibility. A viewer hidden with `--hide-viewer` stays hidden after stop, worker exit, or attach rollback; cleanup never shows/minimizes/disconnects it. Linux stops its owned private desktop; Mac saves and stops its guest. Interrupted mutations are not automatically replayed. New Mac guest provisioning remains explicit and separate from routine control.
 
 Distribution: `quietwing` is the installed CLI. Sources are packaged as resources; native builds go to user state/cache, never into the installed package. `quietwing build` builds the Mac native helper without starting a VM. No computer-ctrl import/dependency is required.

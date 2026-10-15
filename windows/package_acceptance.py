@@ -43,7 +43,7 @@ try:
  call('stop',*guard);active=False
  after=adapter.provider()[1];fields=['pid','childSessionId','connectedAt','desktopState'];assert all(before.get(k)==after.get(k) for k in fields)
  assert adapter.native_state(after['childSessionId'])==0 and adapter.process(meta['workerPid']) is None
- ip=Path(meta['ipc']);parent=read(ip/'parent.json');restored=read(ip/'viewer-stopped.json');assert parent['viewerVisible']==restored['visible'] and not restored['minimized']
+ ip=Path(meta['ipc']);parent=read(ip/'parent.json');restored=read(ip/'viewer-stopped.json');assert not restored['restored'] and not restored['visible'] and not restored['minimized']
  for name in ['parent.json','parent-observations.jsonl','viewer-stopped.json']:shutil.copyfile(ip/name,OUT/name)
  assert hashes()==initial_hashes,'Installed resource contents changed'
  executables=[str(p.relative_to(PACKAGE)) for p in PACKAGE.rglob('*.exe')];assert not executables,executables

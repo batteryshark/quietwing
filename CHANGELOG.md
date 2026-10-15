@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1 — 2026-10-15
+
+- Keep a hidden ParaDesk viewer hidden after stop, worker exit, or attach rollback.
+  Cleanup preserves the current visibility and the signed-in native child.
+- Remove the cleanup show-window call, add a portable no-show invariant and
+  12 simulated Windows cleanup cases, and update native acceptance expectations.
+- Windows machine remains occupied: no fresh native or Codex/OpenCode acceptance
+  for 0.3.1. Earlier 0.3.0 live evidence is historical, not validation of this fix.
+- No login, reconnect, firewall, credential policy, RDP or service changes.
+
 ## 0.3.0 — 2026-10-15
 
 - Name the companion QuietWing, under the MIT license.

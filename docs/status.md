@@ -5,7 +5,29 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
-## Release validation
+## [0.3.1 viewer cleanup patch](https://github.com/batteryshark/quietwing/releases/tag/v0.3.1)
+
+Version 0.3.1 removes the explicit show-window operation from the Windows viewer
+observer's cleanup. Stop, worker exit (including idle exit/crash), and attach
+rollback preserve the current viewer visibility. A viewer hidden for control stays
+hidden; the external provider and native login are not stopped or reconnected.
+Explicitly visible viewers remain visible. No cleanup operation reveals a viewer.
+
+The portable regression failed against 0.3.0's hide-plus-show calls and passes with
+the cleanup show removed. Windows CI additionally compiles the actual worker with
+only its viewer OS calls faked, then executes 12 stop/crash/rollback cases across
+visible/hidden and hide/observe modes. A negative control reinserts the old show operation and must fail. These tests
+do not use a real desktop.
+
+**Fresh Windows native and Codex/OpenCode acceptance was not run for 0.3.1.** The
+operator kept the Windows machine reserved for another workload and requested
+static validation. No Windows connection, install, input, capture, sign-in or
+provider operation is performed for this patch. The 0.3.0 live evidence below is
+historical and does not prove the changed cleanup behavior on a native desktop.
+Mac/Linux native implementations are unchanged. Existing 0.3.0 attachments still
+use their old cleanup code until finished and replaced during a safe work window.
+
+## 0.3.0 release validation
 
 | Check | Result |
 | --- | --- |
@@ -58,8 +80,8 @@ reports preserve exact source/package identities; they are not new-name reruns.
 
 - No unified live viewer, takeover control, or agent pause/resume panel.
 - Windows requires an authenticated, connected, non-minimized ParaDesk viewer;
-  no automatic sign-in/reconnect. Stop restores original viewer visibility, which
-  can cover other windows even though it does not request foreground focus.
+  no automatic sign-in/reconnect. From 0.3.1, cleanup preserves current viewer
+  visibility; a hidden viewer stays hidden. Old running workers retain old behavior.
 - Windows owned apps close after 30 minutes without requests. Linux defaults to
   a fixed 30-minute TTL. Mac has no idle-save policy.
 - Linux uses llvmpipe software rendering on the tested host. No gaming claim.

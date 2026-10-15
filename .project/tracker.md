@@ -2,6 +2,25 @@
 
 Updated: 2026-10-15
 
+## 0.3.1 viewer cleanup (2026-10-15, release preparation)
+
+- User requested quiet stop with the child signed in, then explicitly reserved
+  the Windows machine for another workload: static verification only, no Windows
+  host access/install/input/capture or native/two-harness rerun for this patch.
+- Root cause is the explicit ShowWindowAsync(hwnd, 4) in the viewer finally path.
+  Portable regression ran red on 0.3.0 (hide plus show), green after removal.
+  Stop, worker exit and attach rollback now preserve current visibility; hidden
+  viewers remain hidden. Observer result reports restored=false. Provider/session
+  lifecycle and Mac/Linux native code unchanged. Historical popup still unattributed.
+- Added 12 actual C# cleanup-path cases with viewer OS calls faked for Windows CI;
+  no real desktop/provider. Updated native acceptance assertions for later use.
+- Existing live 0.3.0 attachments cannot be rewritten by a package upgrade; finish
+  them during a safe work window, retain the provider/login, then use new workers.
+- Local portable checks: 35 passed, one Windows-only simulated test skipped.
+  Clean wheel/source build, archive audit, fresh installed entry points and source
+  rebuild passed; all 29 runtime resources match. Hosted CI and exact-tag draft/
+  archive verification remain release gates. Keep native deferral explicit.
+
 ## Windows follow-up (2026-10-15, acceptance complete)
 
 - Initial completion wording overstated Windows coverage. Fresh acceptance now
@@ -61,7 +80,6 @@ Updated: 2026-10-15
 
 ## Next action
 
-Prioritize explicit lifetimes and a read-only viewer, including a stop policy that
-does not reveal a hidden Windows viewer. Measure setup and game/GPU behavior
-separately; the historical obstruction is still unidentified. docs/status.md is
+Finish 0.3.1 static/package/CI release gates, then prioritize explicit lifetimes
+and a read-only viewer. Repeat native Windows/two-harness acceptance when available. Measure setup and game/GPU behavior separately; the historical obstruction is still unidentified. docs/status.md is
 the current capability/validation summary.

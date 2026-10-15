@@ -45,6 +45,7 @@ try:
   assert read(OUT/'fixture.json')['text']=='SSH_RECONNECTED_57'
   frame=call('screenshot');shutil.copyfile(frame['path'],OUT/'after.png');call('session',['stop'])
   ip=Path(prior['binding']['ipc'])
+  viewer=read(ip/'viewer-stopped.json');assert not viewer['restored'] and not viewer['visible'] and not viewer['minimized']
   for name in ['parent.json','parent-observations.jsonl','viewer-stopped.json']:shutil.copyfile(ip/name,OUT/name)
   result={'ok':True,'sameControllerPid':p.pid,'sameGeneration':prior['generation'],'priorFrameAccepted':prior['frame']['frame'],'fixture':read(OUT/'fixture.json'),'viewer':read(ip/'viewer-stopped.json'),'workerGone':adapter.process(prior['binding']['workerPid']) is None,'childActive':adapter.native_state(prior['binding']['childSessionId'])==0}
   save(OUT/'result.json',result);print(json.dumps(result))
