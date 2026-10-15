@@ -1,6 +1,6 @@
 # QuietWing contract
 
-This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.3.1; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
+This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.4.0.dev0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
 
 ## Commands
 
@@ -11,6 +11,7 @@ This project owns the creation/attachment, lifetime and control boundary of isol
 - `exec --id NAME -- PROGRAM ARG...`: launch a generic application inside that session. Preserve arguments without shell interpolation. Record only owned resources for cleanup.
 - `capture --id NAME --output PATH`: capture only that session and return the image path, dimensions and capture time. Errors must not fall back to a parent screenshot.
 - `input --id NAME --type TEXT | --key KEY | --click X Y [--button N] | --move X Y`: deliver native input only to the verified isolated session. Text is data, including leading hyphens and shell metacharacters. Input must fail closed when session identity, ownership or permission checks fail.
+- `view --id NAME [--status | --close]`: optional Mac VM read-only preview. Open pins the existing live generation; it never starts/resumes a guest or forwards input. Status/close touch only preview files/processes. A failed capture clears the image; no automatic rebind. See [viewer](docs/viewer.md).
 - `stop --id NAME`: stop only helper-owned resources. Do not log off a pre-existing Windows/Mac user session, stop a human app, or change global settings.
 
 Adapters may add necessary OS options. Every command must be documented by its adapter. Normal stdout is exactly one JSON object: `{ "ok": true|false, "platform": "linux"|"windows"|"macos", "session": {...}, "result": {...}, "error": {"code": "...", "message": "..."} }`. Optional fields may be omitted. The common entry point adds `schemaVersion`. A failed operation returns a nonzero exit status. Diagnostic logs go to stderr and must not contain credentials or authority cookies.

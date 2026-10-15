@@ -2,6 +2,31 @@
 
 Updated: 2026-10-15
 
+## Mac read-only viewer (0.4 development, 2026-10-15)
+
+- User requested a Mac-first read-only peek; personal Windows is reserved for
+  DreamStudio and was not contacted. No host settings or credentials changed.
+- `view --id NAME [--status | --close]` uses a separate nonactivating image panel
+  plus a generation/PID-pinned capture broker. No VM socket/input code in the
+  window; broker uses existing owned capture. No automatic resume/rebind, audio,
+  host capture or listener. `build --viewer` compiles only the preview, safe with
+  a running VM. Existing VMHost/capture and Windows/Linux native sources unchanged.
+- Native fixture passed image display, all 12 local event handlers, nonkey/main,
+  controlled unchanged foreground/cursor, stale-image clear and close cleanup.
+  Live duplicate/stale open-close, unchanged guest input timestamp, saved guest
+  retention and explicit generation transition passed. Preview clears on stop.
+- Final installed wheel passed actual Codex + OpenCode editor workflows: seven
+  verified isolated MCP events each, exact Unicode readback, final images, 151
+  viewer/owner metadata samples; preview frames 33->86 and 87->105. Neither agent
+  window became foreground or posted host input; human activity remained allowed.
+- Portable: 51 passed, one Windows-only simulated case skipped. Wheel/source audit,
+  independent source rebuild and fresh installed entry points passed; all 33
+  bundled resources match source/rebuild. Native UI fixture retained in tests;
+  hosted Mac CI now compiles the installed viewer without launch.
+- Own private venv uses development 0.4.0.dev0; official 0.3.1 assets unchanged.
+  Private evidence: evidence/mac-viewer-2026-10-15. Acceptance controller and
+  harness/server processes removed; authenticated Mac guest and preview retained.
+
 ## 0.3.1 viewer cleanup (2026-10-15, released)
 
 - User requested quiet stop with the child signed in, then explicitly reserved
@@ -86,6 +111,7 @@ Updated: 2026-10-15
 ## Next action
 
 Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
-Prioritize explicit lifetimes and a read-only viewer. Measure setup and game/GPU
+Prioritize explicit lifetimes and separately validated Linux/Windows viewers.
+The Mac read-only viewer is implemented in the 0.4 development build. Measure setup and game/GPU
 behavior separately; the historical obstruction is still unidentified.
 docs/status.md is the current capability/validation summary.

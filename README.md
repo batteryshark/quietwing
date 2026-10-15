@@ -12,7 +12,7 @@ desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
 MCP tools, images, and automation workflow. QuietWing also works directly from
 the command line, without computer-ctrl or a particular agent harness.
 
-**Status: experimental, version 0.3.1.** The native backends passed ordinary-app
+**Status: experimental. Latest release: 0.3.1; development: 0.4.0.dev0.** The native backends passed ordinary-app
 and lifecycle acceptance in 0.2, including actual Codex and OpenCode workflows
 on all three operating systems. Version 0.3 introduces the QuietWing name,
 package, and repository tooling. The published 0.3.0 wheel also passed fresh Windows
@@ -21,6 +21,10 @@ distinguishes that follow-up from initial release checks and historical evidence
 Version 0.3.1 prevents Windows cleanup from revealing the hidden viewer. Its
 regression uses static checks and simulated OS calls in CI; fresh native Windows
 and two-harness acceptance were unavailable for this patch.
+
+The 0.4 development build adds an optional [read-only Mac preview](docs/viewer.md):
+`quietwing view --id minimal`. It opens without taking keyboard focus and never
+forwards viewer input to the guest. Windows and Linux viewing are unchanged.
 
 ## Pick your desktop
 

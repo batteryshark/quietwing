@@ -37,8 +37,14 @@ Ask the agent to display a fresh isolated screenshot, or run
 `quietwing capture --id work --output /absolute/new-file.png`. Standalone capture
 paths must be new files.
 
-There is no common live viewer, takeover button, or agent pause command yet.
-Mac's VM view is offscreen and Linux's display has no viewer by default. Windows
+The 0.4 development build adds a [read-only Mac viewer](viewer.md):
+run `quietwing build --viewer` once, then `quietwing view --id work` while the
+provisioned guest runs. Closing the viewer leaves the agent working. It does not
+start a guest, take keyboard focus or forward input. The ID must match the
+QuietWing ID in your target configuration, which can differ from the cctl name.
+
+There is no common takeover button or agent pause command. Linux has no viewer
+by default. Windows
 has ParaDesk's viewer, but the helper has no supported show/hide toggle during
 work. Keep it connected and unminimized. Use screenshots to inspect without
 competing with the agent's input. A hidden Windows viewer stays hidden after stop
