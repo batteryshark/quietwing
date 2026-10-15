@@ -19,18 +19,16 @@ The repository/package are `quietwing`; the CLI has the same single name.
    native reports are historical; add current native evidence for changed
    backend behavior. State unavailable-target deferrals explicitly.
 
-## First GitHub repository
+## GitHub repositories
 
-The source is prepared for `batteryshark/quietwing`. Creating a repository,
-pushing it, or publishing a release is a separate explicit action. After that
-action is authorized, create the repository with the agreed visibility and
-connect this existing Git history. Do not upload ignored local state/evidence.
-Enable issues and private vulnerability reporting if available.
+The public MIT project is [batteryshark/quietwing](https://github.com/batteryshark/quietwing).
+Computer-ctrl consumes the versioned executable interface; its integration is
+[merged separately](https://github.com/batteryshark/computer-ctrl/pull/1).
+Private vulnerability reporting is enabled. Keep local state/evidence ignored.
 
-The CI workflow runs portable tests on Linux, Mac, and Windows with Python 3.11
-and 3.14, and audits wheel/source packages. It runs without native desktop access,
-credentials, or provisioning. Inspect actual GitHub results after the first push;
-a local workflow file is not proof that remote CI passed.
+Hosted CI runs portable tests and clean package checks on Linux, Mac, and Windows.
+It does not provide an authenticated native child or provisioned guest. Current
+release/native coverage is documented in [status](status.md).
 
 ## Draft a versioned release
 
@@ -43,3 +41,8 @@ Review the generated notes and capability limits before publishing it.
 The workflow checks out the supplied tag, not an unrelated current branch.
 Its release job has `contents: write`; ordinary CI has read-only permissions.
 No cloud credentials or package-registry tokens are required.
+
+Publish the reviewed draft explicitly with `gh release edit vVERSION --draft=false`.
+Then verify the public assets against SHA256SUMS and smoke-test the downloaded
+wheel. Publishing requires the maintainer's authorization; it is not an automatic
+side effect of pushing a branch.

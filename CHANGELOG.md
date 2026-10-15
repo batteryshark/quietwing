@@ -8,6 +8,9 @@
 - Add daily-use, upgrade, architecture, status, contribution, and release guides.
 - Add portable CI, clean installation checks, and distribution inspection.
 - Preserve descriptor v1, native adapters, and their established private state.
+- Verify hosted CI on all three OSes, repeat Linux native installed-package
+  acceptance, and validate Windows installation/compilation/refusals headlessly.
+- Resolve the Windows global-Python scripts-directory check before release.
 
 This release adds no live viewer and changes no backend lifetime defaults.
 Historical native reports retain their original package/source identities.

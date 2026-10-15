@@ -1,47 +1,48 @@
 # Current status
 
-Updated 2026-10-15. QuietWing is experimental software with usable native backends.
-It succeeds desktop-session-helper with a separate package and MIT license.
+Updated 2026-10-15. [QuietWing 0.3.0](https://github.com/batteryshark/quietwing/releases/tag/v0.3.0)
+is the first experimental MIT-licensed GitHub release. The package, import, and
+sole executable are `quietwing`. Computer-ctrl's integration is
+[merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
-## Proven behavior
-
-The 2026-10-13 version 0.2 acceptance exercised installed wheels, ordinary native
-apps, screenshots, native input, reconnect/save-resume, stale-generation refusal,
-and owned cleanup on Linux, Mac, and Windows. Codex CLI and OpenCode each
-completed actual editor workflows on all three. Saved Unicode, tool calls,
-screenshots, and host pointer/focus metadata were checked independently.
-See [validation](../VALIDATION.md) and its platform reports.
-
-Version 0.3 changes project/package/CLI naming and repository tooling. Native
-backend implementation and state conventions are retained. Portable tests and
-clean-package checks are separate from that historical native acceptance.
-GitHub CI is not evidence of a real GUI workflow. The repository-polish session
-does not run or modify the occupied Windows machine.
-
-## QuietWing 0.3 local release checks
+## Release validation
 
 | Check | Result |
 | --- | --- |
-| Portable dispatcher/distribution, Windows fake transport, Mac fake generation tests | 34 passed on the Mac. |
-| Updated computer-ctrl regression | 141 passed. |
-| Clean wheel installation and sole command/import | Passed; only `quietwing`, no old command alias. |
-| Source archive inspection, rebuild, and fresh install | Passed; required resources/license/guides present, private/generated content excluded. |
-| GitHub workflow lint | Passed with actionlint 1.7.12; Actions revisions pinned to reviewed commits. |
-| Native source comparison | 17 runtime/native source files identical to 0.2. |
-| Updated cctl → installed QuietWing → Mac guest | Resume, fresh visually inspected capture, provider identity, and save/stop passed. Host pointer/focus unchanged; guest has no audio devices. No input was sent. |
-| New-name Windows/Linux native rollout | Deferred. Historical backend acceptance remains valid evidence for those unchanged sources, not a new installation claim. |
-| Remote GitHub CI and release publication | Pending repository creation/push. Local lint does not establish hosted CI success. |
+| Hosted QuietWing CI | Linux, macOS, Windows; Python 3.11 and 3.14 portable checks, clean wheel install, source rebuild/distribution audit passed. See [CI](https://github.com/batteryshark/quietwing/actions/workflows/ci.yml). |
+| Hosted computer-ctrl CI | Linux, macOS, Windows; Python 3.11 and 3.13 regression and package jobs passed. 141 regression tests per run. |
+| Portable companion checks on Mac | 34 passed: 15 dispatcher/distribution, 11 Windows fake transport, 8 Mac fake generation cases. |
+| Native source comparison | 17 runtime/native source files identical to the historically validated 0.2 backend. |
+| Mac, updated cctl and installed QuietWing | Saved guest resumed, fresh capture visually inspected, provider identity verified, guest saved/stopped again. Host pointer/focus unchanged, no audio devices; no input sent in this smoke check. |
+| Linux, installed QuietWing | Two separate SSH stages passed ordinary Mousepad/Xmessage input, exact Unicode/metacharacter saved text, native click, fresh capture, private audio, generation refusal, reconnect, TTL expiry, and owned cleanup. 167 unchanged host metadata samples; only the original X display remained. |
+| Windows, installed QuietWing and private consumer environment | Clean install/entry point, native C# compilation without launching the worker, pure transport tests, and refusal without an active child passed. Provider state file and installed resources unchanged. No input, capture, scheduled task, sign-in, reconnect, or main-desktop controller changes. |
+| Windows current live-GUI scope | The existing ParaDesk child was disconnected. A new 0.3 live GUI rerun was deliberately not attempted on the occupied host. Historical 0.2 native/two-harness results below remain the evidence for unchanged GUI backend behavior. |
+
+Release archives include source, license, guides, and native build resources;
+private evidence, credentials, VM disks/snapshots, compiled binaries, and runtime
+state are excluded. Release assets and SHA256SUMS are built by the reviewed-tag
+workflow. Native images/inventories remain private.
+
+## Historical native evidence
+
+Version 0.2 acceptance on 2026-10-13 exercised installed wheels, ordinary native
+apps, input/capture, reconnect/save-resume, stale refusal, and owned cleanup on all
+three platforms. Actual Codex CLI and OpenCode editor workflows passed on each.
+Saved Unicode, successful tool calls, screenshots, and host pointer/focus metadata
+were checked independently. [VALIDATION.md](../VALIDATION.md) and its platform
+reports preserve exact source/package identities; they are not new-name reruns.
 
 ## Current limits
 
 - No unified live viewer, takeover control, or agent pause/resume panel.
-- Windows requires an authenticated, connected, non-minimized ParaDesk viewer.
-  No automatic sign-in or reconnect.
+- Windows requires an authenticated, connected, non-minimized ParaDesk viewer;
+  no automatic sign-in/reconnect. The 0.3 release's Windows live GUI rerun remains
+  pending an available authenticated child.
 - Windows owned apps close after 30 minutes without requests. Linux defaults to
   a fixed 30-minute TTL. Mac has no idle-save policy.
 - Linux uses llvmpipe software rendering on the tested host. No gaming claim.
-- Mac was tested on Apple Silicon, macOS 27.0.1, SDK 27, Swift 6.4. Older
-  hosts/toolchains are unvalidated; guest provisioning is explicit.
+- Mac was tested on Apple Silicon, macOS 27.0.1, SDK 27, Swift 6.4; older
+  hosts/toolchains are unvalidated. Guest provisioning is explicit.
 - The computer-ctrl adapter lacks accessibility, browser DOM/CDP, window
   management, drag/scroll, and audio/video tools.
 - Windows/Linux share the user's filesystem/device access. Application-specific
@@ -52,8 +53,5 @@ does not run or modify the occupied Windows machine.
 1. Make lifetimes explicit for long tasks, with visible expiry and a safe policy.
 2. Add a read-only viewer that opens/closes without disturbing session identity
    or agent input. Keep takeover a separate explicit action.
-3. Repeat native installed-package acceptance under the QuietWing command on
-   Windows when available, and on Linux.
+3. Run new-name Windows native acceptance when its child desktop is available.
 4. Expand computer-ctrl capabilities only with per-platform evidence.
-
-These are follow-up features, not features shipped in 0.3.

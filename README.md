@@ -32,11 +32,13 @@ alone does not prepare either desktop.
 
 ## Install
 
-Python 3.11+ is required; there are no Python runtime dependencies. From a checkout:
+Python 3.11+ is required; there are no Python runtime dependencies.
+Download the wheel and SHA256SUMS from the [v0.3.0 release](https://github.com/batteryshark/quietwing/releases/tag/v0.3.0).
+For a private environment on Mac/Linux:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install .
+.venv/bin/python -m pip install https://github.com/batteryshark/quietwing/releases/download/v0.3.0/quietwing-0.3.0-py3-none-any.whl
 .venv/bin/quietwing --version
 .venv/bin/quietwing doctor
 ```
@@ -44,7 +46,8 @@ python3 -m venv .venv
 Windows uses `.venv\Scripts\python.exe` and `.venv\Scripts\quietwing.exe`.
 Alternatively, install a reviewed wheel with
 `python -m pip install /path/to/quietwing-VERSION-py3-none-any.whl`, or use
-`uv tool install .` from a checkout. This setup does not require a PyPI release.
+`uv tool install .` from a checkout. To develop from a checkout, install with `python -m pip install .`.
+This setup does not require a PyPI release.
 
 Native tools are separate prerequisites:
 
@@ -83,7 +86,9 @@ before delivery. Normal output is JSON; errors exit nonzero. The
 
 ## Connect computer-ctrl
 
-Install both projects on the controlled machine. In a private cctl configuration:
+Install both projects on the controlled machine. Use a computer-ctrl build
+containing [the merged QuietWing integration](https://github.com/batteryshark/computer-ctrl/pull/1).
+In a private cctl configuration:
 
 ```toml
 [sessions.work]
