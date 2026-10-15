@@ -15,8 +15,9 @@ the command line, without computer-ctrl or a particular agent harness.
 **Status: experimental, version 0.3.0.** The native backends passed ordinary-app
 and lifecycle acceptance in 0.2, including actual Codex and OpenCode workflows
 on all three operating systems. Version 0.3 introduces the QuietWing name,
-package, and repository tooling. [Current status](docs/status.md) distinguishes
-the recorded native acceptance from checks run for this release.
+package, and repository tooling. The published 0.3 wheel also passed fresh Windows
+native and actual Codex/OpenCode acceptance on 2026-10-15. [Current status](docs/status.md)
+distinguishes that follow-up from initial release checks and historical evidence.
 
 ## Pick your desktop
 

@@ -15,11 +15,16 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 | Native source comparison | 17 runtime/native source files identical to the historically validated 0.2 backend. |
 | Mac, updated cctl and installed QuietWing | Saved guest resumed, fresh capture visually inspected, provider identity verified, guest saved/stopped again. Host pointer/focus unchanged, no audio devices; no input sent in this smoke check. |
 | Linux, installed QuietWing | Two separate SSH stages passed ordinary Mousepad/Xmessage input, exact Unicode/metacharacter saved text, native click, fresh capture, private audio, generation refusal, reconnect, TTL expiry, and owned cleanup. 167 unchanged host metadata samples; only the original X display remained. |
-| Windows, installed QuietWing and private consumer environment | Clean install/entry point, native C# compilation without launching the worker, pure transport tests, and refusal without an active child passed. Provider state file and installed resources unchanged. No input, capture, scheduled task, sign-in, reconnect, or main-desktop controller changes. |
-| Windows current live-GUI scope | The existing ParaDesk child was disconnected. It remained unavailable after the host became available; a new 0.3 live GUI rerun was not attempted without authentication. Historical 0.2 native/two-harness results below remain the evidence for unchanged GUI backend behavior. |
+| Windows, official 0.3 wheel and private consumer environment, follow-up on 2026-10-15 | Installed CLI passed native text/click/capture, ordinary cmd application, runtime silent-output checks, stale refusal and cleanup. Two SSH connections reused the same controller/generation. Reattachment rejected old generations, including direct worker stop. |
+| Windows, fresh actual Codex and OpenCode workflows | Both saved exact Unicode in an ordinary PowerShell ISE document through isolated MCP calls. Independent file/event/session/capture/cleanup checks passed. The same authenticated child/provider survived all tests; 1,849 parent metadata samples showed unchanged pointer/focus and a hidden, non-minimized connected viewer during control. |
 
-Windows live GUI acceptance has **not** been run on 0.3.0. Installation, compiler,
-transport, and refusal checks do not substitute for that acceptance.
+Windows live GUI acceptance was missing at initial publication; earlier wording
+that the Windows checks were finished overstated that coverage. The authorized
+follow-up above now exercises the **published 0.3.0 wheel**. No runtime sources or
+release assets were replaced. Private captures and failed harness-startup attempts
+are retained locally, excluded from Git. These tests establish ordinary-app
+behavior under the measured conditions, not game/GPU or arbitrary startup-path
+noninterference.
 
 A parallel main-desktop workload stopped at 14:37 EDT after its capture guard
 reported an obstruction without recording the blocking window. Its visible
@@ -29,7 +34,10 @@ inventory. The shared host driver had already logged accessibility timeouts.
 Replaying the headless QuietWing checks while the workload ran produced no new
 visible windows or foreground changes across 284 metadata samples. The original
 obstruction remains unidentified; no fix for that historical event is claimed.
-The workload's launcher has a separate headless-launch inconsistency under review.
+With explicit authorization, the workload's launcher was made consistently headless,
+and its unchanged obstruction guard now reports blocking process/window metadata.
+Command-generation checks and Windows diagnostic compilation passed. This is a
+separate runner correction, not identification of the historical obstruction.
 This evidence does not establish noninterference for every setup or diagnostic path.
 
 Release archives include source, license, guides, and native build resources;
@@ -50,8 +58,8 @@ reports preserve exact source/package identities; they are not new-name reruns.
 
 - No unified live viewer, takeover control, or agent pause/resume panel.
 - Windows requires an authenticated, connected, non-minimized ParaDesk viewer;
-  no automatic sign-in/reconnect. The 0.3 release's Windows live GUI rerun remains
-  pending an available authenticated child.
+  no automatic sign-in/reconnect. Stop restores original viewer visibility, which
+  can cover other windows even though it does not request foreground focus.
 - Windows owned apps close after 30 minutes without requests. Linux defaults to
   a fixed 30-minute TTL. Mac has no idle-save policy.
 - Linux uses llvmpipe software rendering on the tested host. No gaming claim.
@@ -67,5 +75,5 @@ reports preserve exact source/package identities; they are not new-name reruns.
 1. Make lifetimes explicit for long tasks, with visible expiry and a safe policy.
 2. Add a read-only viewer that opens/closes without disturbing session identity
    or agent input. Keep takeover a separate explicit action.
-3. Run new-name Windows native acceptance when its child desktop is available.
+3. Measure nonintrusive viewer/setup behavior and game rendering separately.
 4. Expand computer-ctrl capabilities only with per-platform evidence.

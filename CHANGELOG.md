@@ -11,6 +11,9 @@
 - Verify hosted CI on all three OSes, repeat Linux native installed-package
   acceptance, and validate Windows installation/compilation/refusals headlessly.
 - Resolve the Windows global-Python scripts-directory check before release.
+- Post-publication follow-up: run fresh Windows native and actual Codex/OpenCode
+  acceptance against the official wheel; correct the earlier completion
+  claim. Runtime sources and release assets are unchanged.
 
 This release adds no live viewer and changes no backend lifetime defaults.
 Historical native reports retain their original package/source identities.

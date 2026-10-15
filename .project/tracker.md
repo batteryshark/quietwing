@@ -2,23 +2,34 @@
 
 Updated: 2026-10-15
 
-## Windows interruption investigation (2026-10-15, active)
+## Windows follow-up (2026-10-15, acceptance complete)
 
-- Corrected completion wording: 0.3 Windows live GUI acceptance was not done.
-  Current provider has no native child. New sign-in is needed for that acceptance;
-  none requested on the desktop. No login, settings, input, or host capture used.
-- Original parallel-workload stop: 14:37 EDT, obstruction guard with no saved
-  blocker identity and the same visible application set. QuietWing install checks
-  began about 14:40; only a read-only inventory overlapped before the stop. Shared
-  host UIA timeouts predate the inventory. Historical occluder remains unknown.
-- Exact headless replay passed with a windowless console-session monitor: 284
-  samples, no new visible windows, foreground remained the running workload.
-- Service-session console probes did not reproduce a popup; no speculative
-  QuietWing runtime change. Prepared a separate workload runner patch for consistent
-  headless launches and blocker metadata; its command checks and Windows C# compile
-  pass. Applying/messaging that active project awaits explicit user authorization.
-- User requests moving the checkout to ~/Projects/workstack/quietwing when ready;
-  update its venv and private cctl path directly, with no aliases.
+- Initial completion wording overstated Windows coverage. Fresh acceptance now
+  passes against the published 0.3 wheel (SHA256 852ea015…3675e4), with no runtime
+  or asset replacement: native CLI text/click/capture, ordinary app, silent output
+  routes, stale-generation refusal, reattachment, two-SSH reconnect, owned cleanup.
+- Actual Codex and OpenCode saved exact Unicode in separate ordinary ISE documents.
+  Independently verified files, native tool events, child identity, fresh captures
+  and cleanup. 1,849 parent samples: pointer/focus unchanged, connected viewer
+  hidden and not minimized. Same provider/authenticated child retained; all owned
+  workers/apps, temporary tasks and the private consumer controller removed.
+- User authorized one manual ParaDesk sign-in while the separate main workload
+  was paused. No host capture/input, firewall, credential-policy, RDP or service
+  changes. Private evidence and unsuccessful harness-startup attempts stay ignored
+  under evidence/windows-live-0.3.0-2026-10-15.
+- Separate workload runner patch applied with permission: all shell helpers use
+  its existing headless launcher, obstruction guard retains refusal and adds
+  blocker identity. Command checks/Windows compile passed; synced copy hash matches.
+  Lead notified of completion and PC release. Historical 14:37 occluder remains
+  unknown: install checks began later; headless replay had 284 stable samples.
+- Fixed acceptance-runner readiness: required Codex MCP startup now waits up to
+  60 s, avoiding the optional one-second catalog grace. Private MCP pywin32 missing
+  dependency fixed only in the test environment. Successful runs verified afterward.
+- Checkout moved to ~/Projects/workstack/quietwing; private venv recreated and Mac
+  cctl configuration points directly there. No alias. Saved guest/state/cache kept.
+- Remaining Windows visibility limit: stop restores original viewer visibility,
+  which may cover another window. Hidden/connected control passed; minimized,
+  disconnected and automatic reconnect remain unsupported. No game/GPU claim.
 
 ## Release 0.3.0
 
@@ -39,7 +50,8 @@ Updated: 2026-10-15
   launching worker, transport tests, and missing-child refusal. Provider file and
   installed resources unchanged; no main-desktop input/capture/controller changes.
   Existing child remained disconnected after the host became available; fresh
-  live GUI acceptance remains deferred. Operator reported a window interruption
+  live GUI acceptance was deferred at publication; the follow-up above now passed.
+  Operator reported a window interruption
   during headless validation; final inventory found no release-test process/window,
   and its origin was not established. Existing provider/authentication retained.
 - 17 native sources match the historical 0.2 acceptance; actual Codex/OpenCode
@@ -49,7 +61,7 @@ Updated: 2026-10-15
 
 ## Next action
 
-Prioritize explicit lifetimes and a read-only viewer. Repeat Windows native
-acceptance when an authenticated child is available; investigate diagnostic/setup
-foreground interference without assuming the reported interruption was resolved
-at source. docs/status.md is the current capability/validation summary.
+Prioritize explicit lifetimes and a read-only viewer, including a stop policy that
+does not reveal a hidden Windows viewer. Measure setup and game/GPU behavior
+separately; the historical obstruction is still unidentified. docs/status.md is
+the current capability/validation summary.
