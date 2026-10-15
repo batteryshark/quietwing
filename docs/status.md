@@ -5,6 +5,35 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## 0.4 development: Mac read-only viewer
+
+The installed 0.4.0.dev0 wheel passed live Mac viewer acceptance on 2026-10-15.
+`quietwing view --id NAME` displays guest pixels without taking keyboard focus
+or forwarding input. `--close` closes only the preview. Windows/Linux viewing
+remain unsupported. See the [viewer guide](viewer.md).
+
+- Native AppKit fixture: image display, 12 locally dispatched input events,
+  refusal to become key/main, unchanged foreground/cursor, stale-image clearing,
+  and frame removal at close passed. This fixture posts no global input.
+- Live guest: duplicate open reused the same window; stale open/close refused;
+  close retained the running owner and input timestamp. Explicit save/resume
+  retained the guest login, cleared the old preview, refused automatic rebind,
+  and allowed an explicitly reopened preview on the new generation.
+- Actual Codex and OpenCode each saved exact Unicode through seven isolated MCP
+  calls while preview frames advanced. Files, tool events, final screenshots and
+  pinned generation were checked independently. Across 151 metadata samples, the
+  preview/VM stayed nonkey/nonmain, the VM stayed offscreen, and neither became
+  foreground or posted host input. The human continued moving the pointer and
+  switching applications; unchanged pointer/focus is claimed only for the native
+  fixture's controlled interval, not the whole agent workflow.
+- Local portable checks: 51 passed, one Windows-only simulated case skipped.
+  Clean wheel/source audit, independent source rebuild and fresh installed
+  command passed; all 33 bundled runtime resources matched reviewed source.
+  Hosted CI additionally compiles the installed viewer on Mac without launching it.
+- Dedicated acceptance controller and harness/server processes were removed.
+  The Mac guest and preview were retained for inspection. No personal Windows
+  connection, install, capture, input or settings change was performed.
+
 ## [0.3.1 viewer cleanup patch](https://github.com/batteryshark/quietwing/releases/tag/v0.3.1)
 
 [Exact-tag CI](https://github.com/batteryshark/quietwing/actions/runs/38805831649)
@@ -83,7 +112,8 @@ reports preserve exact source/package identities; they are not new-name reruns.
 
 ## Current limits
 
-- No unified live viewer, takeover control, or agent pause/resume panel.
+- The 0.4 development build has a Mac-only read-only preview; see [viewer](viewer.md).
+  No cross-platform viewer, takeover control, or agent pause/resume panel.
 - Windows requires an authenticated, connected, non-minimized ParaDesk viewer;
   no automatic sign-in/reconnect. From 0.3.1, cleanup preserves current viewer
   visibility; a hidden viewer stays hidden. Old running workers retain old behavior.
@@ -100,7 +130,7 @@ reports preserve exact source/package identities; they are not new-name reruns.
 ## Next measured work
 
 1. Make lifetimes explicit for long tasks, with visible expiry and a safe policy.
-2. Add a read-only viewer that opens/closes without disturbing session identity
-   or agent input. Keep takeover a separate explicit action.
+2. Extend read-only viewing to other backends with separate native acceptance.
+   Keep takeover a separate explicit action.
 3. Measure nonintrusive viewer/setup behavior and game rendering separately.
 4. Expand computer-ctrl capabilities only with per-platform evidence.

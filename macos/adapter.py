@@ -89,7 +89,7 @@ def save_binding(name, uid, session_id):
 
 def parse(argv):
     parser = Parser(description='Guarded Mac separate-user adapter; setup and live acceptance are incomplete.')
-    parser.add_argument('command', choices=['doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop'])
+    parser.add_argument('command', choices=['doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'view'])
     parser.add_argument('--id')
     parser.add_argument('--expect-generation', help='Require the exact live VM owner generation; never retarget a replacement')
     parser.add_argument('--backend', choices=['vm','native'], default='vm')
@@ -99,6 +99,9 @@ def parse(argv):
     parser.add_argument('--window-id', type=int)
     parser.add_argument('--display-id', type=int)
     parser.add_argument('--cwd')
+    viewer = parser.add_mutually_exclusive_group()
+    viewer.add_argument('--close', dest='close_viewer', action='store_true', help='Close only the read-only viewer')
+    viewer.add_argument('--status', dest='viewer_status', action='store_true', help='Inspect only viewer state')
     inputs = parser.add_mutually_exclusive_group()
     inputs.add_argument('--type', dest='text')
     inputs.add_argument('--key')
@@ -130,6 +133,10 @@ def parse(argv):
     if has_literal_text:
         args.text = literal_text
     args.argv = executable
+    if args.command != 'view' and (args.close_viewer or args.viewer_status):
+        raise Failure('invalid_arguments', '--close/--status are view options only')
+    if args.command == 'view' and args.backend != 'vm':
+        raise Failure('viewer_unsupported', 'Read-only viewing supports only the Mac VM backend')
     if args.command != 'doctor' and (not args.id or not NAME.fullmatch(args.id)):
         raise Failure('invalid_id', 'Use a 1–64 character session ID containing letters, digits, underscore or hyphen.')
     if args.expect_generation is not None:
@@ -150,7 +157,15 @@ def main(argv):
                 from . import vm_adapter
             else:
                 import vm_adapter
-            try: response = vm_adapter.command(args)
+            try:
+                if args.command == 'view':
+                    if __package__:
+                        from . import viewer
+                    else:
+                        import viewer
+                    response = viewer.command(args)
+                else:
+                    response = vm_adapter.command(args)
             except (vm_adapter.VMError, OSError, ValueError, subprocess.SubprocessError) as exc:
                 raise Failure(getattr(exc, 'code', 'vm_backend_error'), str(exc))
         elif args.command == 'doctor':

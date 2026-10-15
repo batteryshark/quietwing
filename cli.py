@@ -6,9 +6,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-VERSION = '0.3.1'
+VERSION = '0.4.0.dev0'
 PLATFORMS = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}
-COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build'}
+COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build', 'view'}
 
 
 def fail(platform, code, message, exit_code=2):
@@ -48,7 +48,7 @@ def main(argv):
     if not argv or argv in (['-h'], ['--help']):
         print('QuietWing ' + VERSION + '\n'
               'Usage: quietwing COMMAND [OPTIONS]\n\n'
-              'Commands: doctor, describe, start, attach, status, exec, capture, input, stop, build\n'
+              'Commands: doctor, describe, start, attach, status, exec, capture, input, stop, view, build\n'
               'Session commands use --id NAME. Run COMMAND --help for adapter options.\n'
               'Run this helper on the target OS, directly or through SSH.\n'
               'Only verified isolated sessions are controllable; there is no host-desktop fallback.')
@@ -58,11 +58,11 @@ def main(argv):
     if argv[0] not in COMMANDS:
         return fail(platform, 'unknown_command', 'Unknown command: ' + argv[0])
     root = Path(__file__).resolve().parent
-    if argv == ['build']:
+    if argv in (['build'], ['build', '--viewer']):
         if platform != 'macos':
             return fail(platform, 'unsupported_operation', 'Explicit build is macOS-only; other backends report prerequisites through doctor.')
         try:
-            p = subprocess.run([sys.executable, str(root / 'macos' / 'build_vm.py')],
+            p = subprocess.run([sys.executable, str(root / 'macos' / ('build_viewer.py' if '--viewer' in argv else 'build_vm.py'))],
                                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, timeout=240)
         except (OSError, subprocess.TimeoutExpired) as exc:
@@ -74,6 +74,8 @@ def main(argv):
         print(json.dumps({'schemaVersion': 1, 'ok': True, 'platform': platform,
                           'result': {'built': True, 'output': p.stdout.strip()}}))
         return 0
+    if argv[0] == 'view' and platform != 'macos':
+        return fail(platform, 'unsupported_operation', 'Read-only viewing currently supports the Mac VM backend only.')
     adapter_argv = ['status', *argv[1:]] if argv[0] == 'describe' else argv
     adapter = root / platform / 'adapter.py'
     if not adapter.is_file():

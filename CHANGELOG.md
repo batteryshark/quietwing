@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0.dev0 — unreleased
+
+- Optional Mac VM read-only viewer: `quietwing view --id NAME`, `--status`,
+  `--close`. Nonactivating image-only panel, generation-pinned capture broker,
+  no input forwarding, automatic guest resume, audio or host capture.
+- `quietwing build --viewer` builds only the preview while an existing VM runs.
+- Windows and Linux native behavior unchanged; personal Windows testing excluded
+  while another workload owns that desktop.
+
 ## 0.3.1 — 2026-10-15
 
 - Keep a hidden ParaDesk viewer hidden after stop, worker exit, or attach rollback.

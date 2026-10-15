@@ -28,3 +28,13 @@ See [PROVISIONING.md](PROVISIONING.md) for reproducible setup commands and [NATI
 Consumers can pin `status`, `capture`, `input`, `exec` and `stop` to `--expect-generation TOKEN`, using `session.generation` from a live response. The owner rejects a mismatch with `generation_changed` before performing the action, including bridge mutations. An unpinned status can discover a replacement; a pinned action never automatically retargets it. Saved/stopped responses have a null generation. Calls without this option retain their existing behavior.
 
 Capabilities are explicit booleans: capture, input, keyboard, pointer, exec, audio_capture, audio_silent, browser and accessibility. The VM supplies pixels and native guest input, generic process launch and silent audio (no audio device). It does not supply audio recording, browser DOM or accessibility-tree APIs. Exec/Unicode readiness requires a fresh guest nonce bound to the current owner.
+
+## Peek without taking control
+
+In the 0.4 development build, run `quietwing build --viewer` once, then
+`quietwing view --id minimal` while the guest runs. The preview opens in the
+background, cannot become key/main, and does not forward clicks, keys or scroll.
+Closing its window or running `quietwing view --id minimal --close` leaves the
+guest and agent working. `--status` inspects the preview without raising it.
+It never resumes a saved guest and never follows a replacement generation.
+See the [viewer guide](../docs/viewer.md) for limits and native verification.

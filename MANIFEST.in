@@ -10,7 +10,7 @@ include windows/cleanup_test_controller.py
 
 include LICENSE README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md THIRD_PARTY.md AGENTS.md
 include .project/tracker.md
-include macos/test_generation.py
+include macos/test_generation.py macos/test_viewer.py
 include macos/test_guards.py
 graft docs
 graft examples

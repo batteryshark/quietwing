@@ -25,4 +25,9 @@ info={'CFBundleIdentifier':'dev.desktop-session-helper.vm','CFBundleName':'Deskh
 with (contents/'Info.plist').open('wb') as f:plistlib.dump(info,f)
 for target in [app,build/'vm-probe']:
     subprocess.run(['/usr/bin/codesign','--force','--sign','-','--entitlements',str(root/'VMProbe.entitlements'),str(target)],check=True)
+try:
+    from .build_viewer import build as build_preview
+except ImportError:
+    from build_viewer import build as build_preview
+build_preview()
 print(app)

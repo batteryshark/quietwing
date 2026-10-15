@@ -38,6 +38,9 @@ jobs:
       - name: Install wheel without runtime dependencies
         shell: bash
         run: python -m pip install --no-deps dist/*.whl
+      - name: Compile installed Mac viewer without launching a desktop
+        if: runner.os == 'macOS'
+        run: quietwing build --viewer
       - name: Check installed command from a fresh directory
         run: python scripts/check_installed.py
 
