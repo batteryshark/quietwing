@@ -7,3 +7,13 @@ include windows/reconnect_acceptance.py windows/package_acceptance.py windows/ed
 include windows/harness_prepare.py windows/harness_verify.py windows/test_adapter.py
 include tests/MetalGuestProbe.swift tests/verify_vm_boundary.py
 include windows/cleanup_test_controller.py
+
+include LICENSE README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md THIRD_PARTY.md AGENTS.md
+include .project/tracker.md
+include macos/test_generation.py
+include macos/test_guards.py
+graft docs
+graft examples
+graft scripts
+graft tests
+global-exclude *.pyc *.pyo .DS_Store

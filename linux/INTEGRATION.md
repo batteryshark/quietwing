@@ -1,5 +1,9 @@
 # Linux integration validation
 
+This is the historical 0.2 acceptance report. Package names and hashes below
+identify that tested build. For QuietWing 0.3 commands and setup, use the
+[upgrade guide](../docs/upgrading.md) and this platform's README.
+
 Validated on Debian 13/X11 on 2026-10-13. The companion provides an independent authenticated Xvfb display, optional xfwm4, private HOME/XDG/D-Bus, and private PulseAudio null output. Tests used ordinary Mousepad (GTK) and Xmessage (Xaw), with no viewer attached. The physical display received no input or screenshots; only pointer/focus metadata was sampled. The existing installed computer-ctrl remained unchanged: integration used a separate source checkout with its existing Python dependencies.
 
 ## Companion and consumer checks

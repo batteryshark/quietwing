@@ -1,23 +1,45 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "desktop-session-helper"
-version = "0.2.0"
-description = "Local isolated desktop sessions for Windows, macOS and Linux"
+name = "quietwing"
+version = "0.3.0"
+description = "Separate desktops for agents, while you keep using your computer"
 requires-python = ">=3.11"
-readme = "PACKAGE.md"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "batteryshark"}]
+keywords = ["desktop", "automation", "computer-use", "virtualization", "agents"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Repository = "https://github.com/batteryshark/quietwing"
+Documentation = "https://github.com/batteryshark/quietwing#readme"
+Issues = "https://github.com/batteryshark/quietwing/issues"
 
 [project.scripts]
-deskhelper = "desktop_session_helper.deskhelper:entrypoint"
+quietwing = "quietwing.cli:entrypoint"
 
 [tool.setuptools]
-packages = ["desktop_session_helper"]
+packages = ["quietwing"]
 include-package-data = false
 
 [tool.setuptools.package-dir]
-desktop_session_helper = "."
+quietwing = "."
 
 [tool.setuptools.package-data]
-desktop_session_helper = ["linux/adapter.py", "windows/adapter.py", "windows/Worker.cs", "windows/NativeSupport.cs", "macos/adapter.py", "macos/vm_adapter.py", "macos/runtime_paths.py", "macos/build.py", "macos/build_vm.py", "macos/*.swift", "macos/*.entitlements", "macos/guest_bootstrap.sh", "macos/README.md", "macos/SETUP.md", "macos/NATIVE_OR_VM.md", "macos/PROVISIONING.md", "linux/README.md", "windows/README.md", "windows/SETUP.md", "CONTRACT.md", "session.schema.json"]
+quietwing = ["linux/adapter.py", "windows/adapter.py", "windows/Worker.cs", "windows/NativeSupport.cs", "macos/adapter.py", "macos/vm_adapter.py", "macos/runtime_paths.py", "macos/build.py", "macos/build_vm.py", "macos/*.swift", "macos/*.entitlements", "macos/guest_bootstrap.sh", "macos/README.md", "macos/SETUP.md", "macos/NATIVE_OR_VM.md", "macos/PROVISIONING.md", "linux/README.md", "windows/README.md", "windows/SETUP.md", "CONTRACT.md", "session.schema.json"]

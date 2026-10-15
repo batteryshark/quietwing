@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 PLATFORMS = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}
 COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build'}
 
@@ -46,8 +46,8 @@ def main(argv):
         print(json.dumps({'schemaVersion': 1, 'ok': True, 'version': VERSION, 'platform': platform}))
         return 0
     if not argv or argv in (['-h'], ['--help']):
-        print('Desktop Session Helper ' + VERSION + '\n'
-              'Usage: python deskhelper.py COMMAND [OPTIONS]\n\n'
+        print('QuietWing ' + VERSION + '\n'
+              'Usage: quietwing COMMAND [OPTIONS]\n\n'
               'Commands: doctor, describe, start, attach, status, exec, capture, input, stop, build\n'
               'Session commands use --id NAME. Run COMMAND --help for adapter options.\n'
               'Run this helper on the target OS, directly or through SSH.\n'

@@ -1,6 +1,6 @@
 # Portable Windows setup
 
-This backend attaches to an already authenticated ParaDesk child session. It does not provision Remote Desktop, create users, save passwords, reconnect, or log off a native session. A fresh machine therefore has a one-time operator setup step before `deskhelper attach` can work.
+This backend attaches to an already authenticated ParaDesk child session. It does not provision Remote Desktop, create users, save passwords, reconnect, or log off a native session. A fresh machine therefore has a one-time operator setup step before `quietwing attach` can work.
 
 The tested provider is ParaDesk 1.1.0, source commit `c01b5fa1c434fac74b5cd3ddf8adb0cd3b08d435`. The live experiment used its portable release ZIP, SHA-256 `60c0e6502c799de434870647c77e736401e9c18841ee996fd54ab5d0b5b76122`, with the thin launcher below. The source pin is recorded in that experiment; its provider directory contains the release, not a Git checkout. The source-build recipe below is reviewed against that pin, but a clean-machine source rebuild and provisioning have not been tested here.
 
@@ -98,7 +98,7 @@ From that same console, start the child and complete any Windows Security prompt
 
 No password goes into a script, chat, command line, or helper state. This recipe does not save credentials or promise future connections without authentication. A bounded CLI wait may time out while the local prompt remains open; inspect the existing viewer instead of repeatedly restarting it. Same-user startup programs can create their own UAC dialogs in the child. The human must dismiss or handle those locally; the helper refuses a secure/locked desktop.
 
-Keep the viewer **connected and not minimized**. `deskhelper attach --hide-viewer` uses `SW_HIDE` while retaining the connection. Closing/detaching/minimizing the RDP viewer made native screen capture/input unavailable in the experiment. Hiding the connected window is a different operation. Native input/capture and a modest D3D11 fixture passed while hidden on this host; this is not a game/performance guarantee.
+Keep the viewer **connected and not minimized**. `quietwing attach --hide-viewer` uses `SW_HIDE` while retaining the connection. Closing/detaching/minimizing the RDP viewer made native screen capture/input unavailable in the experiment. Hiding the connected window is a different operation. Native input/capture and a modest D3D11 fixture passed while hidden on this host; this is not a game/performance guarantee.
 
 ## Install and use the companion independently
 
@@ -106,8 +106,8 @@ Use the supplied companion wheel in its own venv; no cctl installation is requir
 
 ```powershell
 python -m venv "$root\helper-venv"
-& "$root\helper-venv\Scripts\python.exe" -m pip install --no-index --no-deps C:\path\desktop_session_helper-0.2.0-py3-none-any.whl
-$helper = "$root\helper-venv\Scripts\deskhelper.exe"
+& "$root\helper-venv\Scripts\python.exe" -m pip install --no-index --no-deps C:\path\quietwing-0.3.0-py3-none-any.whl
+$helper = "$root\helper-venv\Scripts\quietwing.exe"
 $env:DESKHELPER_PARADESK_DATA = "$root\data"
 $env:DESKHELPER_STATE_ROOT = "$root\helper-state"
 & $helper doctor
@@ -127,7 +127,7 @@ The caller needs permission to register Limited Interactive tasks for the alread
 
 ## Cleanup and recovery
 
-Normal `deskhelper stop` ends only the helper worker and its job-owned apps, removes its temporary tasks, and restores original viewer visibility. Save work in those apps before stop. The native child and its existing authentication remain alive. A worker crash also closes its owned job and triggers viewer restoration; follow with stop to clean registrations. If generation changes, obtain a new descriptor explicitly rather than retrying an old action against a replacement.
+Normal `quietwing stop` ends only the helper worker and its job-owned apps, removes its temporary tasks, and restores original viewer visibility. Save work in those apps before stop. The native child and its existing authentication remain alive. A worker crash also closes its owned job and triggers viewer restoration; follow with stop to clean registrations. If generation changes, obtain a new descriptor explicitly rather than retrying an old action against a replacement.
 
 If the provider locks/disconnects/exits, the companion fails closed and never reconnects. Leave the native session alone until the human is available to restore it and authenticate if needed. Do not guess credentials or repeatedly trigger prompts. `--quit` exits the provider and loses the connection even though the native child may remain; it is not routine helper cleanup.
 

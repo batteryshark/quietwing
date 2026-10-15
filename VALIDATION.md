@@ -1,3 +1,9 @@
+# Historical native acceptance — desktop-session-helper 0.2
+
+These results describe the 2026-10-13 predecessor package, not a fresh QuietWing
+0.3 native rerun. The backend implementations are retained. Current release
+checks and open work are listed in [status](docs/status.md).
+
 # Integration acceptance status
 
 The 0.2 companion and optional computer-ctrl provider passed the defined cross-platform integration gates. Native session management stays in this independent project. Acceptance covers the tools and conditions below; it does not establish full computer-ctrl capability parity.

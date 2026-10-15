@@ -13,9 +13,9 @@ PLATFORM = {'darwin': 'macos', 'linux': 'linux', 'win32': 'windows'}[sys.platfor
 
 class DispatcherContract(unittest.TestCase):
     def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory(prefix='deskhelper-dispatch-')
+        self.tmp = tempfile.TemporaryDirectory(prefix='quietwing-dispatch-')
         self.root = Path(self.tmp.name)
-        shutil.copyfile(ROOT / 'deskhelper.py', self.root / 'deskhelper.py')
+        shutil.copyfile(ROOT / 'cli.py', self.root / 'cli.py')
         (self.root / PLATFORM).mkdir()
 
     def tearDown(self):
@@ -25,7 +25,7 @@ class DispatcherContract(unittest.TestCase):
         (self.root / PLATFORM / 'adapter.py').write_text(body)
 
     def call(self, *args):
-        return subprocess.run([sys.executable, str(self.root / 'deskhelper.py'), *args],
+        return subprocess.run([sys.executable, str(self.root / 'cli.py'), *args],
                               capture_output=True, text=True, timeout=10)
 
     def session_adapter(self, state, generation, capabilities):

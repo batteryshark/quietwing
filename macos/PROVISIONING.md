@@ -9,8 +9,8 @@ export DESKHELPER_VM_ID=mac-agent
 # Optional absolute parent directories, before building/provisioning:
 # export DESKHELPER_BUILD_ROOT=/your/private/build-cache
 # export DESKHELPER_STATE_ROOT=/your/private/state
-deskhelper build
-deskhelper doctor
+quietwing build
+quietwing doctor
 ```
 
 Build uses `xcrun swiftc` and ad-hoc `codesign`, with no VM manager or admin password. Assets go to `DESKHELPER_BUILD_ROOT/macos`, default `~/Library/Caches/desktop-session-helper/macos`, never installed package resources. Save/stop existing VMs before rebuilding.
@@ -24,8 +24,8 @@ python3 - <<'PY'
 import json, os, platform, shutil, subprocess, uuid
 from pathlib import Path
 from importlib.resources import files
-from desktop_session_helper.macos import vm_adapter
-from desktop_session_helper.macos.runtime_paths import build_root
+from quietwing.macos import vm_adapter
+from quietwing.macos.runtime_paths import build_root
 os.umask(0o077)
 assert platform.machine() == 'arm64', 'Apple Silicon is required'
 state = vm_adapter.directory(os.environ['DESKHELPER_VM_ID'], create=True)
@@ -45,7 +45,7 @@ if not (bridge/'bridge-id').exists():
     (bridge/'bridge-id').write_text(str(uuid.uuid4()))
 shutil.copy2(build/'GuestBridge', bridge/'GuestBridge')
 (bridge/'GuestBridge').chmod(0o700)
-source = Path(str(files('desktop_session_helper').joinpath('macos')))
+source = Path(str(files('quietwing').joinpath('macos')))
 shutil.copy2(source/'guest_bootstrap.sh', bridge/'bootstrap.sh')
 (bridge/'bootstrap.sh').chmod(0o700)
 print(json.dumps({'state':str(state), 'restore':restore}, indent=2))
@@ -64,7 +64,7 @@ The download runs in the foreground. If interrupted, ensure that process ended, 
 python3 - <<'PY'
 import hashlib, json, os, re, shutil, subprocess, time
 from urllib.parse import urlparse
-from desktop_session_helper.macos import vm_adapter
+from quietwing.macos import vm_adapter
 os.umask(0o077)
 state = vm_adapter.directory(os.environ['DESKHELPER_VM_ID'])
 assert not (state/'installed.json').exists(), 'Already installed'
@@ -105,8 +105,8 @@ PY
 ## 3. Install and complete guest Setup Assistant
 
 ```sh
-deskhelper start --id "$DESKHELPER_VM_ID"
-deskhelper status --id "$DESKHELPER_VM_ID"
+quietwing start --id "$DESKHELPER_VM_ID"
+quietwing status --id "$DESKHELPER_VM_ID"
 ```
 
 First start creates compatible Mac hardware/identifier/auxiliary files, the sparse disk and a persistent owner, then runs Apple's installer. Status exposes `install_fraction`; wait for `phase: running`. Do not relaunch because a command returned while installation continues. The owner lock prevents duplicate disk owners. `installed.json` distinguishes installation from boot/resume. Do not delete partial platform files or force-stop the installer.
@@ -114,11 +114,11 @@ First start creates compatible Mac hardware/identifier/auxiliary files, the spar
 The view is intentionally offscreen. Complete Setup Assistant by inspecting **owned guest screenshots** and sending guest-only input. Until the bridge is installed, use the companion directly; cctl waits for generic exec readiness.
 
 ```sh
-deskhelper capture --id "$DESKHELPER_VM_ID" --output /private/tmp/mac-agent-setup-001.png
+quietwing capture --id "$DESKHELPER_VM_ID" --output /private/tmp/mac-agent-setup-001.png
 # Open the PNG normally. Use a new capture filename each time.
-deskhelper input --id "$DESKHELPER_VM_ID" --click 500 600
-deskhelper input --id "$DESKHELPER_VM_ID" --type 'Guest account name'
-deskhelper input --id "$DESKHELPER_VM_ID" --key enter
+quietwing input --id "$DESKHELPER_VM_ID" --click 500 600
+quietwing input --id "$DESKHELPER_VM_ID" --type 'Guest account name'
+quietwing input --id "$DESKHELPER_VM_ID" --key enter
 ```
 
 Coordinates illustrate syntax, not universal targets; use the current image. Choose a US keyboard for bootstrap, create a **guest-local** account, and skip Apple Account/iCloud and host data migration. No existing host/Apple password is needed. Do not put a password in `--type`, shell history or saved source. After focusing the guest password field, use this private stdin path; repeat for its confirmation field:
@@ -126,7 +126,7 @@ Coordinates illustrate syntax, not universal targets; use the current image. Cho
 ```sh
 python3 - <<'PY'
 import getpass, os
-from desktop_session_helper.macos import vm_adapter
+from quietwing.macos import vm_adapter
 name = os.environ['DESKHELPER_VM_ID']
 status = vm_adapter.request(name, {'op':'status'})
 assert status['ok'] and status['session']['phase']=='running'
@@ -145,21 +145,21 @@ Before bridge installation, text uses US physical key codes; choose a password r
 After reaching Finder, use guest Spotlight to open Terminal. Inspect fresh screenshots at transitions rather than typing into an unready window:
 
 ```sh
-deskhelper input --id "$DESKHELPER_VM_ID" --key cmd+space
-deskhelper input --id "$DESKHELPER_VM_ID" --type Terminal
-deskhelper input --id "$DESKHELPER_VM_ID" --key enter
+quietwing input --id "$DESKHELPER_VM_ID" --key cmd+space
+quietwing input --id "$DESKHELPER_VM_ID" --type Terminal
+quietwing input --id "$DESKHELPER_VM_ID" --key enter
 # Once the guest Terminal prompt is visible:
-deskhelper input --id "$DESKHELPER_VM_ID" --type "/bin/zsh '/Volumes/My Shared Files/bootstrap.sh'"
-deskhelper input --id "$DESKHELPER_VM_ID" --key enter
-deskhelper status --id "$DESKHELPER_VM_ID"
+quietwing input --id "$DESKHELPER_VM_ID" --type "/bin/zsh '/Volumes/My Shared Files/bootstrap.sh'"
+quietwing input --id "$DESKHELPER_VM_ID" --key enter
+quietwing status --id "$DESKHELPER_VM_ID"
 ```
 
 The script refuses a nonvirtualized context, installs under the **guest** account's `~/Library/Application Support/Deskhelper`, and registers only a **guest** LaunchAgent. Do not execute it on the host. The only share is this VM's private bridge, never home/projects. Fresh guest/owner generations must match before `exec` and `unicode_text` advertise true.
 
 ```sh
-deskhelper exec --id "$DESKHELPER_VM_ID" -- /usr/bin/open -a TextEdit
-deskhelper stop --id "$DESKHELPER_VM_ID"
-deskhelper start --id "$DESKHELPER_VM_ID"
+quietwing exec --id "$DESKHELPER_VM_ID" -- /usr/bin/open -a TextEdit
+quietwing stop --id "$DESKHELPER_VM_ID"
+quietwing start --id "$DESKHELPER_VM_ID"
 ```
 
 Verify the same desktop resumes without login, with a new owner `session.generation`. Controller exit leaves the guest running; stop saves memory and exits the owner. After successful install and save/resume acceptance, remove only `Restore.ipsw` to reclaim download space; keep verification metadata, disk, hardware, auxiliary storage, network MAC, bridge and snapshot. The snapshot is encrypted and host/configuration-bound. There are no audio devices, no host clipboard synchronization, and NAT has no forwarded ports.

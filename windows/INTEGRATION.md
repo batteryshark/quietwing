@@ -1,5 +1,9 @@
 # Windows companion integration acceptance
 
+This is the historical 0.2 acceptance report. Package names and hashes below
+identify that tested build. For QuietWing 0.3 commands and setup, use the
+[upgrade guide](../docs/upgrading.md) and this platform's README.
+
 The independent Windows companion and the optional computer-ctrl consumer passed native acceptance and two real model harnesses, Codex CLI and OpenCode. Both harnesses controlled an ordinary PowerShell ISE document inside an existing authenticated ParaDesk child. They used the installed companion wheel through the same SSH/MCP transport. No host-desktop fallback, provider reconnect, credential saving, or system provisioning was used.
 
 ## Tested components and artifacts

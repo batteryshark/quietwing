@@ -1,0 +1,6 @@
+# CCTL_CONFIG=/absolute/path/to/macos.toml cctl --session work mcp
+profile = "personal"
+[sessions.work]
+command = ["/absolute/path/to/quietwing-env/bin/quietwing"]
+id = "minimal" # An explicitly provisioned guest, not a new blank VM.
+acquire = "start"

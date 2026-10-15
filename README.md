@@ -1,65 +1,132 @@
-# Desktop Session Helper
+# QuietWing
 
-A standalone companion that creates or attaches to a separate desktop for agent work while a human uses the host. It owns the platform session, native capture/input and lifecycle. The optional computer-ctrl integration consumes its versioned CLI; neither project depends on the other's source tree.
+**Separate desktops for agents. Keep using your computer.**
 
-| Backend | Work instance | Lifecycle and limitations |
+QuietWing gives a computer-use agent somewhere else to open applications, click,
+type, and take screenshots. The agent works in a separate desktop while you keep
+your own pointer, focus, and audio.
+
+It is an independent companion to
+[computer-ctrl](https://github.com/batteryshark/computer-ctrl). QuietWing owns
+desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
+MCP tools, images, and automation workflow. QuietWing also works directly from
+the command line, without computer-ctrl or a particular agent harness.
+
+**Status: experimental, version 0.3.0.** The native backends passed ordinary-app
+and lifecycle acceptance in 0.2, including actual Codex and OpenCode workflows
+on all three operating systems. Version 0.3 introduces the QuietWing name,
+package, and repository tooling. [Current status](docs/status.md) distinguishes
+the recorded native acceptance from checks run for this release.
+
+## Pick your desktop
+
+| Host | Agent desktop | Everyday behavior |
 | --- | --- | --- |
-| Windows | Existing authenticated ParaDesk child session | Attach to a hidden, connected viewer; detach owned workers/apps on stop. Minimized or disconnected viewers are unsupported. No automatic sign-in. |
-| Linux | Private Xvfb display, HOME/XDG, D-Bus and PulseAudio null sink | Start a bounded owned session; reconnect over SSH; stop only its resources. Tested GLX renderer is software llvmpipe. |
-| Apple Silicon macOS | macOS guest using Apple's Virtualization.framework | Resume an explicitly provisioned guest; save and stop to release RAM. Tested with 2 vCPU, 4 GiB RAM and no audio devices. |
+| Apple Silicon Mac | macOS VM using Apple's Virtualization.framework | Resume a provisioned guest; save memory and release RAM on stop. Tested with 2 vCPU, 4 GiB RAM, no audio devices. |
+| Linux | Private Xvfb with its own HOME/XDG, D-Bus, and PulseAudio null sink | Start/adopt an owned desktop; stop its apps when finished. Software rendering on the tested host. |
+| Windows | Existing authenticated ParaDesk child session | Attach and hide its connected viewer. Stop owned apps/workers while preserving the Windows login. |
 
-## Install separately
+Windows needs an already signed-in child. Minimized/disconnected viewers are
+unsupported. Mac needs explicit guest provisioning first. Package installation
+alone does not prepare either desktop.
 
-Python 3.11 or later is required; the companion has no Python runtime dependencies. From a checkout:
+## Install
+
+Python 3.11+ is required; there are no Python runtime dependencies. From a checkout:
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install .
-.venv/bin/deskhelper --version
-.venv/bin/deskhelper doctor
+.venv/bin/quietwing --version
+.venv/bin/quietwing doctor
 ```
 
-On Windows use `.venv\Scripts\python.exe` and `.venv\Scripts\deskhelper.exe` instead. `uv tool install .` is an alternative when uv is already available. To build a portable wheel, use `python -m pip wheel --no-deps --wheel-dir dist .`; install that wheel on each target OS in a separate environment. The wheel includes native source resources; the target's existing compiler builds them into private state/cache. It does not include compiled executables, credentials, a VM disk or snapshots.
+Windows uses `.venv\Scripts\python.exe` and `.venv\Scripts\quietwing.exe`.
+Alternatively, install a reviewed wheel with
+`python -m pip install /path/to/quietwing-VERSION-py3-none-any.whl`, or use
+`uv tool install .` from a checkout. This setup does not require a PyPI release.
 
-Package installation does not install OS prerequisites, change host policies, create accounts or provision a guest. Follow [Linux setup](linux/README.md), [Windows setup](windows/README.md), or [Mac provisioning](macos/PROVISIONING.md). Mac first-instance setup requires a guest-local account; routine clean save/resume does not require repeated login. `deskhelper build` builds the Mac helper without booting or downloading a guest.
+Native tools are separate prerequisites:
 
-## Use the CLI
+- [Mac setup and guest provisioning](macos/PROVISIONING.md)
+- [Linux prerequisites and private desktop](linux/README.md)
+- [Windows setup and ParaDesk](windows/SETUP.md)
 
-Run on the controlled machine, optionally through existing SSH:
+The wheel includes native source; existing compilers build into a private cache.
+It contains no VM disk, credentials, snapshots, or machine state. Installation
+does not change host firewall, login policy, RDP ports, Sharing, accounts, or startup.
+
+## First use
+
+Run on the controlled machine, directly or through SSH. Use a provisioned Mac ID;
+Linux can create a fresh ID.
 
 ```sh
-deskhelper doctor
-deskhelper start --id work
-deskhelper describe --id work
-deskhelper exec --id work -- PROGRAM ARGUMENTS
-deskhelper capture --id work --output /absolute/new-capture.png
-deskhelper input --id work --click 100 100
-deskhelper input --id work --type 'Hello — café 日本語'
-deskhelper input --id work --key Return
-deskhelper stop --id work
+quietwing doctor
+quietwing start --id work
+quietwing describe --id work
+quietwing exec --id work -- PROGRAM ARGUMENTS
+quietwing capture --id work --output /absolute/new-capture.png
+quietwing input --id work --type 'Hello — café 日本語'
+quietwing stop --id work
 ```
 
-Windows uses `attach --id work --hide-viewer` instead of start and requires `DESKHELPER_PARADESK_DATA`. Mac uses an already provisioned ID. Linux can reuse a fully stopped ID with `start --replace-stopped`. Platform docs define key syntax, text limits and state paths.
+Windows uses `quietwing attach --id work --hide-viewer` instead of start, with
+`DESKHELPER_PARADESK_DATA` set to its prepared ParaDesk directory. There is one
+command, `quietwing`. No `deskhelper` alias is installed. See the
+[upgrade guide](docs/upgrading.md) for an existing 0.2 setup.
 
-`describe` returns descriptor version 1: identity, generation, capabilities, connection and lifecycle. Bind subsequent status/capture/input/exec/stop commands with `--expect-generation TOKEN`; a replaced instance is rejected before delivery. Failed commands return nonzero with a JSON error. A timeout can have an unknown outcome: inspect state before retrying a mutation. There is no human-desktop fallback. See [the contract](CONTRACT.md) and [descriptor schema](session.schema.json).
+Scripts should bind capture, input, exec, status, and stop to acquisition's
+generation using `--expect-generation TOKEN`. Replaced sessions are refused
+before delivery. Normal output is JSON; errors exit nonzero. The
+[versioned interface](CONTRACT.md) is the source of truth.
 
-## Optional computer-ctrl integration
+## Connect computer-ctrl
 
-Install both projects on the controlled machine. Add an explicit target to a private cctl configuration:
+Install both projects on the controlled machine. In a private cctl configuration:
 
 ```toml
 [sessions.work]
-command = ["/absolute/path/to/deskhelper"]
+command = ["/absolute/path/to/quietwing"]
 id = "work"
 acquire = "start"
 ```
 
-Use `cctl --session work mcp` for a harness, or `cctl --session work screenshot` for CLI use. Windows selects `acquire = "attach"`; its data-directory environment and hidden viewer option belong to that target's configuration. Computer-ctrl's `docs/isolated-sessions.md` covers those examples, remote SSH use, supported tools and recovery. Omitting session selection retains ordinary host control.
+Launch the agent's MCP server with `cctl --session work mcp`. Its first ordinary
+control action acquires the target. Windows uses `acquire = "attach"`. The
+[examples](examples/) cover each backend. [Daily use](docs/daily-use.md) explains
+automatic acquisition, lifetimes, stopping, SSH, and progress viewing.
 
-Each target has separate controller state, artifacts and browser-profile defaults. Accessibility trees, window management, browser/CDP, audio/video recording and game compatibility are not implied by basic capture/input. Same-user Windows/Linux sessions still share filesystem and hardware access; applications with custom device routes or singleton IPC need their own compatibility checks. Windows refuses execution/input when its normal audio output routes are not demonstrably absent; Linux uses a private null sink; the Mac VM has no audio device.
+## Peek at the agent
 
-## Verification
+Ask for a fresh screenshot, run `cctl --session work screenshot`, or use
+`quietwing capture`. These capture the isolated desktop. A common live viewer and
+show/hide command are not implemented yet. Mac stays offscreen; Linux has no
+viewer by default; Windows retains ParaDesk's active connection.
 
-[ACCEPTANCE.md](ACCEPTANCE.md) defines completion gates. The dispatcher contract tests run with `python -m unittest discover -s tests -p 'test_*.py'`. Platform acceptance scripts exercise actual applications, generation replacement, stale refusal, reconnect and owned cleanup. The integration adds real agent-harness workflows whose saved content and native evidence are checked independently of model completion messages.
+## Scope
 
-The installed companion and optional computer-ctrl provider passed native lifecycle acceptance on all three platforms, plus ordinary-app workflows through both Codex and OpenCode. See [VALIDATION.md](VALIDATION.md) and its platform reports for exact coverage, source identities, preserved failures and limitations. Machine-specific raw evidence, screenshots and private inventories are retained locally and ignored by Git and package builds. Fresh checkouts contain portable source, setup instructions and curated results only.
+QuietWing provides session identity, lifecycle, app launch, pixels, and native
+input. Accessibility trees, browser DOM/CDP, window management, audio/video,
+and game compatibility are separate work. The computer-ctrl adapter supports a
+subset of its normal tools. See [status and limitations](docs/status.md).
+
+Windows/Linux apps retain their user's file/device permissions: separate desktops
+are not a security sandbox. Mac uses a separate guest with no host home/project
+folder shared. Read the [security model](SECURITY.md) before granting access.
+
+## Develop
+
+```sh
+python scripts/check.py
+python -m pip install build
+python -m build
+python scripts/check_distribution.py dist
+```
+
+Default checks never start a desktop or request permissions. See
+[contributing](CONTRIBUTING.md), [architecture](docs/architecture.md),
+[releases](docs/releases.md), and [validation evidence](VALIDATION.md).
+
+MIT licensed. External tools and operating systems retain their own terms;
+see [third-party dependencies](THIRD_PARTY.md).

@@ -1,0 +1,9 @@
+# Requires an authenticated, connected ParaDesk child.
+profile = "personal"
+[sessions.work]
+command = ['C:\path\to\quietwing-env\Scripts\quietwing.exe']
+id = "work"
+acquire = "attach"
+acquire_args = ["--hide-viewer"]
+[sessions.work.env]
+DESKHELPER_PARADESK_DATA = 'C:\private\paradesk-data'

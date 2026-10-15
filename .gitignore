@@ -35,3 +35,14 @@ dist/
 *.hdd
 *.pvm
 **/guest-credential.json
+
+# Private configuration, logs, and local tooling
+.env
+.env.*
+*.log
+.venv-*/
+.pytest_cache/
+.ruff_cache/
+
+# Local acceptance reports and captures
+/evidence/

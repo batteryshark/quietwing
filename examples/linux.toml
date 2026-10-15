@@ -1,0 +1,9 @@
+# Private configuration on the controlled machine; select with --session work.
+profile = "personal"
+[sessions.work]
+command = ["/absolute/path/to/quietwing-env/bin/quietwing"]
+id = "work"
+acquire = "start"
+# Four-hour fixed lifetime; activity does not refresh it.
+# Recreate only a fully stopped ID. A live owned instance is adopted.
+acquire_args = ["--ttl", "14400", "--replace-stopped"]

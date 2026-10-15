@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a failure in an isolated desktop or its tooling.
+body:
+  - type: markdown
+    attributes:
+      value: Redact credentials, private paths, and host screenshots. Follow SECURITY.md for sensitive reports.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python and QuietWing version; backend and provider prerequisites.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction and observed behavior
+      description: Redacted commands/error codes; new or resumed session; expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: cleanup
+    attributes:
+      label: Session state and cleanup
+      description: Did identity change, did stop complete, and was the host affected?

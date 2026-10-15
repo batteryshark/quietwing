@@ -20,7 +20,7 @@ def main():
     source = Path(__file__).resolve().parents[1] / 'macos' / 'vm_adapter.py'
     # Direct script execution must resolve the adapter's sibling runtime helper.
     sys.path.insert(0, str(source.parent))
-    spec = importlib.util.spec_from_file_location('deskhelper_vm_boundary', source)
+    spec = importlib.util.spec_from_file_location('quietwing_vm_boundary', source)
     vm = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(vm)
     before = vm.request(args.id, {'op': 'status'})

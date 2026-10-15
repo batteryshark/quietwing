@@ -1,10 +1,10 @@
 """Exercise only the installed public entry point; no host GUI or native-session lifecycle."""
 import datetime,hashlib,importlib.util,json,os,shutil,subprocess,sys,time
 from pathlib import Path
-import desktop_session_helper
-PACKAGE=Path(desktop_session_helper.__file__).parent
+import quietwing
+PACKAGE=Path(quietwing.__file__).parent
 spec=importlib.util.spec_from_file_location('installed_adapter',PACKAGE/'windows/adapter.py');adapter=importlib.util.module_from_spec(spec);spec.loader.exec_module(adapter)
-EXE=Path(sys.executable).with_name('deskhelper.exe');NAME='package-smoke';BASE=adapter.instance(NAME)
+EXE=Path(sys.executable).with_name('quietwing.exe');NAME='package-smoke';BASE=adapter.instance(NAME)
 OUT=Path(os.environ['DESKHELPER_ACCEPTANCE_OUTPUT']);OUT.mkdir(parents=True,exist_ok=True);adapter.restrict_directory(OUT)
 calls=[];meta=None;active=False
 

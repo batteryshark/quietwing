@@ -24,7 +24,7 @@ The adapter itself does not install packages or change system services. Review p
 | `pulseaudio`, `pulseaudio-utils` | `pulseaudio`, `pactl`; acceptance also uses `paplay` |
 | `xfwm4`, `mousepad` | Optional window manager and native editor acceptance app |
 
-The companion wheel has no Python runtime dependencies beyond Python 3.11 or newer. `python3-venv` supports the documented private installation. After installing the wheel, run `deskhelper doctor`; successful session start additionally verifies the private audio module topology.
+The companion wheel has no Python runtime dependencies beyond Python 3.11 or newer. `python3-venv` supports the documented private installation. After installing the wheel, run `quietwing doctor`; successful session start additionally verifies the private audio module topology.
 
 ## Commands
 
@@ -71,8 +71,8 @@ This is **same-user session separation, not a security sandbox**. An explicitly 
 
 The runtime adapter is one standard-library Python file plus its installed external tool dependencies (`doctor` lists them). It locates its supervisor through `Path(__file__).resolve()` and starts it with the current Python executable. Installed packaging must preserve the adapter as a real on-disk Python resource, rather than an ephemeral extraction that disappears after a command. Private state is stored outside package resources. Acceptance scripts and screenshots are development evidence, not runtime dependencies.
 
-Acceptance observers default to host display `:0`, the current user's `~/.Xauthority`, and `unix:/run/user/<uid>/pulse/native`. Override these explicitly with `CCTL_TEST_HOST_DISPLAY`, `CCTL_TEST_HOST_XAUTHORITY` and `CCTL_TEST_HOST_PULSE` when appropriate; they read host metadata only. `integration_acceptance.py` defaults to `~/Experiments/cctl-isolated/run-001` and `~/Experiments/desktop-session-helper/deskhelper.py`. Configure another test setup through `CCTL_INTEGRATION_ROOT`, `CCTL_INTEGRATION_RUN`, `CCTL_INTEGRATION_LAUNCHER`, `CCTL_INTEGRATION_ID` and `DESKHELPER_DISPATCHER`. These test configuration variables do not affect the production adapter.
+Acceptance observers default to host display `:0`, the current user's `~/.Xauthority`, and `unix:/run/user/<uid>/pulse/native`. Override these explicitly with `CCTL_TEST_HOST_DISPLAY`, `CCTL_TEST_HOST_XAUTHORITY` and `CCTL_TEST_HOST_PULSE` when appropriate; they read host metadata only. `integration_acceptance.py` defaults to `~/Experiments/cctl-isolated/run-001` and `~/Experiments/quietwing/cli.py`. Configure another test setup through `CCTL_INTEGRATION_ROOT`, `CCTL_INTEGRATION_RUN`, `CCTL_INTEGRATION_LAUNCHER`, `CCTL_INTEGRATION_ID` and `DESKHELPER_DISPATCHER`. These test configuration variables do not affect the production adapter.
 
-For installed-package acceptance, `DESKHELPER_TEST_COMMAND_JSON` can name the installed entry point (a JSON string array), `DESKHELPER_TEST_ADAPTER` supplies its on-disk adapter resource for the source hash, and `DESKHELPER_TEST_EVIDENCE_ROOT` places artifacts outside the installed package. For example, set the command to `["/path/to/venv/bin/deskhelper"]` and run the same two stages. The test source defaults still invoke the adjacent adapter directly.
+For installed-package acceptance, `DESKHELPER_TEST_COMMAND_JSON` can name the installed entry point (a JSON string array), `DESKHELPER_TEST_ADAPTER` supplies its on-disk adapter resource for the source hash, and `DESKHELPER_TEST_EVIDENCE_ROOT` places artifacts outside the installed package. For example, set the command to `["/path/to/venv/bin/quietwing"]` and run the same two stages. The test source defaults still invoke the adjacent adapter directly.
 
 See [INTEGRATION.md](INTEGRATION.md) for the portable current validation summary, including actual Codex/OpenCode MCP runs, installed-wheel acceptance, source provenance and cleanup. Detailed raw evidence is optional and ignored by the package repository.

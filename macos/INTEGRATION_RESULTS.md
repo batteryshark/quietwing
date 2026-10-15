@@ -1,5 +1,9 @@
 # macOS companion integration acceptance
 
+This is the historical 0.2 acceptance report. Package names and hashes below
+identify that tested build. For QuietWing 0.3 commands and setup, use the
+[upgrade guide](../docs/upgrading.md) and this platform's README.
+
 Tested on Apple Silicon with the existing dedicated 2 vCPU / 4 GiB macOS VM. This record covers the installable companion boundary and cctl integration; it does not repeat the earlier VM installation/Metal investigation.
 
 ## Completed

@@ -1,6 +1,6 @@
-# Desktop Session Helper contract
+# QuietWing contract
 
-This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.2.0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
+This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.3.0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
 
 ## Commands
 
@@ -33,4 +33,4 @@ Bind a client to the returned generation, then pass `--expect-generation TOKEN` 
 
 `exec` starts an application and reports launch metadata; it does not promise synchronous stdout or completion. Caller exit preserves the work instance. Windows stop detaches only owned workers/apps and retains the external login; Linux stops its owned private desktop; Mac saves and stops its guest. Interrupted mutations are not automatically replayed. New Mac guest provisioning remains explicit and separate from routine control.
 
-Distribution: `deskhelper` is the installed CLI. Sources are packaged as resources; native builds go to user state/cache, never into the installed package. `deskhelper build` builds the Mac native helper without starting a VM. No computer-ctrl import/dependency is required.
+Distribution: `quietwing` is the installed CLI. Sources are packaged as resources; native builds go to user state/cache, never into the installed package. `quietwing build` builds the Mac native helper without starting a VM. No computer-ctrl import/dependency is required.

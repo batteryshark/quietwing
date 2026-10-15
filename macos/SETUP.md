@@ -21,7 +21,7 @@ This is one planned setup visit, not a guarantee of one authorization click: mac
 
 ## Worker launch and transport
 
-Run `python3 macos/build.py` to compile only. `python3 deskhelper.py doctor --backend native` performs read-only API preflight; it does not automatically build, install a service, prompt, or start a viewer.
+Run `python3 macos/build.py` to compile only. `python3 cli.py doctor --backend native` performs read-only API preflight; it does not automatically build, install a service, prompt, or start a viewer.
 
 The JSONL worker is `~/Library/Caches/desktop-session-helper/macos/deskhelper-macos-worker --stdio` (or `DESKHELPER_BUILD_ROOT/macos/deskhelper-macos-worker --stdio`). It can be launched in the already established dedicated Aqua login. A production transport/bootstrap has not yet been installed or live-validated. No TCP listener, LaunchAgent, LaunchDaemon, login item, or automatic startup is created here.
 
@@ -30,10 +30,10 @@ Apple's installed `launchctl(1)` documents that `asuser UID` adopts bootstrap/au
 From the dedicated GUI context, an explicit binding is:
 
 ```text
-python3 deskhelper.py attach --backend native --id mac-agent --uid DEDICATED_UID --session-id GRAPHICAL_SECURITY_SESSION_ID
-python3 deskhelper.py status --backend native --id mac-agent
-python3 deskhelper.py capture --backend native --id mac-agent --output /absolute/new-capture.png
-python3 deskhelper.py stop --backend native --id mac-agent
+python3 cli.py attach --backend native --id mac-agent --uid DEDICATED_UID --session-id GRAPHICAL_SECURITY_SESSION_ID
+python3 cli.py status --backend native --id mac-agent
+python3 cli.py capture --backend native --id mac-agent --output /absolute/new-capture.png
+python3 cli.py stop --backend native --id mac-agent
 ```
 
 Attach retains an external OS login; stop removes only the adapter's private binding. It never logs off that user, disables Sharing, or terminates human applications. The stateless CLI currently owns no launched applications. The staged persistent worker retains direct child objects, but generic execution is disabled and descendant cleanup is not claimed.
