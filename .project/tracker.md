@@ -23,11 +23,11 @@ Updated: 2026-10-15
   independent source rebuild and fresh installed entry points passed; all 33
   bundled resources match source/rebuild. Native UI fixture retained in tests;
   hosted Mac CI now compiles the installed viewer without launch.
-- PR #1: https://github.com/batteryshark/quietwing/pull/1. Initial feature head
-  45f59a5 passed all seven PR CI jobs (38810013290), including fresh Mac compile.
-  Automatic approval review rejected the main merge without explicit user
-  authorization; PR stays open pending that authorization. No merge attempted
-  through another route. Published 0.3.1 remains the default release.
+- PR #1 merged as c79b8b5 after the user explicitly authorized the merge:
+  https://github.com/batteryshark/quietwing/pull/1. Final feature head 7a61c69
+  passed all seven PR CI jobs (38810403518), including fresh Mac compilation;
+  its push CI also passed (38810395981). Published 0.3.1 remains the default
+  release; this viewer is available on main as development 0.4.0.dev0.
 - Own private venv uses development 0.4.0.dev0; official 0.3.1 assets unchanged.
   Private evidence: evidence/mac-viewer-2026-10-15. Acceptance controller and
   harness/server processes removed; authenticated Mac guest and preview retained.
@@ -115,7 +115,6 @@ Updated: 2026-10-15
 
 ## Next action
 
-Obtain authorization to merge Mac viewer PR #1, then verify main CI.
 Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
 Prioritize explicit lifetimes and separately validated Linux/Windows viewers.
 The Mac read-only viewer is implemented in the 0.4 development build. Measure setup and game/GPU
