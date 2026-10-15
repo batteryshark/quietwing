@@ -16,7 +16,12 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 | Mac, updated cctl and installed QuietWing | Saved guest resumed, fresh capture visually inspected, provider identity verified, guest saved/stopped again. Host pointer/focus unchanged, no audio devices; no input sent in this smoke check. |
 | Linux, installed QuietWing | Two separate SSH stages passed ordinary Mousepad/Xmessage input, exact Unicode/metacharacter saved text, native click, fresh capture, private audio, generation refusal, reconnect, TTL expiry, and owned cleanup. 167 unchanged host metadata samples; only the original X display remained. |
 | Windows, installed QuietWing and private consumer environment | Clean install/entry point, native C# compilation without launching the worker, pure transport tests, and refusal without an active child passed. Provider state file and installed resources unchanged. No input, capture, scheduled task, sign-in, reconnect, or main-desktop controller changes. |
-| Windows current live-GUI scope | The existing ParaDesk child was disconnected. A new 0.3 live GUI rerun was deliberately not attempted on the occupied host. Historical 0.2 native/two-harness results below remain the evidence for unchanged GUI backend behavior. |
+| Windows current live-GUI scope | The existing ParaDesk child was disconnected. It remained unavailable after the host became available; a new 0.3 live GUI rerun was not attempted without authentication. Historical 0.2 native/two-harness results below remain the evidence for unchanged GUI backend behavior. |
+
+A window interruption was reported during Windows headless validation. Final
+inspection found no remaining release-test process or QuietWing window; the source
+of the interruption was not identified. This run does not establish foreground
+noninterference for every setup or diagnostic path.
 
 Release archives include source, license, guides, and native build resources;
 private evidence, credentials, VM disks/snapshots, compiled binaries, and runtime
