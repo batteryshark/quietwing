@@ -2,7 +2,7 @@
 
 Updated: 2026-10-15
 
-## 0.3.1 viewer cleanup (2026-10-15, release preparation)
+## 0.3.1 viewer cleanup (2026-10-15, released)
 
 - User requested quiet stop with the child signed in, then explicitly reserved
   the Windows machine for another workload: static verification only, no Windows
@@ -18,8 +18,13 @@ Updated: 2026-10-15
   them during a safe work window, retain the provider/login, then use new workers.
 - Local portable checks: 35 passed, one Windows-only simulated test skipped.
   Clean wheel/source build, archive audit, fresh installed entry points and source
-  rebuild passed; all 29 runtime resources match. Hosted CI and exact-tag draft/
-  archive verification remain release gates. Keep native deferral explicit.
+  rebuild passed; all 29 runtime resources match. Exact-tag CI 38805831649 and
+  draft workflow 38805847684 passed at 3678a5a. Both Windows matrices passed the
+  12 fake-OS C# cases and failing old-behavior control.
+- Published experimental v0.3.1: https://github.com/batteryshark/quietwing/releases/tag/v0.3.1.
+  Official wheel/source/SHA256SUMS independently audited, installed and source
+  rebuilt; reviewed runtime sources match. Own Mac venv updated to 0.3.1. Personal
+  Windows provider/login left untouched; fix is not installed on that machine.
 
 ## Windows follow-up (2026-10-15, acceptance complete)
 
@@ -46,8 +51,8 @@ Updated: 2026-10-15
   dependency fixed only in the test environment. Successful runs verified afterward.
 - Checkout moved to ~/Projects/workstack/quietwing; private venv recreated and Mac
   cctl configuration points directly there. No alias. Saved guest/state/cache kept.
-- Remaining Windows visibility limit: stop restores original viewer visibility,
-  which may cover another window. Hidden/connected control passed; minimized,
+- Historical 0.3.0 visibility behavior: stop restored the viewer and could cover
+  another window; 0.3.1 corrects that. Hidden/connected control passed; minimized,
   disconnected and automatic reconnect remain unsupported. No game/GPU claim.
 
 ## Release 0.3.0
@@ -80,6 +85,7 @@ Updated: 2026-10-15
 
 ## Next action
 
-Finish 0.3.1 static/package/CI release gates, then prioritize explicit lifetimes
-and a read-only viewer. Repeat native Windows/two-harness acceptance when available. Measure setup and game/GPU behavior separately; the historical obstruction is still unidentified. docs/status.md is
-the current capability/validation summary.
+Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
+Prioritize explicit lifetimes and a read-only viewer. Measure setup and game/GPU
+behavior separately; the historical obstruction is still unidentified.
+docs/status.md is the current capability/validation summary.

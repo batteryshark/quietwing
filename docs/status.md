@@ -7,6 +7,11 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 
 ## [0.3.1 viewer cleanup patch](https://github.com/batteryshark/quietwing/releases/tag/v0.3.1)
 
+[Exact-tag CI](https://github.com/batteryshark/quietwing/actions/runs/38805831649)
+and the [release workflow](https://github.com/batteryshark/quietwing/actions/runs/38805847684)
+passed. Official archives were checksum-verified, fresh installed, and rebuilt
+from the source download with all 29 runtime resources matching.
+
 Version 0.3.1 removes the explicit show-window operation from the Windows viewer
 observer's cleanup. Stop, worker exit (including idle exit/crash), and attach
 rollback preserve the current viewer visibility. A viewer hidden for control stays
