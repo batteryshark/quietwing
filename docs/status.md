@@ -18,10 +18,19 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 | Windows, installed QuietWing and private consumer environment | Clean install/entry point, native C# compilation without launching the worker, pure transport tests, and refusal without an active child passed. Provider state file and installed resources unchanged. No input, capture, scheduled task, sign-in, reconnect, or main-desktop controller changes. |
 | Windows current live-GUI scope | The existing ParaDesk child was disconnected. It remained unavailable after the host became available; a new 0.3 live GUI rerun was not attempted without authentication. Historical 0.2 native/two-harness results below remain the evidence for unchanged GUI backend behavior. |
 
-A window interruption was reported during Windows headless validation. Final
-inspection found no remaining release-test process or QuietWing window; the source
-of the interruption was not identified. This run does not establish foreground
-noninterference for every setup or diagnostic path.
+Windows live GUI acceptance has **not** been run on 0.3.0. Installation, compiler,
+transport, and refusal checks do not substitute for that acceptance.
+
+A parallel main-desktop workload stopped at 14:37 EDT after its capture guard
+reported an obstruction without recording the blocking window. Its visible
+application list matched its baseline. The QuietWing installation checks started
+around 14:40; the earlier overlapping QuietWing operation was a read-only SSH
+inventory. The shared host driver had already logged accessibility timeouts.
+Replaying the headless QuietWing checks while the workload ran produced no new
+visible windows or foreground changes across 284 metadata samples. The original
+obstruction remains unidentified; no fix for that historical event is claimed.
+The workload's launcher has a separate headless-launch inconsistency under review.
+This evidence does not establish noninterference for every setup or diagnostic path.
 
 Release archives include source, license, guides, and native build resources;
 private evidence, credentials, VM disks/snapshots, compiled binaries, and runtime

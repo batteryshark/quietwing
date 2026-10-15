@@ -2,6 +2,24 @@
 
 Updated: 2026-10-15
 
+## Windows interruption investigation (2026-10-15, active)
+
+- Corrected completion wording: 0.3 Windows live GUI acceptance was not done.
+  Current provider has no native child. New sign-in is needed for that acceptance;
+  none requested on the desktop. No login, settings, input, or host capture used.
+- Original parallel-workload stop: 14:37 EDT, obstruction guard with no saved
+  blocker identity and the same visible application set. QuietWing install checks
+  began about 14:40; only a read-only inventory overlapped before the stop. Shared
+  host UIA timeouts predate the inventory. Historical occluder remains unknown.
+- Exact headless replay passed with a windowless console-session monitor: 284
+  samples, no new visible windows, foreground remained the running workload.
+- Service-session console probes did not reproduce a popup; no speculative
+  QuietWing runtime change. Prepared a separate workload runner patch for consistent
+  headless launches and blocker metadata; its command checks and Windows C# compile
+  pass. Applying/messaging that active project awaits explicit user authorization.
+- User requests moving the checkout to ~/Projects/workstack/quietwing when ready;
+  update its venv and private cctl path directly, with no aliases.
+
 ## Release 0.3.0
 
 - Public MIT repository: https://github.com/batteryshark/quietwing. Sole package,
