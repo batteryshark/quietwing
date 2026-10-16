@@ -31,7 +31,7 @@ Capabilities are explicit booleans: capture, input, keyboard, pointer, exec, aud
 
 ## Peek without taking control
 
-In the 0.4 development build, run `quietwing build --viewer` once, then
+With QuietWing 0.4.0, run `quietwing build --viewer` once, then
 `quietwing view --id minimal` while the guest runs. The preview opens in the
 background, cannot become key/main, and does not forward clicks, keys or scroll.
 Closing its window or running `quietwing view --id minimal --close` leaves the

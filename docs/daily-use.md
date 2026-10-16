@@ -37,7 +37,7 @@ Ask the agent to display a fresh isolated screenshot, or run
 `quietwing capture --id work --output /absolute/new-file.png`. Standalone capture
 paths must be new files.
 
-The 0.4 development build adds a [read-only Mac viewer](viewer.md):
+QuietWing 0.4.0 adds a [read-only Mac viewer](viewer.md):
 run `quietwing build --viewer` once, then `quietwing view --id work` while the
 provisioned guest runs. For Linux, use `view --host user@linux-machine --id work`
 and the remote executable/state-root options from the viewer guide. For an

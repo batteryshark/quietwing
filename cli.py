@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-VERSION = '0.4.0.dev2'
+VERSION = '0.4.0'
 PLATFORMS = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}
 COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build', 'view'}
 

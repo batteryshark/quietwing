@@ -1,6 +1,6 @@
 # Read-only viewer on Mac
 
-Available in the 0.4 development build, for a local Mac VM or an already running
+Available in QuietWing 0.4.0, for a local Mac VM or an already running
 isolated Linux or Windows desktop over SSH. The preview window opens on your Mac.
 Use the QuietWing executable from the same environment that computer-ctrl uses.
 The viewer is optional; computer-ctrl's MCP interface and configuration do not change.
@@ -45,7 +45,7 @@ The preview window currently runs on Mac; a native viewer window on Linux or Win
 
 ## Linux over SSH
 
-Use matching 0.4 development builds on Mac and Linux. Existing Linux prerequisite
+Use QuietWing 0.4.0 or later on Mac and Linux. Existing Linux prerequisite
 packages and an already trusted, noninteractive SSH login are required. The viewer
 does not install software or request login, change SSH configuration or accept
 new host keys. First start the Linux isolated session through its normal
@@ -88,7 +88,7 @@ is not a video or remote-control client.
 
 ## Windows over SSH
 
-Use matching 0.4.0.dev2 or later development builds on Mac and Windows. The
+Use QuietWing 0.4.0 or later on Mac and Windows. The
 existing ParaDesk child must already be authenticated, connected and unminimized,
 and QuietWing must already be attached with `--hide-viewer`. Viewing never starts,
 attaches, hides, reconnects or signs in to ParaDesk. It requires no extra firewall,

@@ -5,6 +5,41 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## 0.4.0 release validation
+
+The installed 0.4.0 release candidate passed fresh Mac acceptance on 2026-10-15.
+Codex and OpenCode each saved exact Unicode in TextEdit through six verified
+isolated MCP calls. Files, tool events, pinned generation and final images were
+checked independently. Across 220 preview observations, the window stayed visible,
+nonkey/nonmain and never became foreground; frames advanced 27->60 and 69->88.
+The VM stayed offscreen and posted no host input; human activity remained allowed.
+
+Duplicate/stale open-close, closing without changing owner/input timestamp,
+save/stop image clearing, guest login/document retention after resume, stale
+capture refusal, and explicit close/reopen on the new generation all passed.
+The native AppKit fixture passed all 12 local input handlers, controlled unchanged
+foreground/cursor, invalid/waiting/ended frame clearing and close cleanup. Only
+owned guest input was used; the user explicitly authorized guest credential use
+for the one-time unlock. No login/power/credential policy or host setting changed.
+
+The native and transport executable sources are byte-identical to accepted
+0.4.0.dev2. Windows native lifecycle and both actual harnesses, plus both Linux
+shared-transport harnesses, passed on that development build as detailed below;
+they were not rerun against the version-only 0.4.0 package. No Windows connection
+was made during this release task. The Mac checks close the development guest-lock
+deferrals recorded below; those earlier failed attempts remain historical.
+
+Local portable checks: 93 passed and one Windows-only simulated case skipped.
+Clean release archives passed auditing, independent source rebuild and fresh
+wheel/source installs; all 34 runtime resources match the live-tested candidate
+and reviewed source. Exact-tag hosted CI and reviewed public asset checks are
+publication gates. Private evidence stays under evidence/release-0.4.0.
+
+## Development acceptance history
+
+The following sections identify their tested development builds and historical
+deferrals; the 0.4.0 results above supersede the Mac guest-lock deferrals.
+
 ## 0.4.0.dev2: Windows viewing on Mac over SSH
 
 The optional Mac preview can now show an already attached Windows child with
@@ -206,13 +241,13 @@ reports preserve exact source/package identities; they are not new-name reruns.
 
 ## Current limits
 
-- The 0.4 development build has a read-only Mac window for Mac VMs and Linux over
+- QuietWing 0.4.0 has a read-only Mac window for Mac VMs and Linux/Windows over
   SSH; see [viewer](viewer.md).
-  No cross-platform viewer, takeover control, or agent pause/resume panel.
+  No viewer window running on Linux/Windows, takeover control, or agent pause/resume panel.
 - Windows requires an authenticated, connected, non-minimized ParaDesk viewer;
   no automatic sign-in/reconnect. From 0.3.1, cleanup preserves current viewer
   visibility; a hidden viewer stays hidden. Old running workers retain old behavior.
-- Windows owned apps close after 30 minutes without requests. Linux defaults to
+- Windows owned apps close after 30 minutes without activity other than preview frames. Linux defaults to
   a fixed 30-minute TTL. Mac has no idle-save policy.
 - Linux uses llvmpipe software rendering on the tested host. No gaming claim.
 - Mac was tested on Apple Silicon, macOS 27.0.1, SDK 27, Swift 6.4; older

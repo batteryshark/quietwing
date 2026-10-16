@@ -79,7 +79,7 @@ See [INTEGRATION.md](INTEGRATION.md) for the portable current validation summary
 
 ## Peek from a Mac
 
-A matching 0.4 development build can show this isolated desktop in QuietWing's
+QuietWing 0.4.0 on both ends can show this isolated desktop in QuietWing's
 nonactivating, read-only Mac window over existing SSH. On Mac, run
 `quietwing view --host user@linux-machine --id work --remote-command /absolute/path/to/quietwing`
 and include `--remote-state-root` if this Linux session uses a custom state root.

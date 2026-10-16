@@ -2,6 +2,27 @@
 
 Updated: 2026-10-15
 
+## 0.4.0 release (2026-10-15, publication preparation)
+
+- User authorized remaining Mac checks, CI and publication. After automatic review
+  required specific guest-credential approval, user explicitly authorized private
+  retrieval/unlock; one guest-only submission succeeded, without secret output.
+- Installed 0.4.0 candidate passed actual Codex/OpenCode TextEdit workflows: six
+  verified isolated tools each, exact saved Unicode and final images, 220 preview
+  samples (27->60 and 69->88 frames), nonactivating panel/offscreen VM/no host input.
+- Native panel passed 12 local handlers, controlled focus/cursor and clearing.
+  Duplicate/stale open-close, retained owner/input timestamp, save/stop clearing,
+  resume retaining guest login/documents, stale capture and explicit preview reopen
+  passed. This closes the earlier Mac guest-lock acceptance deferrals.
+- Native/transport executable resources match accepted dev2 byte-for-byte; only
+  version constants/guides differ. Windows/Linux dev2 evidence below is retained;
+  no fresh remote native run or Windows access claimed for this version-only release.
+- Portable 93 passed/one Windows-only simulated skip. Clean archives, independent
+  source rebuild/fresh wheel/source installs passed; all 34 resources match source
+  and the live-tested candidate. Exact-tag CI/draft asset review remain release gates.
+- Private evidence: evidence/release-0.4.0. Same signed-in guest and read-only
+  preview retained; no host settings, guest disks/identity or policy changes.
+
 ## Windows read-only viewer and 0.3.1 follow-up (0.4.0.dev2, 2026-10-15)
 
 - User freed Windows and explicitly chose preview plus deferred checks. Existing
@@ -195,9 +216,6 @@ Updated: 2026-10-15
 
 ## Next action
 
-Windows viewer PR #3 is merged; retain final main CI results privately.
-Repeat the extra Mac VM app workflows when the guest is unlocked.
-Prioritize explicit lifetimes; native viewer windows on Linux/Windows remain future work.
-The Mac viewer can show Mac VMs and Linux/Windows over SSH in development 0.4.0.dev2.
-Measure setup and game/GPU behavior separately; the historical obstruction remains unidentified.
-docs/status.md is the current capability/validation summary.
+Finish reviewed 0.4.0 archive validation and exact-tag CI, then publish the authorized
+GitHub release and verify its public assets. Retain the signed-in Mac guest/preview.
+Native viewer windows on Linux/Windows and game/GPU validation remain future work.

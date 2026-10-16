@@ -44,7 +44,7 @@ capture or input and does not replace native acceptance on a signed-in child.
 
 ## Read-only preview from Mac
 
-Development 0.4.0.dev2 adds `view --frame --id NAME --expect-generation TOKEN` as
+QuietWing 0.4.0 adds `view --frame --id NAME --expect-generation TOKEN` as
 an SSH transport leaf. It only captures through the already bound worker and its
 existing child/provider guards; no attachment, reconnect, login, visible Windows
 window or standalone PNG is created. The PNG travels in a bounded JSON envelope

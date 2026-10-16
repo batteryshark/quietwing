@@ -1,35 +1,24 @@
 # Changelog
 
-## 0.4.0.dev2 — unreleased
+## 0.4.0 — 2026-10-15
 
-- Read-only Windows viewing on Mac over existing SSH, selected explicitly with
-  `--remote-platform windows`. Reuses the image-only Mac window without input,
-  audio, forwarding, ParaDesk startup/reconnect or system configuration changes.
-- Windows `view --frame` captures only through an existing generation-pinned
-  child worker. Bounded PNG/JSON stays in memory and normal transient IPC; preview
-  frames do not reset worker inactivity. No standalone remote image is retained.
-- Share bounded SSH/protocol validation between Linux and Windows while keeping
-  existing Linux target identities and command behavior unchanged.
-
-## 0.4.0.dev1 — unreleased
-
-- Read-only Linux viewing on Mac over existing SSH: `view --host HOST --id NAME`
-  with an optional remote executable/state root. Reuses the image-only Mac panel;
-  no forwarding, remote viewer, listener, host-key acceptance or guest lifecycle action.
-- Linux `view --frame` returns one generation-checked, bounded PNG as JSON; no
-  remote capture file. Mac checks identity, provenance, dimensions and digest.
-- Busy agent actions clear/wait and retry only the pinned capture; lost SSH,
-  expiry and replacement end refresh. Native window clears undecodable frames.
-- Enforce private nonsymlink viewer state at every path component.
-
-## 0.4.0.dev0 — unreleased
-
-- Optional Mac VM read-only viewer: `quietwing view --id NAME`, `--status`,
-  `--close`. Nonactivating image-only panel, generation-pinned capture broker,
-  no input forwarding, automatic guest resume, audio or host capture.
-- `quietwing build --viewer` builds only the preview while an existing VM runs.
-- Windows and Linux native behavior unchanged; personal Windows testing excluded
-  while another workload owns that desktop.
+- Optional read-only Mac window for a local Mac VM or an existing isolated
+  Linux/Windows desktop over SSH: `view --id NAME`, `--status`, `--close`.
+  Use `--remote-platform windows` for Windows; Linux remains the remote default.
+- Image-only, nonactivating preview: no keyboard focus, input/audio forwarding,
+  host capture, automatic session creation/resume/reconnect or generation rebind.
+  Closing leaves the existing desktop and agent work running.
+- Generation/PID/connection/display guards, bounded PNG/JSON transport, verified
+  dimensions/digest/provenance, private state and image clearing on failure.
+  Linux busy capture waits only for the pinned generation; other failures require
+  explicit preview close/reopen. Frames do not extend Linux TTL or Windows idle.
+- Existing SSH trust/authentication, literal arguments/encoded PowerShell, optional
+  existing-key selection; no forwarding, listener, credential-policy/firewall/RDP
+  changes or saved credentials. Preview window currently runs on Mac only.
+- `build --viewer` compiles just the Mac preview while a VM runs. Native owner and
+  guest bridge sources are unchanged from the earlier accepted VM implementation.
+- Includes the 0.3.1 Windows cleanup fix: hidden ParaDesk stays hidden after stop,
+  worker crash and attach rollback, preserving the native connection and login.
 
 ## 0.3.1 — 2026-10-15
 
