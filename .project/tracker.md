@@ -2,6 +2,21 @@
 
 Updated: 2026-10-16
 
+## Bounded Windows held keys (0.4.2.dev1, in progress)
+
+- Public input `--key KEY --hold-ms MS`, integer 1–5000 ms. Worker-owned finite
+  lease, physical scan-code chord, reverse release, periodic unchanged guards,
+  already-down refusal and explicit KEY_RELEASE_UNCONFIRMED on unsafe cleanup.
+  No persistent key-down state, action replay or host fallback. Old workers need
+  explicit reattachment; new capability key_hold guards against silent taps.
+- computer-ctrl contract/integration adds hold_ms, repeat=1, capability/receipt
+  validation. Direct host and non-supporting backends refuse holds.
+- Desktop-free regressions added; Windows-native fake-OS C# CI and installed/
+  two-harness acceptance pending. Personal Windows not touched; DreamStudio
+  holds native work until this supported route is ready. No ready/game claim yet.
+- Stacked on viewer PR #4. Next: headless CI, safe native fixture handoff, then
+  notify authorized DreamStudio lead ses_ece023730ffe4v1reMQaRMyzHj with exact syntax.
+
 ## SSH viewer follow mode (0.4.2.dev0, 2026-10-16)
 
 - Opt-in Mac SSH `view --follow` discovers only an existing verified attachment

@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-VERSION = '0.4.2.dev0'
+VERSION = '0.4.2.dev1'
 PLATFORMS = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}
 COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build', 'view'}
 
@@ -25,6 +25,7 @@ def descriptor(response):
     state = session.get('phase', session.get('state', 'unknown'))
     generation = session.get('generation') if state in ('running', 'attached', 'starting') else None
     caps = {k: v for k, v in session.get('capabilities', {}).items() if type(v) is bool}
+    caps.setdefault('key_hold', False)
     if state not in ('running', 'attached'):
         caps = {k: False for k in caps}
     return {'schemaVersion': 1, 'id': session['id'], 'platform': platform,

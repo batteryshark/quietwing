@@ -103,3 +103,12 @@ The live recovery passed doctor, native attach, isolated capture and owned stop
 without input, games or another sign-in. It retained the child and left ParaDesk
 hidden. This is an operator workaround; the provider's post-login snapshot race
 is not permanently fixed by QuietWing 0.4.0.
+
+## Bounded held keys
+
+Development 0.4.2.dev1 workers advertise `key_hold: true` and support
+`quietwing input --id work --expect-generation TOKEN --key ENTER --hold-ms 120`.
+The duration is 1–5000 ms; the same request presses and releases the chord using
+physical scan codes. Old workers explicitly require reattachment after saving
+their owned work. Existing taps remain unchanged. See [held-key semantics and
+cleanup limits](../docs/held-keys.md); no new login or ParaDesk reconnect is needed.

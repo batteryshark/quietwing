@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased — 0.4.2.dev0
+## Unreleased — 0.4.2.dev1
+
+- Add Windows `input --key KEY --hold-ms MS` (1–5000 ms), native scan-code chords,
+  worker-owned guarded release and explicit unconfirmed-cleanup errors.
+- Advertise `key_hold` only from supporting live workers; old workers cannot
+  silently downgrade a hold to a tap. Other platform input stays unchanged.
+
+## Development — 0.4.2.dev0
 
 - Opt-in Mac SSH viewer `--follow` waits for an agent's verified Linux/Windows
   attachment and follows a replacement in the same image-only window. Fixed
