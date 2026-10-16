@@ -19,7 +19,9 @@ Updated: 2026-10-16
   status/frames display normally, same generation retained, never key/main/frontmost.
   Windows provider/worker/login/install/settings and DreamStudio work untouched.
 - Future cross-platform worker pools recorded in docs/future-work.md; evaluate
-  a separate scheduler/leases project and RDS backend later, no implementation now.
+  a separate scheduler/leases project later, no implementation now. README positions
+  QuietWing for existing personal machines; VM pools are the default future scaling
+  direction, with RDS only if measured density benefits justify it.
 - Actual Codex/OpenCode each ran installed Linux and Windows fixtures: all four
   passed, 387 nonactivating window observations. Initial OpenCode runner expired
   after Linux passed while waiting for inference; resumed only Windows, which

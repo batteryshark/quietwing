@@ -3,6 +3,12 @@
 Recorded 2026-10-16 at the maintainer's request. This is a research idea, not
 implemented functionality or a commitment to build it now.
 
+QuietWing's current purpose is unobtrusive work on existing machines, without
+a managed fleet. For independent workers at scale, start the
+future evaluation with a VM pool: reproducible environments, snapshot/reset and
+per-worker OS separation. A shared-session backend should earn its complexity
+through a measured density/resource advantage; it is not the assumed upgrade path.
+
 Explore running several agents concurrently across Mac, Linux and Windows, with
 an exclusive lease per isolated desktop and read-only previews from one machine.
 Keep QuietWing responsible for verified session lifetime and capture/input. A
