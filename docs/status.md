@@ -1,9 +1,52 @@
 # Current status
 
-Updated 2026-10-15. [QuietWing 0.3.0](https://github.com/batteryshark/quietwing/releases/tag/v0.3.0)
+Updated 2026-10-16. [QuietWing 0.3.0](https://github.com/batteryshark/quietwing/releases/tag/v0.3.0)
 is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
+
+## Development Windows live-provider fix — 2026-10-16
+
+0.4.1.dev0 queries ParaDesk's existing local status pipe instead of trusting cached
+child/connection metadata. The actual pipe server PID/birth is verified; readiness
+and every bound action fail closed on missing/unavailable status or changed live
+identity. Native WTS, generation, secure-desktop, audio and hidden-viewer checks
+remain. No provider launch/reconnect, state-file repair or settings toggle.
+The upstream ParaDesk file-writer race itself is unchanged.
+
+The deterministic stale-cache test failed with the original authentication error
+before the fix and passes afterward. Native desktop-free pipe tests cover login
+registration timing, repeated status connections, disconnect/new connection and
+child replacement, wrong server PID/birth, malformed/oversized replies and timeout.
+Viewer stop/crash/rollback regression also passes. Portable checks ran 100 tests
+(98 passed; two Windows-native tests skipped on Mac and passed on Windows).
+Fresh wheel/source installs and independent rebuild passed; all 35 runtime
+resources match reviewed source and the accepted executable resources.
+
+An installed native red/green test used a separate stale-cache fixture pointing
+to the existing provider: unchanged 0.4.0 refused it; the candidate passed doctor,
+native WTS attach, Unicode input and capture. A fresh SSH connection retained the
+same worker/generation/child; eight independent live-status connections, exact
+input/capture, stale-generation refusal and owned stop passed. The real provider
+state/settings and stale fixture bytes stayed unchanged. All 192 parent samples
+kept cursor/foreground unchanged and the viewer hidden/unminimized, including stop.
+
+Actual Codex and OpenCode normal-MCP editor workflows each passed seven tools,
+independently checked exact Unicode/files, native identities and fresh captures.
+All 1,568 parent observations kept the viewer hidden/unminimized. The first
+OpenCode attempt correctly refused a stale controller generation; explicit rebind
+preceded the successful new-generation rerun. Earlier fixture runner failures
+(transient file replacement and select-all expectations) are retained and are not
+passes. Owned editors, workers, observers, tasks and private controller were cleaned;
+the original provider, authenticated child and other worker were retained.
+
+Live reconnect coverage is SSH/status-pipe transport against a retained native
+connection. Provider disconnect/new connection/child replacement were tested in
+headless fixtures. An RDP disconnect/relogin was not forced because it can require
+an interactive sign-in. No main-desktop capture/input, games, system-policy change
+or new authentication was used.
+Official 0.4.0 assets/tag remain unchanged; this development fix is not a published
+release. Private evidence: evidence/windows-live-provider-2026-10-16.
 
 ## 0.4.0 release validation
 

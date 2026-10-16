@@ -2,6 +2,34 @@
 
 Updated: 2026-10-16
 
+## Live ParaDesk readiness fix (0.4.1.dev0, 2026-10-16)
+
+- Replaced cached child/connection authority with bounded read-only status IPC for
+  readiness and every bound action. Pin actual pipe-server PID/birth and live
+  connection at attach; retain native WTS, generation, desktop, audio and viewer
+  guards. No launch/reconnect, settings toggle, state-file repair or cached fallback.
+  The upstream writer race remains, but cannot serve as QuietWing live authority.
+- Deterministic original-auth-error regression ran red/green. Native pipe fixture
+  covers login timing, reconnect/replacement/refusal, wrong PID/birth, malformed/
+  oversized status and timeout; actual viewer fake-OS cleanup cases passed.
+  Portable: 100 tests, 98 pass/two Windows-only skips on Mac; native cases passed
+  on Windows. Clean installs/source rebuild and all 35 runtime resources match.
+- Installed native old-vs-fixed test with a separate stale-cache fixture passed
+  doctor, WTS attach, Unicode input/capture, same worker across SSH reconnect,
+  eight status connections, stale-generation refusal and stop. Real provider and
+  fixture/settings bytes unchanged; 192 unchanged parent cursor/focus observations.
+- Actual normal-MCP Codex/OpenCode each passed seven tools, exact Unicode, native
+  identity/images and cleanup. All 1,568 parent samples kept viewer hidden. Initial
+  OpenCode stale-controller attempt correctly refused; explicit rebind/new generation
+  passed. Fixture runner transient-file/select-all failures retained, not counted.
+- Owned test editors/workers/observers/tasks/controller removed; other worker and
+  native provider/login retained. No main input/capture, games or system settings.
+  Live reconnects cover SSH/status pipes; native RDP reauthentication was not forced.
+- Runtime fix is development, not a new public release; 0.4.0 assets/tag unchanged.
+  Private receipts (including hosted CI): evidence/windows-live-provider-2026-10-16.
+  Next: update consumers through the CLI; existing workers load new code on their
+  next explicit attachment. Native reconnect/relogin remains an operator action.
+
 ## ParaDesk 1.1 snapshot recovery (2026-10-16)
 
 - Live mismatch reproduced: saved connected/no-child metadata, but fresh provider

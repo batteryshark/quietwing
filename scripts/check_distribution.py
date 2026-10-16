@@ -11,7 +11,7 @@ import zipfile
 
 REQUIRED_RUNTIME = {
     "__init__.py", "cli.py", "CONTRACT.md", "session.schema.json", "docs/viewer.md",
-    "linux/adapter.py", "windows/adapter.py", "windows/Worker.cs", "windows/NativeSupport.cs",
+    "linux/adapter.py", "windows/adapter.py", "windows/Worker.cs", "windows/NativeSupport.cs", "windows/ProviderStatus.cs",
     "macos/adapter.py", "macos/vm_adapter.py", "macos/runtime_paths.py", "macos/build.py",
     "macos/build_vm.py", "macos/viewer.py", "macos/ssh_remote.py", "macos/build_viewer.py", "macos/Viewer.swift", "macos/VMHost.swift", "macos/VMCapture.swift", "macos/GuestBridge.swift",
     "macos/SessionGuard.swift", "macos/Worker.swift", "macos/NativeSession.swift",
@@ -80,7 +80,7 @@ def audit(path):
         prefixes = {name.split("/", 1)[0] for name in entries}
         assert len(prefixes) == 1
         prefix = next(iter(prefixes)) + "/"
-        expected = {"README.md", "LICENSE", "CONTRIBUTING.md", "SECURITY.md", "CHANGELOG.md", "THIRD_PARTY.md", "docs/daily-use.md", "docs/upgrading.md", "docs/releases.md", "docs/status.md", "examples/macos.toml", "examples/linux.toml", "examples/windows.toml", "scripts/check.py", "scripts/check_distribution.py", "scripts/check_installed.py", "tests/test_dispatcher.py", "windows/test_adapter.py", "windows/test_viewer.py", "macos/test_generation.py", "macos/test_viewer.py", "macos/test_remote_viewer.py", "linux/test_readonly_frames.py", "tests/native_viewer.swift", "docs/viewer.md"}
+        expected = {"README.md", "LICENSE", "CONTRIBUTING.md", "SECURITY.md", "CHANGELOG.md", "THIRD_PARTY.md", "docs/daily-use.md", "docs/upgrading.md", "docs/releases.md", "docs/status.md", "examples/macos.toml", "examples/linux.toml", "examples/windows.toml", "scripts/check.py", "scripts/check_distribution.py", "scripts/check_installed.py", "tests/test_dispatcher.py", "windows/test_adapter.py", "windows/test_provider.py", "windows/test_viewer.py", "macos/test_generation.py", "macos/test_viewer.py", "macos/test_remote_viewer.py", "linux/test_readonly_frames.py", "tests/native_viewer.swift", "docs/viewer.md"}
         assert {prefix + name for name in expected} <= entries.keys(), "Incomplete source distribution"
         assert prefix + "deskhelper.py" not in entries, "Old command source in release"
     return {"file": path.name, "entries": len(entries), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}

@@ -63,12 +63,36 @@ def provider():
     audio={'configuredMode':profiles[0].get('desktopAudio') if profiles else None,'configuredMuted':bool(profiles and profiles[0].get('desktopAudio')==2),'runtimeVerified':False,'isolationVerified':False,'detail':'ParaDesk maps profile mode 2 to RDP mute; saved settings alone do not prove the active connection or arbitrary endpoint playback is silent.'}
     return path,s,audio
 
+def live_provider(viewer):
+    # Windowless, bounded status-only IPC. The native probe pins the actual pipe
+    # server PID and birth; the provider's saved child/connection fields are unused.
+    import tempfile
+    directory=state_root().parent/'cache'/'windows'/'provider-status'
+    directory.mkdir(parents=True,exist_ok=True);restrict_directory(directory)
+    exe=compile_worker()
+    with tempfile.TemporaryDirectory(dir=directory) as temporary:
+        output=Path(temporary)/'status.json'
+        try:
+            result=subprocess.run([str(exe),'--provider-status',str(output),str(viewer['pid']),str(viewer['birthTicks'])],capture_output=True,timeout=8,creationflags=subprocess.CREATE_NO_WINDOW)
+            response=read(output)
+        except (OSError,ValueError,subprocess.TimeoutExpired):
+            raise Failure('PROVIDER_UNAVAILABLE','Live ParaDesk status could not be verified; no cached fallback or reconnect attempted') from None
+        if result.returncode or not response.get('ok'):
+            raise Failure('PROVIDER_UNAVAILABLE','Live ParaDesk status could not be verified; no cached fallback or reconnect attempted')
+        return response['snapshot']
+
 def require_provider():
-    path,s,audio=provider(); parent=console_id(); child=s.get('childSessionId',-1)
-    if s.get('desktopState')!='connected' or not s.get('childSessionExists') or child in (-1,0,parent) or native_state(child)!=0:
+    path,cached,audio=provider();parent=console_id()
+    # The selected data directory discovers only the existing PID. Even connected
+    # cached state is never sufficient evidence for readiness or a connection ID.
+    pid=cached.get('pid')
+    if type(pid) is not int or pid<=0:raise Failure('PROVIDER_UNAVAILABLE','No existing provider PID is available; no provider launched')
+    p=process(pid)
+    if not p or p['session']!=parent:raise Failure('PARENT_MISMATCH','ParaDesk viewer is not in the active console session')
+    s=live_provider(p);child=s.get('childSessionId',-1)
+    if s.get('pid')!=pid:raise Failure('PARENT_MISMATCH','Live ParaDesk status does not match the selected provider PID')
+    if s.get('running') is not True or s.get('attached') is not True or not s.get('connectedAt') or s.get('desktopState')!='connected' or s.get('childSessionExists') is not True or type(child) is not int or child in (-1,0,parent) or child<0 or native_state(child)!=0:
         raise Failure('AUTHENTICATED_SESSION_REQUIRED','No connected active non-console ParaDesk child exists. Existing authentication is required; no reconnect or sign-in attempted.')
-    p=process(s['pid'])
-    if not p or p['session']!=parent: raise Failure('PARENT_MISMATCH','ParaDesk viewer is not in the active console session')
     return path,s,audio,p
 
 def state_root(): return Path(os.environ.get('DESKHELPER_STATE_ROOT',str(Path(os.environ['LOCALAPPDATA'])/'DesktopSessionHelper'))).resolve()/'windows'
@@ -138,12 +162,12 @@ def restrict_directory(path):
         if token:kernel.CloseHandle(token)
 
 def compile_worker():
-    digest=hashlib.sha256((HERE/'Worker.cs').read_bytes()+(HERE/'NativeSupport.cs').read_bytes()).hexdigest(); dest=state_root().parent/'cache'/'windows'/digest; exe=dest/'Worker.exe'
+    digest=hashlib.sha256(b''.join((HERE/name).read_bytes() for name in ('Worker.cs','NativeSupport.cs','ProviderStatus.cs'))).hexdigest(); dest=state_root().parent/'cache'/'windows'/digest; exe=dest/'Worker.exe'
     if not exe.exists():
         dest.mkdir(parents=True,exist_ok=True)
         compiler=Path(os.environ['WINDIR'])/'Microsoft.NET'/'Framework64'/'v4.0.30319'/'csc.exe'
         temporary=dest/('Worker-'+uuid.uuid4().hex+'.exe')
-        p=subprocess.run([str(compiler),'/nologo','/target:winexe',f'/out:{temporary}','/r:System.Windows.Forms.dll','/r:System.Drawing.dll','/r:System.Web.Extensions.dll',str(HERE/'Worker.cs'),str(HERE/'NativeSupport.cs')],capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
+        p=subprocess.run([str(compiler),'/nologo','/target:winexe',f'/out:{temporary}','/r:System.Windows.Forms.dll','/r:System.Drawing.dll','/r:System.Web.Extensions.dll',str(HERE/'Worker.cs'),str(HERE/'NativeSupport.cs'),str(HERE/'ProviderStatus.cs')],capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
         if p.returncode:
             temporary.unlink(missing_ok=True);raise Failure('BUILD_FAILED',p.stdout+p.stderr)
         try:
@@ -203,7 +227,7 @@ def attach(name,hide):
         task(names[0],exe,['--inspect',folder/'parent.json',s['pid']],p['session']); parent=wait_file(folder/'parent.json')
         if not parent['childQuerySucceeded'] or parent['childSessionId']!=s['childSessionId'] or parent['childState']!=0 or parent['parentSessionId']!=parent['consoleSessionId'] or parent['viewerBirthTicks']!=p['birthTicks'] or not parent['viewerHwnd'] or parent['viewerMinimized']:
             raise Failure('RELATIONSHIP_MISMATCH','Native WTS parent/child relationship or usable viewer state could not be verified')
-        task(names[1],exe,[folder,path,name,s['childSessionId'],p['session'],s['pid']],s['childSessionId']); ready=wait_file(folder/'ready.json')
+        task(names[1],exe,[folder,path,name,s['childSessionId'],p['session'],s['pid'],s['connectedAt'],p['birthTicks']],s['childSessionId']); ready=wait_file(folder/'ready.json')
         if not ready['ok']:raise Failure(ready['error']['code'],ready['error']['message'])
         meta={'id':name,'generation':folder.name,'root':str(base),'ipc':str(folder),'token':token,'tasks':names,'exe':str(exe),'provider':str(path),'parentSessionId':p['session'],'childSessionId':s['childSessionId'],'viewerPid':s['pid'],'viewerBirthTicks':p['birthTicks'],'workerPid':ready['session']['workerPid'],'workerBirthTicks':ready['session']['workerBirthTicks'],'connectedAt':s.get('connectedAt'),'hideViewer':hide,'audio':audio}
         save(base/'binding.json',meta);save(folder/'binding.json',meta)

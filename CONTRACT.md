@@ -1,10 +1,10 @@
 # QuietWing contract
 
-This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.4.0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
+This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.4.1.dev0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
 
 ## Commands
 
-- `doctor`: read-only prerequisite and capability checks; no permission prompts or setup changes.
+- `doctor`: read-only prerequisite and capability checks; no permission prompts or setup changes. Windows may compile a windowless status probe into its private cache; the provider and desktop remain read-only.
 - `start --id NAME`: create only an owned isolated session when supported and prerequisites are met. Otherwise return a specific setup/authentication error. Do not silently attach to the host desktop.
 - `attach --id NAME`: adopt a verified existing isolated session with an explicit identity. Never log off or replace a pre-existing session on stop.
 - `status --id NAME`: report live state and verified capabilities; revalidate process/session identity, not just a saved state file.

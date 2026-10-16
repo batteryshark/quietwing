@@ -12,12 +12,13 @@ desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
 MCP tools, images, and automation workflow. QuietWing also works directly from
 the command line, without computer-ctrl or a particular agent harness.
 
-**Status: experimental. Release: 0.4.0.** QuietWing adds an optional
+**Status: experimental. Release: 0.4.0; development: 0.4.1.dev0.** QuietWing adds an optional
 [read-only preview on Mac](docs/viewer.md) for a local Mac VM or an isolated
 Linux/Windows desktop over existing SSH. The window opens without taking keyboard
 focus and never forwards input or audio. Closing it leaves the agent working.
 See [current validation and limits](docs/status.md) for release acceptance and
-historical results.
+historical results. Development fixes the ParaDesk stale-login snapshot race in
+QuietWing by verifying live provider status; see the [Windows adapter](windows/README.md#live-provider-readiness).
 
 ```sh
 quietwing view --id minimal

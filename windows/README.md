@@ -2,7 +2,7 @@
 
 Run this adapter on Windows with Python 3.11 or newer. It uses the installed .NET Framework C# compiler, Windows PowerShell, Task Scheduler, and an already authenticated ParaDesk child session. SSH can be an outer transport; no host address, SSH identity, password, listener, or credential persistence is built in.
 
-Set `DESKHELPER_PARADESK_DATA` to the existing ParaDesk directory containing `state.json` and `settings.json`. `DESKHELPER_STATE_ROOT` optionally selects helper state; default is `%LOCALAPPDATA%\DesktopSessionHelper`. The instance directory receives a user-and-SYSTEM-only ACL. Packaged `Worker.cs` and `NativeSupport.cs` are read-only resources. A worker executable is compiled under `%DESKHELPER_STATE_ROOT%\cache\windows\<source hash>` (or the default state root), outside the installed package. No write access to installed sources is required.
+Set `DESKHELPER_PARADESK_DATA` to the existing ParaDesk directory containing `state.json` and `settings.json`. `DESKHELPER_STATE_ROOT` optionally selects helper state; default is `%LOCALAPPDATA%\DesktopSessionHelper`. The instance directory receives a user-and-SYSTEM-only ACL. Packaged `Worker.cs`, `NativeSupport.cs`, and `ProviderStatus.cs` are read-only resources. A worker executable is compiled under `%DESKHELPER_STATE_ROOT%\cache\windows\<source hash>` (or the default state root), outside the installed package. No write access to installed sources is required.
 
 ```powershell
 $env:DESKHELPER_PARADESK_DATA = 'C:\Users\YOURNAME\Experiments\paradesk-spike\data'
@@ -52,6 +52,35 @@ via the normal private transient IPC response. Capture does not reset the worker
 inactivity timer. Use the [Mac viewer](../docs/viewer.md#windows-over-ssh) with
 `--remote-platform windows` and matching builds on both ends. Status/close of the
 Mac preview act locally; closing it leaves Windows applications and login intact.
+
+## Live provider readiness
+
+Development 0.4.1.dev0 removes readiness and worker-action dependence on ParaDesk's
+cached child/connection fields. The selected data directory discovers the existing
+provider PID. A windowless probe sends only `status` with no arguments to the
+existing ParaDesk 1.1 local pipe. It verifies the actual pipe-server PID and process
+birth before sending and after receiving, bounds the response and total deadline,
+and requires a valid successful status envelope. There is no cached fallback.
+The first readiness call may compile this probe into QuietWing's private cache;
+it does not launch ParaDesk or acquire a desktop.
+
+Attach still verifies the native WTS console-child relationship and viewer state.
+It pins the live connection identity and viewer birth into the worker's arguments.
+Every bound action rechecks fresh provider status, the original native session,
+viewer birth/parent, secure desktop and generation. Exec/input additionally retain
+the runtime audio gate. A disconnect, new connection identity, replacement child,
+wrong pipe owner process, malformed reply or timeout refuses the operation.
+Reattachment remains explicit; no mutation is retried automatically.
+
+No settings are toggled and no provider state file is repaired. The upstream
+ParaDesk writer race remains in that provider; QuietWing no longer consumes its
+stale child snapshot as the live authority. Existing workers retain their loaded
+code until explicitly stopped and attached again with the updated helper.
+
+`windows/test_provider.py` reproduces the cached connected/child-minus-one failure.
+On Windows it also runs real local named-pipe status/race/refusal cases without
+using a provider, desktop, capture, input or settings. Native validation and its
+reconnect scope are recorded in [current status](../docs/status.md).
 
 ## Connected provider with a stale child snapshot
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.1.dev0 — unreleased
+
+- Read ParaDesk live status over its existing local pipe during Windows readiness
+  and before every bound action. A stale pre-login state file cannot reject a
+  healthy child or conceal a changed connection. No provider launch, reconnect,
+  state-file repair, settings toggle, or cached-status fallback.
+- Verify the actual pipe-server PID and process birth; pin the live connection
+  identity at attach. Keep native WTS, generation, secure-desktop, audio and
+  viewer-visibility checks. Provider errors/timeouts fail closed.
+- Add a deterministic stale-cache regression and desktop-free Windows pipe tests
+  for login timing, transport reconnects, replacement/refusal and bounded timeout.
+
 ## 0.4.0 — 2026-10-15
 
 - Optional read-only Mac window for a local Mac VM or an existing isolated
