@@ -28,6 +28,11 @@ See the [viewer guide](viewer.md#windows-over-ssh).
   was refused until explicit close/reopen. An old helper ended/cleared its own
   separate preview without fallback. No physical network outage, Windows lock or
   provider disconnect was induced during this follow-up.
+- Later, the retained preview ended/cleared after 301 frames with an empty SSH
+  failure (`remote_unavailable`). A new read-only status succeeded; the same
+  Windows worker/provider/child were still healthy. Explicit preview close/reopen
+  on that same generation restored frames. The transient failure's origin was
+  not established; manual reopen after SSH failure is the current behavior.
 - Six frames did not keep a worker copy alive with its timeout shortened to five
   seconds. It exited naturally in 6.89 s, left ParaDesk hidden and cleaned up.
   Only that private copy's duration changed; installed 30-minute timeout was not

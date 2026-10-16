@@ -33,6 +33,11 @@ Updated: 2026-10-15
   https://github.com/batteryshark/quietwing/pull/3; tested code 1bc2107 awaits final
   CI and explicit merge authorization. Default published release remains 0.3.1;
   its notes now include the completed native follow-up, with tag/assets unchanged.
+- Late preview SSH failure after 301 frames cleared/ended as designed; origin
+  unestablished. Read-only status confirmed the same healthy worker/provider/child;
+  explicit Mac preview close/reopen restored frames without native reconnect.
+  Earlier final-head PR/push CI (38831532674/38831526066) and consumer CI
+  38831468234 passed all seven jobs each; final documentation update reruns CI.
 - Private evidence: evidence/windows-viewer-2026-10-15. Only Windows demo worker/
   saved editor and preview retained; same native child/login. Dedicated direct
   MCPs ended, other test bindings/tasks removed; Linux demo/preview retained.
