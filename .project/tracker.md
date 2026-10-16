@@ -2,6 +2,22 @@
 
 Updated: 2026-10-16
 
+## 0.4.2 release preparation (2026-10-16)
+
+- User authorized merges/publication. PR #4 merged as 7d49521; stacked #5 rebased
+  with the entire accepted tree unchanged, seven fresh jobs 38963532399 passed,
+  then merged as bf3a3f1. Consumer PR #2 merged as 84124c7.
+- Version/docs promoted to 0.4.2. Local portable checks: 126 tests, 123 pass and
+  three Windows-native Mac skips. Fresh wheel/source audits, clean installs and
+  independent rebuild passed; 37 resources match source/rebuild, 24 executable
+  backend resources exactly match the accepted dev1 wheel. Prior native and
+  two-harness acceptance applies; no fresh native rerun claimed.
+- Release work never accesses Windows, its workers, viewer or settings while
+  DreamStudio tests. No machine installation or automatic worker replacement.
+  Private receipts: evidence/release-0.4.2 and /private/tmp/quietwing-release-042.
+- Next: exact release-commit/tag CI, reviewed draft assets and authorized publish;
+  verify public downloads/checksums/fresh installs, then record publication.
+
 ## Bounded Windows held keys (0.4.2.dev1, 2026-10-16)
 
 - Public input `--key KEY --hold-ms MS`, integer 1–5000 ms. Physical scan-code

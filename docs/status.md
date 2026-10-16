@@ -5,6 +5,27 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## 0.4.2 release validation — 2026-10-16
+
+Version 0.4.2 promotes the accepted 0.4.2.dev1 candidate: opt-in SSH viewer
+follow mode and bounded Windows held keys. Its executable backend resources
+are byte-identical to the candidate that passed the native and actual
+Codex/OpenCode checks recorded below. The stacked held-key branch was rebased
+onto merged viewer work with its complete file tree unchanged before final CI.
+
+Release preparation passed all 126 portable tests eligible on Mac (123 passed,
+three Windows-only cases skipped), fresh archive audits, independent source
+rebuild and clean wheel/source installations. All 37 runtime resources match
+source and the independent rebuild; all 24 executable backend resources match
+the native-tested candidate. Hosted cross-platform CI gates publication. It does not
+access or update the occupied Windows machine, replace a worker or interrupt
+DreamStudio. No fresh native Windows acceptance is claimed for this version
+promotion. The prior candidate's installed Windows worker code remains in place.
+A package update never automatically replaces an existing worker; save its owned
+work and explicitly reattach before expecting new capabilities. Game compatibility
+and frame-accurate timing are outside the acceptance described here.
+Private release receipts: evidence/release-0.4.2.
+
 ## Development Windows held keys — 2026-10-16
 
 0.4.2.dev1 adds [bounded key/chord holds](held-keys.md) to supporting Windows
@@ -35,7 +56,8 @@ original game/debugger, main-desktop input/capture, RDP reconnect, host settings
 or DreamStudio/guard edits. All owned apps/workers/controllers/tasks/listeners
 were cleaned and the lead notified before the 20-minute window ended. The main
 Windows cctl install was left alone; the updated consumer was staged separately.
-No official release was published. Original-game compatibility remains its
+At candidate acceptance, no official release had been published; see 0.4.2
+above for the promotion. Original-game compatibility remains its
 separate ordinary-controls pilot. Receipts: evidence/held-keys-2026-10-16.
 
 ## Development SSH preview follow mode — 2026-10-16

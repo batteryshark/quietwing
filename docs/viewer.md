@@ -45,7 +45,7 @@ The preview window currently runs on Mac; a native viewer window on Linux or Win
 
 ## Leave an SSH preview open across agent attachments
 
-Development 0.4.2 adds opt-in `--follow` for Linux and Windows SSH targets:
+QuietWing 0.4.2 adds opt-in `--follow` for Linux and Windows SSH targets:
 
 ```sh
 quietwing view --host user@windows-machine --remote-platform windows --id work --follow \
@@ -78,7 +78,7 @@ finish within its existing bounded deadline. Closing never starts a new window.
 Changing an open preview between pinned and follow modes requires closing that
 Mac preview first. `--follow` cannot be combined with `--expect-generation`, and
 a following window cannot be closed with a generation precondition. Local Mac VM
-viewing remains generation-pinned. Published 0.4.1 does not yet include `--follow`.
+viewing remains generation-pinned. SSH `--follow` requires QuietWing 0.4.2 on Mac.
 
 ## Linux over SSH
 

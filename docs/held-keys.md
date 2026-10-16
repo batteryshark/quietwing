@@ -1,7 +1,7 @@
 # Bounded held keys on Windows
 
-Development 0.4.2.dev1 adds a supported hold duration to the public input command.
-The published 0.4.1 release and already running older workers do not supply it.
+QuietWing 0.4.2 adds a supported hold duration to the public input command.
+Earlier releases and already running older workers do not supply it.
 The current implementation is Windows-only, through an authenticated ParaDesk
 child; Mac and Linux input behavior is unchanged.
 
