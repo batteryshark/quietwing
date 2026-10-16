@@ -1,4 +1,4 @@
-# Upgrade to 0.4.1
+# Upgrade to 0.4.2
 
 Version 0.3 is QuietWing. The package, Python import, and sole installed command
 are `quietwing`. There is no `deskhelper` command alias.
@@ -11,7 +11,7 @@ Install the reviewed wheel in a new private environment:
 
 ```sh
 python3 -m venv /absolute/path/to/quietwing-env
-/absolute/path/to/quietwing-env/bin/python -m pip install /path/to/quietwing-0.4.1-py3-none-any.whl
+/absolute/path/to/quietwing-env/bin/python -m pip install /path/to/quietwing-0.4.2-py3-none-any.whl
 /absolute/path/to/quietwing-env/bin/quietwing --version
 ```
 
@@ -50,3 +50,11 @@ metadata. The provider, native login and session identities remain unchanged.
 Do the package upgrade and explicit reattach after current work is saved and
 stopped: existing workers retain their loaded code until then. No native RDP
 reconnect, sign-in or settings change is required for this package fix.
+
+Version 0.4.2 adds opt-in SSH preview [follow mode](viewer.md#leave-an-ssh-preview-open-across-agent-attachments)
+on Mac and [bounded Windows held keys](held-keys.md). Close only the old Mac
+preview before reopening it with `--follow`; the remote worker keeps running.
+Held keys require a new live worker advertising `key_hold: true`, so coordinate
+an explicit helper stop/attach after saving owned work. Older workers refuse
+holds rather than tapping. Computer-ctrl must include its held-key integration
+(PR #2) to expose `hold_ms`; no controller or desktop is replaced automatically.
