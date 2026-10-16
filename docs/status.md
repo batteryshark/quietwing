@@ -43,6 +43,44 @@ Clean release archives passed auditing, independent source rebuild and fresh
 wheel/source installs; all 34 runtime resources match the live-tested candidate
 and reviewed source. Exact-tag hosted CI and reviewed public asset checks passed, as linked above. Private evidence stays under evidence/release-0.4.0.
 
+## Official 0.4.0 Windows/Linux installation follow-up — 2026-10-15
+
+The unchanged public wheel is now installed in dedicated Windows and Linux
+QuietWing environments. Its checksum and all 34 installed runtime resources
+match the official release. This follow-up is separate from publication-time
+Mac acceptance above.
+
+Linux passed fresh Codex and OpenCode ordinary Mousepad workflows through the
+normal persistent computer-ctrl MCP controller: six verified tools each, exact
+saved Unicode, pinned generation and independently checked final captures.
+Owned editor identities, private X display and private PulseAudio socket were
+verified. Across 235 Mac preview samples the window remained nonactivating.
+Normal CLI automatic acquisition, explicit stop/restart, stale-frame/generation
+refusal and owned controller cleanup also passed. No human Linux desktop capture,
+input or pointer/focus monitor was used.
+
+Windows passed installed native input/capture, normal stop, worker crash, attach
+rollback and stale-generation checks. Codex direct MCP passed ten verified calls,
+exact saved Unicode and a checked final image, with 744 hidden/unminimized
+ParaDesk samples and 281 nonactivating Mac preview samples. Cleanup removed its
+owned editor/worker and retained the same native child at that point.
+
+The normal OpenCode MCP launch then exposed a computer-ctrl private-state ACL
+bug on Windows Python 3.13, where prior direct logging excluded the same user's
+Limited controller. The [consumer fix](https://github.com/batteryshark/computer-ctrl/commit/ce9671c)
+reuses its private-directory helper for new directories; it changes no existing ACL or system policy. A native regression
+failed before the fix and passed after it, and actual OpenCode catalog startup
+passed without desktop acquisition. This is a consumer fix, not a QuietWing
+package or release-asset change.
+
+**Fresh Windows normal-MCP editor acceptance is still pending.** ParaDesk later
+reported its native child signed out; the operator also lost Parsec video. The
+cause of that transition is not established. Childless capture/input refuses,
+and neither the failed startup nor incomplete GUI attempts counts as a pass.
+The earlier two-harness development evidence remains historical. Official
+release assets and tag are unchanged. Private evidence is retained under
+evidence/official-0.4.0-rollout-2026-10-15.
+
 ## Development acceptance history
 
 The following sections identify their tested development builds and historical

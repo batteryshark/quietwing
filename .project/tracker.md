@@ -2,6 +2,37 @@
 
 Updated: 2026-10-15
 
+## Official 0.4.0 remote rollout (2026-10-15, in progress)
+
+- Public wheel checksum verified and installed into dedicated Windows/Linux
+  environments; all 34 runtime resources match the official asset. No system
+  dependencies or global computer-ctrl installations changed.
+- Fresh Linux Codex/OpenCode normal persistent-MCP workflows passed six tools
+  each, exact saved Unicode, verified private display/PulseAudio/editor identities
+  and final captures. All 235 Mac preview samples stayed nonactivating. Normal
+  CLI automatic acquisition, stop/restart, stale generation/frame refusal and
+  owned controller cleanup passed. No Linux human-display activity monitor.
+- Windows installed native input/capture, normal stop, worker crash, attach
+  rollback and stale refusal passed. Codex direct MCP passed ten tools, exact
+  Unicode, independently checked final image, 744 hidden/unminimized parent
+  samples and 281 nonactivating Mac preview samples; owned worker/editor removed.
+- Normal OpenCode MCP bootstrap exposed a cctl Windows Python 3.13 private-state
+  ACL bug after direct logging. Consumer fix uses its existing private-directory
+  helper; native desktop-free regression ran red/green and actual OpenCode
+  catalog startup passed afterward. Dedicated remote consumers use that fix.
+- Remaining Windows normal-MCP GUI/default lifecycle acceptance is pending:
+  provider later logged its child signed out, while the operator's Parsec reported
+  no video. Transition cause unestablished. Existing childless capture/input
+  refuses safely; failed startup/SSH attempts are retained, not counted as passes.
+- Operator requested access recovery. Read-only probe found ~47 GiB RAM and
+  ~15 GiB NVIDIA VRAM free, ~400 MiB containers and no paging in that sample;
+  repeated Parsec DXGI_ACCESS_LOST accompanied display changes. Only the existing
+  Parsec service/app was restarted, preserving console login; no reboot/settings
+  edit or credential read. Awaiting operator reconnect feedback.
+- Private evidence: evidence/official-0.4.0-rollout-2026-10-15. Official tag/assets
+  remain unchanged. Next: restore operator access/sign-in, finish Windows checks,
+  verify published consumer fix ce9671c and documentation CI; keep deferrals explicit.
+
 ## 0.4.0 release (2026-10-15, published)
 
 - User authorized remaining Mac checks, CI and publication. After automatic review
