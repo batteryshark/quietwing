@@ -4,9 +4,11 @@ Updated: 2026-10-15
 
 ## Linux read-only viewer over SSH (0.4.0.dev1, 2026-10-15)
 
-- Review PR #2: https://github.com/batteryshark/quietwing/pull/2. Feature head
-  52063ff is installed/tested; merge awaits explicit authorization after CI, as
-  required by the earlier automatic approval review for main-branch merges.
+- PR #2 merged as 6586ff8 after explicit user authorization:
+  https://github.com/batteryshark/quietwing/pull/2. Tested runtime head 52063ff;
+  final review head 07094c8 passed all seven PR CI jobs (38827975171), including
+  fresh Mac viewer compilation; its push CI also passed (38827968121).
+  Published 0.3.1 remains unchanged; main provides development 0.4.0.dev1.
 - User chose a Mac window for the Linux desktop over existing SSH. Windows is
   reserved for DreamStudio and was not contacted. No host settings, credential
   policy, listener or global installation changed; tests use private venvs.
@@ -151,7 +153,8 @@ Updated: 2026-10-15
 
 ## Next action
 
-Review/authorize Linux SSH viewer PR #2 after its CI; verify main CI after merge.
+Linux SSH viewer PR #2 is merged; retain final main CI evidence privately.
+Repeat the extra Mac VM app workflows when the guest is unlocked.
 Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
 Prioritize explicit lifetimes and separately validated native Linux/Windows viewer windows.
 The Mac viewer can show Mac VMs and Linux over SSH in the 0.4 development build.
