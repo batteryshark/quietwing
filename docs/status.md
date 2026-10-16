@@ -7,7 +7,8 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 
 ## 0.4.1 release validation — 2026-10-16
 
-0.4.1 promotes the accepted live-provider fix from `9652314`. The executable
+[Published experimental v0.4.1](https://github.com/batteryshark/quietwing/releases/tag/v0.4.1)
+at `a0f5d13` promotes the accepted live-provider fix from `9652314`. The executable
 backend resources are unchanged from the development build that passed native
 Windows and actual Codex/OpenCode acceptance below. Release work is local and
 on GitHub; the occupied Windows machine is not accessed for release validation
@@ -18,8 +19,13 @@ The release includes the Windows readiness fix and retains the existing native
 session, generation, secure-desktop, audio and hidden-viewer guards. The ParaDesk
 writer bug remains upstream; QuietWing's live authority is its verified IPC
 response. Existing loaded workers get the new guard on their next explicit attach.
-Packaging/CI and public-download verification receipts are retained privately in
-evidence/release-0.4.1. Historical 0.4.0 assets/tag remain unchanged.
+[Release-commit CI](https://github.com/batteryshark/quietwing/actions/runs/38928179239)
+and [exact-tag CI](https://github.com/batteryshark/quietwing/actions/runs/38928182076)
+passed all seven jobs each; the [draft build](https://github.com/batteryshark/quietwing/actions/runs/38928182600)
+passed. Reviewed draft/public checksums and anonymous downloads, independent source
+rebuild, and fresh wheel/source installs passed. All 35 runtime resources match
+the tag; all 23 executable backend resources match the accepted fix. No old tag
+or asset was replaced. Receipts: evidence/release-0.4.1.
 
 ## Development Windows live-provider fix — 2026-10-16
 

@@ -2,16 +2,25 @@
 
 Updated: 2026-10-16
 
-## 0.4.1 release promotion (2026-10-16)
+## 0.4.1 release (2026-10-16, published)
 
-- User authorized official publication of the accepted fix; Windows is reserved
-  for DreamStudio. Version/docs/package promotion only; no release-related Windows
-  access/install or fresh native acceptance. Executable backend resources stay
-  byte-identical to accepted `9652314`; its native and two-harness evidence applies.
-- Local portable/package/rebuild checks, exact-commit/tag CI, draft review and
-  public asset verification are release gates. Receipts: evidence/release-0.4.1.
-  Next: complete those gates and publish the authorized experimental MIT release;
-  preserve existing native sessions and defer Windows installation to a safe window.
+- Published experimental MIT https://github.com/batteryshark/quietwing/releases/tag/v0.4.1
+  at `a0f5d13`. Executable backend resources are byte-identical to accepted `9652314`;
+  its native Windows and two-harness evidence applies. No new native Windows
+  acceptance or install; DreamStudio's occupied machine/session was left unchanged.
+- Portable: 100 tests (98 passed/two Windows-native skips on Mac; those cases pass
+  on Windows CI). Release-commit CI 38928179239 and exact-tag CI 38928182076 passed
+  all seven jobs each; draft workflow 38928182600 passed. Reviewed notes/assets,
+  authenticated draft and anonymous public checksums/downloads, independent source
+  rebuild and fresh wheel/source installs passed. All 35 runtime resources match
+  the tagged source; 23 executable resources match the live-tested fix.
+- Public wheel SHA256 d2300d8dcc6785c06602c50f7091d6cfac4415634d830b13945e55323c3eb222.
+  Prior tags/assets unchanged; no PyPI or automatic machine update. Existing workers
+  get the new guard on their next explicit attach after their owned work is saved.
+- Separate requested read-only Mac peek found a stopped Windows attachment; no
+  session acquisition/restart/input. Preview needs an already live worker.
+- Private release receipts: evidence/release-0.4.1. Next: normal isolated use;
+  defer the occupied Windows package update until its work is finished.
 
 ## Live ParaDesk readiness fix (0.4.1.dev0, 2026-10-16)
 
