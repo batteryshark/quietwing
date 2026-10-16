@@ -29,9 +29,12 @@ Updated: 2026-10-15
   repeated Parsec DXGI_ACCESS_LOST accompanied display changes. Only the existing
   Parsec service/app was restarted, preserving console login; no reboot/settings
   edit or credential read. Awaiting operator reconnect feedback.
+- Consumer fix ce9671c published; its CI 38839516195 passed all seven jobs.
+  Companion rollout docs 2ae05da CI 38839573592 passed all seven jobs. The verified
+  private Windows acceptance controller was removed without desktop operations.
 - Private evidence: evidence/official-0.4.0-rollout-2026-10-15. Official tag/assets
-  remain unchanged. Next: restore operator access/sign-in, finish Windows checks,
-  verify published consumer fix ce9671c and documentation CI; keep deferrals explicit.
+  remain unchanged. Next: operator confirms restored video/signs in, then finish
+  Windows normal-MCP GUI/default lifecycle checks; keep deferrals explicit.
 
 ## 0.4.0 release (2026-10-15, published)
 
