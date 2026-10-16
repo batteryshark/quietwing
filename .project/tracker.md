@@ -30,14 +30,16 @@ Updated: 2026-10-15
   native VM source unchanged. No lock/disconnect/physical outage induced on Windows.
 - Portable 93 passed/one Windows-only simulated case skipped; clean wheel/source,
   rebuild/fresh install and all 34 runtime resources matched. PR #3:
-  https://github.com/batteryshark/quietwing/pull/3; tested code 1bc2107 awaits final
-  CI and explicit merge authorization. Default published release remains 0.3.1;
+  https://github.com/batteryshark/quietwing/pull/3 merged as 66f444c after explicit
+  user authorization. Tested code 1bc2107; approved review head 9364dfd. Main now
+  provides development 0.4.0.dev2. Default published release remains 0.3.1;
   its notes now include the completed native follow-up, with tag/assets unchanged.
 - Late preview SSH failure after 301 frames cleared/ended as designed; origin
   unestablished. Read-only status confirmed the same healthy worker/provider/child;
   explicit Mac preview close/reopen restored frames without native reconnect.
-  Earlier final-head PR/push CI (38831532674/38831526066) and consumer CI
-  38831468234 passed all seven jobs each; final documentation update reruns CI.
+  Final review-head PR/push CI (38831834832/38831829718) and consumer CI
+  38831468234 passed all seven jobs each, including both fresh Mac compilations.
+  Post-merge main CI evidence is retained privately with the acceptance evidence.
 - Private evidence: evidence/windows-viewer-2026-10-15. Only Windows demo worker/
   saved editor and preview retained; same native child/login. Dedicated direct
   MCPs ended, other test bindings/tasks removed; Linux demo/preview retained.
@@ -193,12 +195,9 @@ Updated: 2026-10-15
 
 ## Next action
 
-Review/authorize Windows SSH viewer PR #3 after final CI; verify main CI after merge.
-Linux SSH viewer PR #2 main CI passed (38828432131); consumer main CI passed (38828448100).
+Windows viewer PR #3 is merged; retain final main CI results privately.
 Repeat the extra Mac VM app workflows when the guest is unlocked.
-Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
-Prioritize explicit lifetimes and separately validated native Linux/Windows viewer windows.
-The Mac viewer can show Mac VMs and Linux over SSH in the 0.4 development build.
-Measure setup and game/GPU
-behavior separately; the historical obstruction is still unidentified.
+Prioritize explicit lifetimes; native viewer windows on Linux/Windows remain future work.
+The Mac viewer can show Mac VMs and Linux/Windows over SSH in development 0.4.0.dev2.
+Measure setup and game/GPU behavior separately; the historical obstruction remains unidentified.
 docs/status.md is the current capability/validation summary.
