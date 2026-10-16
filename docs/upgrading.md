@@ -1,4 +1,4 @@
-# Upgrade to 0.4.0
+# Upgrade to 0.4.1
 
 Version 0.3 is QuietWing. The package, Python import, and sole installed command
 are `quietwing`. There is no `deskhelper` command alias.
@@ -11,7 +11,7 @@ Install the reviewed wheel in a new private environment:
 
 ```sh
 python3 -m venv /absolute/path/to/quietwing-env
-/absolute/path/to/quietwing-env/bin/python -m pip install /path/to/quietwing-0.4.0-py3-none-any.whl
+/absolute/path/to/quietwing-env/bin/python -m pip install /path/to/quietwing-0.4.1-py3-none-any.whl
 /absolute/path/to/quietwing-env/bin/quietwing --version
 ```
 
@@ -44,3 +44,9 @@ keep their compiled code until explicitly replaced: save their owned documents,
 stop only the helper attachment, upgrade, and attach again with `--hide-viewer`.
 Keep the external ParaDesk connection and signed-in child alive. Upgrade never
 requires a native sign-out, system settings change or host-control fallback.
+
+Version 0.4.1 verifies live ParaDesk status instead of cached child/connection
+metadata. The provider, native login and session identities remain unchanged.
+Do the package upgrade and explicit reattach after current work is saved and
+stopped: existing workers retain their loaded code until then. No native RDP
+reconnect, sign-in or settings change is required for this package fix.

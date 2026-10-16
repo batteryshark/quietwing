@@ -5,6 +5,22 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## 0.4.1 release validation — 2026-10-16
+
+0.4.1 promotes the accepted live-provider fix from `9652314`. The executable
+backend resources are unchanged from the development build that passed native
+Windows and actual Codex/OpenCode acceptance below. Release work is local and
+on GitHub; the occupied Windows machine is not accessed for release validation
+or installation. No fresh native Windows acceptance is claimed for the version
+promotion. Native RDP disconnect/relogin remains outside the tested scope.
+
+The release includes the Windows readiness fix and retains the existing native
+session, generation, secure-desktop, audio and hidden-viewer guards. The ParaDesk
+writer bug remains upstream; QuietWing's live authority is its verified IPC
+response. Existing loaded workers get the new guard on their next explicit attach.
+Packaging/CI and public-download verification receipts are retained privately in
+evidence/release-0.4.1. Historical 0.4.0 assets/tag remain unchanged.
+
 ## Development Windows live-provider fix — 2026-10-16
 
 0.4.1.dev0 queries ParaDesk's existing local status pipe instead of trusting cached
@@ -45,8 +61,8 @@ connection. Provider disconnect/new connection/child replacement were tested in
 headless fixtures. An RDP disconnect/relogin was not forced because it can require
 an interactive sign-in. No main-desktop capture/input, games, system-policy change
 or new authentication was used.
-Official 0.4.0 assets/tag remain unchanged; this development fix is not a published
-release. Private evidence: evidence/windows-live-provider-2026-10-16.
+Official 0.4.0 assets/tag remain unchanged. The tested development artifact was
+not a published release; its fix is promoted in 0.4.1 above. Private evidence: evidence/windows-live-provider-2026-10-16.
 
 ## 0.4.0 release validation
 

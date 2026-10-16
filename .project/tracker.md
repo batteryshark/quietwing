@@ -2,6 +2,17 @@
 
 Updated: 2026-10-16
 
+## 0.4.1 release promotion (2026-10-16)
+
+- User authorized official publication of the accepted fix; Windows is reserved
+  for DreamStudio. Version/docs/package promotion only; no release-related Windows
+  access/install or fresh native acceptance. Executable backend resources stay
+  byte-identical to accepted `9652314`; its native and two-harness evidence applies.
+- Local portable/package/rebuild checks, exact-commit/tag CI, draft review and
+  public asset verification are release gates. Receipts: evidence/release-0.4.1.
+  Next: complete those gates and publish the authorized experimental MIT release;
+  preserve existing native sessions and defer Windows installation to a safe window.
+
 ## Live ParaDesk readiness fix (0.4.1.dev0, 2026-10-16)
 
 - Replaced cached child/connection authority with bounded read-only status IPC for

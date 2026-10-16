@@ -55,7 +55,7 @@ Mac preview act locally; closing it leaves Windows applications and login intact
 
 ## Live provider readiness
 
-Development 0.4.1.dev0 removes readiness and worker-action dependence on ParaDesk's
+QuietWing 0.4.1 removes readiness and worker-action dependence on ParaDesk's
 cached child/connection fields. The selected data directory discovers the existing
 provider PID. A windowless probe sends only `status` with no arguments to the
 existing ParaDesk 1.1 local pipe. It verifies the actual pipe-server PID and process
