@@ -76,6 +76,12 @@ explicitly rebinds and discards old frames. An old controller cannot silently
 target a replacement desktop.
 
 A Mac crash/cold boot can require guest login; routine clean save/resume does
-not. A Windows lock, secure desktop, provider reconnect, or disconnected viewer
-requires operator attention. Follow the platform guide rather than changing host
-login or credential policy as a recovery shortcut.
+not. After a Windows reboot, restore access to the Windows console, open your
+external ParaDesk provider and complete its Windows Security sign-in locally.
+Leave save/remember unchecked. Wait until the child desktop is visible, then use
+cctl to attach and hide its viewer. QuietWing does not launch the provider or
+request sign-in automatically. Keep the connected child viewer unminimized.
+
+A Windows lock, secure desktop, provider reconnect or disconnected viewer needs
+operator attention. Follow the platform guide rather than changing host login
+or credential policy as a recovery shortcut.

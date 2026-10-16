@@ -20,6 +20,11 @@
 - Includes the 0.3.1 Windows cleanup fix: hidden ParaDesk stays hidden after stop,
   worker crash and attach rollback, preserving the native connection and login.
 
+- Later official-package follow-up passed native Windows lifecycle checks and
+  actual Codex/OpenCode normal-MCP editor workflows on Windows and Linux.
+  Same Windows login retained and hidden; private Linux display/audio verified.
+  See [current validation](docs/status.md) for counts, limits and consumer fixes.
+
 ## 0.3.1 — 2026-10-15
 
 - Keep a hidden ParaDesk viewer hidden after stop, worker exit, or attach rollback.

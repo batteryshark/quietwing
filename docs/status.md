@@ -33,53 +33,67 @@ for the one-time unlock. No login/power/credential policy or host setting change
 
 The native and transport executable sources are byte-identical to accepted
 0.4.0.dev2. Windows native lifecycle and both actual harnesses, plus both Linux
-shared-transport harnesses, passed on that development build as detailed below;
-they were not rerun against the version-only 0.4.0 package. No Windows connection
-was made during this release task. The Mac checks close the development guest-lock
-deferrals recorded below; those earlier failed attempts remain historical.
+shared-transport harnesses, passed on that development build as detailed below.
+At initial publication those remote workflows had not yet been rerun against
+the version-only 0.4.0 package; initial publication did not access Windows. The
+official-package follow-up below supersedes that deferral. The Mac checks close
+the development guest-lock deferrals; those earlier failures remain historical.
 
 Local portable checks: 93 passed and one Windows-only simulated case skipped.
 Clean release archives passed auditing, independent source rebuild and fresh
 wheel/source installs; all 34 runtime resources match the live-tested candidate
 and reviewed source. Exact-tag hosted CI and reviewed public asset checks passed, as linked above. Private evidence stays under evidence/release-0.4.0.
 
-## Official 0.4.0 Windows/Linux installation follow-up — 2026-10-15
+## Official 0.4.0 Windows/Linux follow-up — 2026-10-15
 
-The unchanged public wheel is now installed in dedicated Windows and Linux
+The unchanged public wheel is installed in dedicated Windows and Linux
 QuietWing environments. Its checksum and all 34 installed runtime resources
-match the official release. This follow-up is separate from publication-time
-Mac acceptance above.
+match the official release. Native Windows input/capture/stop/crash/rollback and
+stale checks passed against this installed package. This follow-up also closes
+the normal-MCP editor deferral recorded in the earlier rollout notes.
 
-Linux passed fresh Codex and OpenCode ordinary Mousepad workflows through the
-normal persistent computer-ctrl MCP controller: six verified tools each, exact
-saved Unicode, pinned generation and independently checked final captures.
-Owned editor identities, private X display and private PulseAudio socket were
-verified. Across 235 Mac preview samples the window remained nonactivating.
-Normal CLI automatic acquisition, explicit stop/restart, stale-frame/generation
-refusal and owned controller cleanup also passed. No human Linux desktop capture,
-input or pointer/focus monitor was used.
+After an operator reboot and local ParaDesk sign-in, actual Windows Codex and
+OpenCode passed through the normal persistent computer-ctrl MCP controller:
+seven and thirteen verified tools, exact saved Unicode, checked final images
+and verified native editor/session identities. Across 594 Mac preview samples
+the panel stayed nonactivating. All 1,983 Windows parent observations kept
+ParaDesk hidden and unminimized. Default CLI rebind, windowless controller,
+stop/stale-frame/generation refusal and cleanup passed with 88 additional
+hidden-parent samples. The same post-reboot native child/login stayed connected;
+owned test editors/workers/controller/tasks were removed.
 
-Windows passed installed native input/capture, normal stop, worker crash, attach
-rollback and stale-generation checks. Codex direct MCP passed ten verified calls,
-exact saved Unicode and a checked final image, with 744 hidden/unminimized
-ParaDesk samples and 281 nonactivating Mac preview samples. Cleanup removed its
-owned editor/worker and retained the same native child at that point.
+Fresh Linux Codex and OpenCode normal-MCP Mousepad workflows passed six verified
+tools each, exact saved Unicode, the same persistent controller and checked final
+captures. Owned editor identities, private X display and private PulseAudio
+routing were verified; all 261 Mac preview samples stayed nonactivating. Owned
+session/editors/controller were cleaned. Default CLI automatic acquisition,
+stop/restart, stale refusal and controller cleanup passed separately. No human
+Linux desktop capture, input or pointer/focus monitor was used. Earlier Linux
+agent evidence used direct MCP; the previous wording calling those runs
+persistent was incorrect. The fresh runs above close that gap.
 
-The normal OpenCode MCP launch then exposed a computer-ctrl private-state ACL
-bug on Windows Python 3.13, where prior direct logging excluded the same user's
-Limited controller. The [consumer fix](https://github.com/batteryshark/computer-ctrl/commit/ce9671c)
-reuses its private-directory helper for new directories; it changes no existing ACL or system policy. A native regression
-failed before the fix and passed after it, and actual OpenCode catalog startup
-passed without desktop acquisition. This is a consumer fix, not a QuietWing
-package or release-asset change.
+Normal Windows MCP bootstrap had exposed a separate
+[computer-ctrl logging/state-directory ACL bug, now fixed](https://github.com/batteryshark/computer-ctrl/commit/ce9671c).
+Its native desktop-free regression failed before and passed after the fix;
+141 portable tests and hosted CI passed. The consumer reuses its existing
+private-directory factory for new paths; it changes no existing ACL or system
+policy. Dedicated consumers use the fix. QuietWing runtime code/assets are unchanged.
 
-**Fresh Windows normal-MCP editor acceptance is still pending.** ParaDesk later
-reported its native child signed out; the operator also lost Parsec video. The
-cause of that transition is not established. Childless capture/input refuses,
-and neither the failed startup nor incomplete GUI attempts counts as a pass.
-The earlier two-harness development evidence remains historical. Official
-release assets and tag are unchanged. Private evidence is retained under
-evidence/official-0.4.0-rollout-2026-10-15.
+One extra Linux default-MCP attempt failed before tools with `AF_UNIX path too
+long`: its socket path was 112 bytes. Shortening only the private test cache path
+to 89 bytes passed; keep Unix cache paths short because this OS limit remains.
+Windows capture after an external helper stop currently returns `ADAPTER_ERROR`
+with a missing-binding detail; explicit cctl start/rebind passed. Explicit cctl
+stop then refuses input as `session_stopped`. Neither error targets the host.
+The first lifecycle assertion expected a different missing-binding code; its
+narrow expectation was corrected and all lifecycle checks were rerun successfully.
+Failed startup/SSH/expectation attempts remain recorded, not counted as GUI passes.
+
+Owned acceptance preview panels/brokers were closed; the authenticated Windows
+child is retained. No system settings, credential/firewall/RDP policy, global cctl,
+release tag or asset changes were made in this follow-up. No gaming/GPU or
+universal noninterference claim follows from these checks. Private evidence is
+retained under evidence/official-0.4.0-rollout-2026-10-15.
 
 ## Development acceptance history
 

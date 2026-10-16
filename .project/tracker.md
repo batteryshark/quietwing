@@ -2,39 +2,37 @@
 
 Updated: 2026-10-15
 
-## Official 0.4.0 remote rollout (2026-10-15, in progress)
+## Official 0.4.0 remote rollout (2026-10-15, live acceptance complete)
 
-- Public wheel checksum verified and installed into dedicated Windows/Linux
-  environments; all 34 runtime resources match the official asset. No system
-  dependencies or global computer-ctrl installations changed.
-- Fresh Linux Codex/OpenCode normal persistent-MCP workflows passed six tools
-  each, exact saved Unicode, verified private display/PulseAudio/editor identities
-  and final captures. All 235 Mac preview samples stayed nonactivating. Normal
-  CLI automatic acquisition, stop/restart, stale generation/frame refusal and
-  owned controller cleanup passed. No Linux human-display activity monitor.
-- Windows installed native input/capture, normal stop, worker crash, attach
-  rollback and stale refusal passed. Codex direct MCP passed ten tools, exact
-  Unicode, independently checked final image, 744 hidden/unminimized parent
-  samples and 281 nonactivating Mac preview samples; owned worker/editor removed.
-- Normal OpenCode MCP bootstrap exposed a cctl Windows Python 3.13 private-state
-  ACL bug after direct logging. Consumer fix uses its existing private-directory
-  helper; native desktop-free regression ran red/green and actual OpenCode
-  catalog startup passed afterward. Dedicated remote consumers use that fix.
-- Remaining Windows normal-MCP GUI/default lifecycle acceptance is pending:
-  provider later logged its child signed out, while the operator's Parsec reported
-  no video. Transition cause unestablished. Existing childless capture/input
-  refuses safely; failed startup/SSH attempts are retained, not counted as passes.
-- Operator requested access recovery. Read-only probe found ~47 GiB RAM and
-  ~15 GiB NVIDIA VRAM free, ~400 MiB containers and no paging in that sample;
-  repeated Parsec DXGI_ACCESS_LOST accompanied display changes. Only the existing
-  Parsec service/app was restarted, preserving console login; no reboot/settings
-  edit or credential read. Awaiting operator reconnect feedback.
-- Consumer fix ce9671c published; its CI 38839516195 passed all seven jobs.
-  Companion rollout docs 2ae05da CI 38839573592 passed all seven jobs. The verified
-  private Windows acceptance controller was removed without desktop operations.
-- Private evidence: evidence/official-0.4.0-rollout-2026-10-15. Official tag/assets
-  remain unchanged. Next: operator confirms restored video/signs in, then finish
-  Windows normal-MCP GUI/default lifecycle checks; keep deferrals explicit.
+- Dedicated Windows/Linux environments use the checksum-verified public wheel;
+  all 34 runtime resources match. No release assets/tag or native code changed.
+- After user reboot/local sign-in, actual Windows Codex/OpenCode normal persistent
+  MCP workflows passed 7/13 tools, exact Unicode, independently checked images
+  and native identities. All 594 Mac preview samples stayed nonactivating;
+  1,983 parent samples kept ParaDesk hidden/unminimized. Default CLI rebind,
+  windowless controller, stop/stale refusal and cleanup passed with 88 more
+  hidden-parent samples. Same post-reboot child/login retained; workers/editors,
+  controller and one-shot tasks removed. Owned test previews/brokers closed.
+- Fresh Linux Codex/OpenCode default-MCP workflows passed six tools each, exact
+  Unicode/images, same persistent controller and private display/audio/editor
+  routing; 261 nonactivating Mac preview samples. Owned session/editors/controller
+  cleaned. Earlier Linux agent runs used direct MCP: previous persistent-MCP
+  wording was incorrect; fresh runs close that gap. Persistent CLI was separately
+  verified. No Linux human-display capture/input/activity monitor or stability claim.
+- Consumer logging fix ce9671c uses its existing private-directory factory for
+  Windows 3.13 Limited-token compatibility. Native regression ran red/green;
+  141 portable tests and seven-job CI 38839516195/38839780348 passed. Dedicated
+  consumers use it; no global cctl or existing ACL/policy changes.
+- Extra Linux normal-MCP attempt failed before tools at the Unix socket path
+  limit (112 bytes); shortening its private test cache to 89 bytes passed. Limit
+  remains. Windows external-stop missing-binding refusal is ADAPTER_ERROR, while
+  explicit cctl stop refuses input as session_stopped. Both rebind paths passed.
+- My bare-exe operator instruction was wrong: guarded ParaDesk requires explicit
+  --minimized then --start. Corrected manual launch requested auth once, user
+  signed in locally; no setup/policy change. Earlier failed attempts retained.
+- Earlier docs CI 38839573592/38839784302 passed seven jobs each. Private evidence:
+  evidence/official-0.4.0-rollout-2026-10-15. Next: normal isolated use with manual
+  cold-boot auth, short Unix cache paths and explicit preview reopen on failure.
 
 ## 0.4.0 release (2026-10-15, published)
 
