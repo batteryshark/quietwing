@@ -2,7 +2,7 @@
 import base64,hashlib,json,os,shlex,subprocess,tempfile,time,unittest
 from pathlib import Path
 from unittest.mock import patch
-import adapter,linux_remote as remote,viewer
+import adapter,ssh_remote as remote,viewer
 PNG=b'\x89PNG\r\n\x1a\n'+b'\0\0\0\rIHDR'+(320).to_bytes(4,'big')+(240).to_bytes(4,'big')+b'test'
 
 class RemoteViewer(unittest.TestCase):
@@ -27,6 +27,15 @@ class RemoteViewer(unittest.TestCase):
         argv=remote.ssh_argv(source,'frame','work','one')
         self.assertEqual(shlex.split(argv[-1]),['env','DESKHELPER_STATE_ROOT=/state/two words',source['command'],'view','--id','work','--frame','--expect-generation','one'])
         for option in ['BatchMode=yes','StrictHostKeyChecking=yes','ForwardX11=no','ForwardAgent=no','ClearAllForwardings=yes','ControlPath=none']:self.assertIn(option,argv)
+    def test_existing_ssh_identity_is_literal_and_separately_namespaced(self):
+        source=remote.target('user@target',identity='/private/a space/key')
+        argv=remote.ssh_argv(source,'status','work')
+        self.assertEqual(argv[argv.index('-i')+1],'/private/a space/key')
+        self.assertIn('IdentitiesOnly=yes',argv)
+        self.assertNotEqual(viewer.state_root('work',True,source),viewer.state_root('work',True,remote.target('user@target')))
+        for identity in ['relative','-flag','/path\nother']:
+            with self.assertRaises(remote.RemoteError):remote.target('user@target',identity=identity)
+
     def test_only_readonly_operations_and_valid_hosts_are_allowed(self):
         for name in ['input','exec','start','stop']:
             with self.assertRaises(remote.RemoteError):remote.ssh_argv(self.source,name,'work')
@@ -114,5 +123,50 @@ class RemoteViewer(unittest.TestCase):
     def test_remote_options_never_apply_to_mutation_commands(self):
         for args in [['input','--id','work','--type','x','--host','user@linux'],['view','--id','work','--remote-command','/other']]:
             with self.assertRaises(adapter.Failure):adapter.parse(args)
+
+
+class WindowsRemote(RemoteViewer):
+    def setUp(self):
+        super().setUp()
+        self.source=remote.target('user@windows',r'C:\private space\quietwing.exe',r'C:\private state','windows')
+    def response(self,generation='one'):
+        value=super().response(generation)
+        value['platform']=value['descriptor']['platform']='windows'
+        value['session'].update(state='attached',nativeSessionId=4,parentSessionId=1,capabilities={'capture':True})
+        value['descriptor']['state']='attached'
+        return value
+    def test_ssh_arguments_are_literal_and_have_no_forwards_or_prompts(self):
+        command=r"C:\private space\a'$(false);quietwing.exe"
+        state=r"C:\private state\a'$(false);x"
+        source=remote.target('user@windows',command,state,'windows')
+        argv=remote.ssh_argv(source,'frame','_work','one')
+        prefix='powershell.exe -NoLogo -NoProfile -NonInteractive -EncodedCommand '
+        self.assertTrue(argv[-1].startswith(prefix))
+        script=base64.b64decode(argv[-1][len(prefix):],validate=True).decode('utf-16le')
+        self.assertIn("$env:DESKHELPER_STATE_ROOT='"+state.replace("'","''")+"';",script)
+        self.assertTrue(script.endswith("& '"+command.replace("'","''")+"' 'view' '--id' '_work' '--frame' '--expect-generation' 'one';exit $LASTEXITCODE"))
+        for option in ['BatchMode=yes','StrictHostKeyChecking=yes','ForwardX11=no','ForwardAgent=no','ClearAllForwardings=yes','ControlPath=none']:self.assertIn(option,argv)
+    def test_reply_requires_matching_linux_session_and_capture_descriptor(self):
+        self.assertEqual(self.call()['session']['generation'],'one')
+        for field,value in [('platform','linux'),('nativeSessionId',1),('nativeSessionId',0),('nativeSessionId',True),('parentSessionId',0),('state','running')]:
+            reply=self.response()
+            if field=='platform':reply['platform']=value
+            else:reply['session'][field]=value
+            with self.subTest(field=field,value=value),self.assertRaises(remote.RemoteError):self.call(reply)
+        for object_name in ('session','descriptor'):
+            reply=self.response();reply[object_name]['capabilities']['capture']=False
+            with self.assertRaises(remote.RemoteError):self.call(reply)
+    def test_remote_session_names_can_include_linux_dots(self):
+        with self.assertRaises(remote.RemoteError):remote.ssh_argv(self.source,'frame','bad.dot','one')
+        args=adapter.parse(['view','--id','_work','--host','user@windows','--remote-platform','windows'])
+        self.assertEqual(args.remote_platform,'windows')
+    def test_platform_namespaces_cannot_collide(self):
+        self.assertNotEqual(viewer.state_root('work',True,remote.target('same')),viewer.state_root('work',True,remote.target('same',platform='windows')))
+    def test_windows_paths_must_be_drive_absolute(self):
+        for state in ['/linux/path','C:relative',r'\\server\share','-flag']:
+            with self.subTest(state=state),self.assertRaises(remote.RemoteError):remote.target('host',state=state,platform='windows')
+    def test_windows_options_require_remote_view(self):
+        for argv in [['view','--id','work','--remote-platform','windows'],['input','--id','work','--type','x','--host','user@windows','--remote-platform','windows']]:
+            with self.assertRaises(adapter.Failure):adapter.parse(argv)
 
 if __name__=='__main__':unittest.main()

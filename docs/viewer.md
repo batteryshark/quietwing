@@ -1,7 +1,7 @@
 # Read-only viewer on Mac
 
 Available in the 0.4 development build, for a local Mac VM or an already running
-isolated Linux desktop over SSH. The preview window opens on your Mac.
+isolated Linux or Windows desktop over SSH. The preview window opens on your Mac.
 Use the QuietWing executable from the same environment that computer-ctrl uses.
 The viewer is optional; computer-ctrl's MCP interface and configuration do not change.
 
@@ -41,7 +41,7 @@ retained for troubleshooting. A crashed broker's window clears a stale image
 after three seconds and exits after fifteen seconds without a heartbeat.
 Frames can pause during capture or guest work; this is a preview, not a video
 stream. CPU, memory and screen space are still shared with the host.
-Windows viewing and a viewer window running on Linux itself remain unsupported.
+The preview window currently runs on Mac; a native viewer window on Linux or Windows is not implemented.
 
 ## Linux over SSH
 
@@ -84,6 +84,52 @@ The current frame is private on Mac under `viewers/linux-ssh/TARGET_HASH/NAME/TO
 and removed on close; small diagnostic metadata remains. Cadence depends on SSH
 and capture latency, roughly one frame per second on the accepted setup. This
 is not a video or remote-control client.
+
+
+## Windows over SSH
+
+Use matching 0.4.0.dev2 or later development builds on Mac and Windows. The
+existing ParaDesk child must already be authenticated, connected and unminimized,
+and QuietWing must already be attached with `--hide-viewer`. Viewing never starts,
+attaches, hides, reconnects or signs in to ParaDesk. It requires no extra firewall,
+credential-policy, RDP-port or service configuration.
+
+```sh
+quietwing view --host user@windows-machine --remote-platform windows --id work \
+  --remote-command 'C:\private\venv\Scripts\quietwing.exe' \
+  --remote-state-root 'C:\private\helper-state'
+# Use the exact same target options with --status or --close.
+```
+
+`--remote-platform windows` selects a fixed noninteractive PowerShell command over
+existing SSH. Executable, state path, ID and generation are passed as literal
+single-quoted values in an encoded script; no local/remote command evaluation,
+forwarding or persistent SSH master is added. Existing SSH aliases and trust
+still apply. If the existing key is not a default SSH identity, pass
+`--ssh-identity /absolute/path/to/existing/key` on Mac. This selects an existing
+key for this connection without changing SSH configuration or copying the key.
+Use the same option for status/close. The provider directory does not need to be passed to the viewer:
+the attached worker retains and revalidates its original provider identity.
+
+Windows `view --frame --id work --expect-generation TOKEN` only requests an
+in-memory PNG from that exact worker. The worker checks the non-console child,
+active connection, provider PID/birth and ordinary input desktop before capture.
+The bounded reply includes dimensions, generation, SHA-256 and isolated-image
+provenance. It creates no standalone Windows PNG; the normal private transient
+IPC response is deleted after reading. Frames do not reset the worker's existing
+30-minute inactivity timer. Agent actions and ordinary status requests retain
+existing lifetime behavior.
+
+The Mac uses the same image-only, nonactivating window as Linux and local VMs.
+Closing it removes the Mac PNG and leaves the attachment, its applications and
+the authenticated child running. A worker stop/crash, lost SSH, lock, disconnect
+or generation replacement clears the image and ends refresh; recovery requires
+explicit close/reopen. The preview never reveals the hidden ParaDesk window or
+forwards keyboard, pointer, clipboard or audio. Remote capture latency determines
+refresh rate; it is a screenshot preview, not a video/game streaming client.
+Windows and Linux target state have separate private namespaces even with the
+same host, executable and logical ID. Windows helper cleanup continues to leave
+ParaDesk's current visibility unchanged.
 
 ## Native UI regression
 

@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-VERSION = '0.4.0.dev1'
+VERSION = '0.4.0.dev2'
 PLATFORMS = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}
 COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build', 'view'}
 
@@ -74,8 +74,6 @@ def main(argv):
         print(json.dumps({'schemaVersion': 1, 'ok': True, 'platform': platform,
                           'result': {'built': True, 'output': p.stdout.strip()}}))
         return 0
-    if argv[0] == 'view' and platform == 'windows':
-        return fail(platform, 'unsupported_operation', 'Read-only viewing is unavailable on Windows.')
     adapter_argv = ['status', *argv[1:]] if argv[0] == 'describe' else argv
     adapter = root / platform / 'adapter.py'
     if not adapter.is_file():

@@ -40,3 +40,15 @@ Optional `--expect-generation TOKEN` is accepted by status, capture, input, exec
 compiles the actual worker with viewer OS calls replaced by in-memory fakes and
 executes 12 stop/crash/rollback visibility cases. It uses no provider, real window,
 capture or input and does not replace native acceptance on a signed-in child.
+
+
+## Read-only preview from Mac
+
+Development 0.4.0.dev2 adds `view --frame --id NAME --expect-generation TOKEN` as
+an SSH transport leaf. It only captures through the already bound worker and its
+existing child/provider guards; no attachment, reconnect, login, visible Windows
+window or standalone PNG is created. The PNG travels in a bounded JSON envelope
+via the normal private transient IPC response. Capture does not reset the worker
+inactivity timer. Use the [Mac viewer](../docs/viewer.md#windows-over-ssh) with
+`--remote-platform windows` and matching builds on both ends. Status/close of the
+Mac preview act locally; closing it leaves Windows applications and login intact.

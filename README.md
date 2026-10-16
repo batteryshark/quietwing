@@ -12,20 +12,22 @@ desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
 MCP tools, images, and automation workflow. QuietWing also works directly from
 the command line, without computer-ctrl or a particular agent harness.
 
-**Status: experimental. Latest release: 0.3.1; development: 0.4.0.dev1.** The native backends passed ordinary-app
+**Status: experimental. Latest release: 0.3.1; development: 0.4.0.dev2.** The native backends passed ordinary-app
 and lifecycle acceptance in 0.2, including actual Codex and OpenCode workflows
 on all three operating systems. Version 0.3 introduces the QuietWing name,
 package, and repository tooling. The published 0.3.0 wheel also passed fresh Windows
 native and actual Codex/OpenCode acceptance on 2026-10-15. [Current status](docs/status.md)
 distinguishes that follow-up from initial release checks and historical evidence.
 Version 0.3.1 prevents Windows cleanup from revealing the hidden viewer. Its
-regression uses static checks and simulated OS calls in CI; fresh native Windows
-and two-harness acceptance were unavailable for this patch.
+initial static/simulated CI coverage was followed by fresh acceptance against the
+unchanged official 0.3.1 wheel: native stop/crash/rollback and actual Codex/OpenCode
+ordinary-app workflows passed. The same signed-in child remained hidden.
 
 The 0.4 development build adds an optional [read-only preview on Mac](docs/viewer.md):
 `quietwing view --id minimal`. It opens without taking keyboard focus and never
-forwards viewer input to the guest. It can also show an isolated Linux desktop over existing SSH with `--host user@linux-machine`.
-Windows viewing remains unsupported.
+forwards viewer input to the guest. It can also show isolated Linux or Windows desktops over existing SSH. Use
+`--host user@linux-machine`, or add `--remote-platform windows` for Windows.
+The ParaDesk child stays connected and hidden; preview input is never forwarded.
 
 ## Pick your desktop
 

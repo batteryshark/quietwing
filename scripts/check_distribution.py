@@ -13,7 +13,7 @@ REQUIRED_RUNTIME = {
     "__init__.py", "cli.py", "CONTRACT.md", "session.schema.json", "docs/viewer.md",
     "linux/adapter.py", "windows/adapter.py", "windows/Worker.cs", "windows/NativeSupport.cs",
     "macos/adapter.py", "macos/vm_adapter.py", "macos/runtime_paths.py", "macos/build.py",
-    "macos/build_vm.py", "macos/viewer.py", "macos/linux_remote.py", "macos/build_viewer.py", "macos/Viewer.swift", "macos/VMHost.swift", "macos/VMCapture.swift", "macos/GuestBridge.swift",
+    "macos/build_vm.py", "macos/viewer.py", "macos/ssh_remote.py", "macos/build_viewer.py", "macos/Viewer.swift", "macos/VMHost.swift", "macos/VMCapture.swift", "macos/GuestBridge.swift",
     "macos/SessionGuard.swift", "macos/Worker.swift", "macos/NativeSession.swift",
     "macos/VMProbe.swift", "macos/VMProbe.entitlements", "macos/guest_bootstrap.sh",
 }
