@@ -4,6 +4,7 @@
 This separates default GUI/session/audio routing, not the same user's OS rights.
 """
 import argparse
+import base64
 import contextlib
 import ctypes
 import datetime as dt
@@ -288,14 +289,15 @@ class Parser(argparse.ArgumentParser):
 def parser():
     p=Parser(add_help=False);subs=p.add_subparsers(dest='command',required=True)
     subs.add_parser('doctor',add_help=False)
-    for name in ('start','attach','status','exec','capture','input','stop'):
+    for name in ('start','attach','status','exec','capture','input','stop','view'):
         s=subs.add_parser(name,add_help=False);s.add_argument('--id',required=True)
-        if name in ('status','exec','capture','input','stop'):s.add_argument('--expect-generation')
+        if name in ('status','exec','capture','input','stop','view'):s.add_argument('--expect-generation')
         if name=='start':
             s.add_argument('--width',type=int,default=1024);s.add_argument('--height',type=int,default=768);s.add_argument('--ttl',type=int,default=1800)
             s.add_argument('--replace-stopped',action='store_true')
         if name=='exec':s.add_argument('argv',nargs=argparse.REMAINDER)
         if name=='capture':s.add_argument('--output',required=True)
+        if name=='view':s.add_argument('--frame',action='store_true',required=True)
         if name=='input':
             g=s.add_mutually_exclusive_group(required=True);g.add_argument('--type');g.add_argument('--key');g.add_argument('--click',nargs=2,type=int);g.add_argument('--move',nargs=2,type=int);s.add_argument('--button',type=int,default=1)
     return p
@@ -310,6 +312,7 @@ def main(argv):
     if '--help' in help_tokens or '-h' in help_tokens:
         reply(True,result={'usage':{'doctor':'doctor','start':'start --id NAME [--width 1024 --height 768 --ttl 1800] [--replace-stopped]',
               'status':'status --id NAME [--expect-generation UUID]','exec':'exec --id NAME [--expect-generation UUID] -- PROGRAM ARG...',
+              'view':'view --frame --id NAME --expect-generation UUID (one isolated PNG in a JSON envelope)',
               'capture':'capture --id NAME [--expect-generation UUID] --output /absolute/image.png',
               'input':'input --id NAME [--expect-generation UUID] --type TEXT | --key KEY | --click X Y [--button 1] | --move X Y',
               'stop':'stop --id NAME [--expect-generation UUID]','attach':'unsupported: this adapter creates only owned isolated displays'},
@@ -397,7 +400,16 @@ def main(argv):
                     reply(True,public(current));return
                 time.sleep(.1)
             fail('STOP_TIMEOUT','Owned supervisor has not confirmed cleanup')
+        if args.command=='view' and args.expect_generation is None:
+            fail('generation_required','Read-only frames require an explicit expected generation')
         env=verify(meta)
+        if args.command=='view':
+            image=run(['ffmpeg','-nostdin','-hide_banner','-loglevel','error','-f','x11grab','-video_size',f'{meta["width"]}x{meta["height"]}',
+                       '-draw_mouse','0','-i',meta['display'],'-frames:v','1','-f','image2pipe','-vcodec','png','-threads','1','pipe:1'],env,timeout=8)
+            if len(image)>16*1024*1024 or not image.startswith(b'\x89PNG\r\n\x1a\n'):fail('INVALID_CAPTURE','Expected one bounded isolated PNG')
+            reply(True,public(meta),{'image':{'encoding':'base64','mimeType':'image/png','only_owned_guest_view':True,
+                'width':meta['width'],'height':meta['height'],'captured_at':time.time(),'sha256':hashlib.sha256(image).hexdigest(),
+                'data':base64.b64encode(image).decode('ascii')}});return
         if args.command=='exec':
             if args.argv[:1]!=['--']:fail('INVALID_EXEC','Use -- before the executable to preserve application arguments')
             command=args.argv[1:] if args.argv[:1]==['--'] else args.argv

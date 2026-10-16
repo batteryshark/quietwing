@@ -2,6 +2,42 @@
 
 Updated: 2026-10-15
 
+## Linux read-only viewer over SSH (0.4.0.dev1, 2026-10-15)
+
+- Review PR #2: https://github.com/batteryshark/quietwing/pull/2. Feature head
+  52063ff is installed/tested; merge awaits explicit authorization after CI, as
+  required by the earlier automatic approval review for main-branch merges.
+- User chose a Mac window for the Linux desktop over existing SSH. Windows is
+  reserved for DreamStudio and was not contacted. No host settings, credential
+  policy, listener or global installation changed; tests use private venvs.
+- `view --host HOST --id NAME [--remote-command PATH] [--remote-state-root PATH]`
+  reuses the image-only Mac panel. Linux `view --frame --expect-generation TOKEN`
+  verifies the private display/PID identities under existing lifetime locks and
+  returns one bounded PNG in JSON; no remote image file. Mac checks generation,
+  dimensions, SHA256 and provenance. SSH is noninteractive with no forwarding or
+  persistent master. Endpoint-specific state cannot collide with Mac VM viewers.
+- Busy capture clears/waits and retries only the pinned generation. Stop/expiry,
+  replacement or helper/SSH error clear/end refresh; explicit reopen required.
+  Closing does not stop work or refresh Linux TTL. Strengthened private path checks.
+- Installed wheel passed actual Codex/OpenCode Linux Mousepad workflows: six
+  verified isolated calls each, exact Unicode, final images and 183 viewer-state
+  samples, frames 70->101 and 101->114. Mac window never activated/keyed.
+- Live duplicate/stale open-close, session retention, eight-second busy lock,
+  simulated helper exit255/reopen, generation replacement and TTL cleanup passed.
+  Native panel passed all 12 local events, controlled focus/cursor invariants,
+  invalid image, waiting/recovery, end/close and real Linux pixel rendering.
+- Portable: 70 passed, one Windows-only simulated case skipped. Clean wheel/source
+  audit, independent rebuild/fresh install, all 34 bundled resources match. Own
+  Mac and dedicated Linux venv use tested 0.4.0.dev1 wheel; official assets unchanged.
+- Extra Mac VM Codex/OpenCode attempts encountered black frames and performed no
+  click/type/save. Guest-only Escape revealed idle lock screen. Not counted as
+  passes; ordinary-app rerun deferred until unlocked. Native VM source unchanged;
+  no credential read or login/power setting change. Mac guest remains running.
+- Automatic review rejected a proposed Linux human-desktop metadata monitor;
+  omitted, without alternative host observation. No unchanged Linux host-pointer/
+  focus claim. Private evidence: evidence/linux-viewer-2026-10-15. Dedicated MCP
+  sessions ended; test TTL session cleaned; current Linux demo and preview retained.
+
 ## Mac read-only viewer (0.4 development, 2026-10-15)
 
 - User requested a Mac-first read-only peek; personal Windows is reserved for
@@ -115,8 +151,10 @@ Updated: 2026-10-15
 
 ## Next action
 
+Review/authorize Linux SSH viewer PR #2 after its CI; verify main CI after merge.
 Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
-Prioritize explicit lifetimes and separately validated Linux/Windows viewers.
-The Mac read-only viewer is implemented in the 0.4 development build. Measure setup and game/GPU
+Prioritize explicit lifetimes and separately validated native Linux/Windows viewer windows.
+The Mac viewer can show Mac VMs and Linux over SSH in the 0.4 development build.
+Measure setup and game/GPU
 behavior separately; the historical obstruction is still unidentified.
 docs/status.md is the current capability/validation summary.

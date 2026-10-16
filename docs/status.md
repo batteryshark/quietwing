@@ -5,6 +5,43 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## 0.4.0.dev1: Linux viewing on Mac over SSH
+
+The same read-only Mac window can display an existing isolated Linux desktop.
+Use `view --host user@linux-machine --id NAME` and the Linux helper's executable
+and state-root options as needed. Matching development builds are required;
+see the [viewer guide](viewer.md). Windows remains unchanged and unsupported by
+this preview; a native Linux viewer window is not implemented.
+
+- Installed-wheel acceptance on Debian 13: actual Codex and OpenCode each saved
+  exact Unicode in ordinary Mousepad documents through six successful isolated
+  MCP calls. Saved files, tool events, generation and final screenshots were
+  independently checked. Across 183 Mac viewer-state samples, the panel stayed
+  nonkey/nonmain and never became foreground; frames advanced 70->101 and
+  101->114 during the two workflows. No human Linux desktop capture or input.
+- Live duplicate open, stale open/close, closing without stopping/extending the
+  Linux session, an eight-second busy action lock, explicit stop/replacement and
+  five-second TTL cleanup passed. Busy capture cleared and recovered on the same
+  generation. A fixed helper returning exit 255 cleared its image and required
+  explicit reopen; this simulated helper/SSH-style failure is not a tested
+  physical network outage. No automatic session creation or rebind occurred.
+- Native Mac panel regression passed 12 local input dispatches, nonactivation,
+  unchanged foreground/cursor during its controlled interval, invalid-image
+  clearing, waiting/recovery and ended/close cleanup. It displayed a real Linux
+  capture for visual QA. Portable checks: 70 passed, one Windows-only fake-OS
+  case skipped locally. Wheel/source audit, independent source rebuild and fresh
+  install passed; all 34 bundled runtime resources matched reviewed source.
+- Extra ordinary-app Mac VM reruns stopped at black captures before typing;
+  waking only the guest revealed its lock screen. Those two attempts are not
+  acceptance passes. Fresh Mac VM ordinary-app reruns are deferred until the
+  guest is unlocked; no login/power settings or credentials were changed. The
+  older 0.4.0.dev0 Mac VM evidence below remains historical. VM native source
+  is unchanged; the current native panel and Linux workflows passed above.
+- Automatic approval review rejected a proposed Linux main-desktop pointer/focus
+  monitor; it was omitted. No such host-activity monitoring or unchanged Linux
+  host cursor/focus claim is made for this run. Private evidence stays ignored
+  under evidence/linux-viewer-2026-10-15. Personal Windows was not contacted.
+
 ## 0.4 development: Mac read-only viewer
 
 The installed 0.4.0.dev0 wheel passed live Mac viewer acceptance on 2026-10-15.
@@ -112,7 +149,8 @@ reports preserve exact source/package identities; they are not new-name reruns.
 
 ## Current limits
 
-- The 0.4 development build has a Mac-only read-only preview; see [viewer](viewer.md).
+- The 0.4 development build has a read-only Mac window for Mac VMs and Linux over
+  SSH; see [viewer](viewer.md).
   No cross-platform viewer, takeover control, or agent pause/resume panel.
 - Windows requires an authenticated, connected, non-minimized ParaDesk viewer;
   no automatic sign-in/reconnect. From 0.3.1, cleanup preserves current viewer
@@ -130,7 +168,7 @@ reports preserve exact source/package identities; they are not new-name reruns.
 ## Next measured work
 
 1. Make lifetimes explicit for long tasks, with visible expiry and a safe policy.
-2. Extend read-only viewing to other backends with separate native acceptance.
+2. Add viewer windows on Linux itself and Windows with separate native acceptance.
    Keep takeover a separate explicit action.
 3. Measure nonintrusive viewer/setup behavior and game rendering separately.
 4. Expand computer-ctrl capabilities only with per-platform evidence.

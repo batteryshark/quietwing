@@ -54,6 +54,17 @@ import Darwin
         content.cacheDisplay(in: content.bounds, to: rendered)
         try rendered.representation(using: .png, properties: [:])!.write(to: root.appendingPathComponent("preview-render.png"))
         chmod(root.appendingPathComponent("preview-render.png").path, 0o600)
+        // An invalid replacement must clear the old pixels too.
+        try Data("bad image".utf8).write(to: root.appendingPathComponent("frame.png"))
+        host.write("state.json", ["state":"watching", "frames":2, "heartbeat":Date().timeIntervalSince1970, "capturedAt":Date().timeIntervalSince1970])
+        host.tick();precondition(host.pixels.image == nil)
+        try imageData.write(to: root.appendingPathComponent("frame.png"))
+        host.write("state.json", ["state":"watching", "frames":3, "heartbeat":Date().timeIntervalSince1970, "capturedAt":Date().timeIntervalSince1970])
+        host.tick();precondition(host.pixels.image != nil)
+        host.write("state.json", ["state":"waiting", "frames":3, "heartbeat":Date().timeIntervalSince1970])
+        host.tick();precondition(host.pixels.image == nil)
+        host.write("state.json", ["state":"watching", "frames":4, "heartbeat":Date().timeIntervalSince1970, "capturedAt":Date().timeIntervalSince1970])
+        host.tick();precondition(host.pixels.image != nil)
         // The preview clears when a session ends, even if a last image remains on disk.
         host.write("state.json", ["state":"ended", "frames":1, "heartbeat":Date().timeIntervalSince1970])
         host.tick();precondition(host.pixels.image == nil)

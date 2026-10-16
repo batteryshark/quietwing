@@ -122,15 +122,21 @@ final class PreviewPixels: NSView {
             panel.close(); NSApplication.shared.terminate(nil); return
         }
         let frameAge = Date().timeIntervalSince1970 - (state?["capturedAt"] as? Double ?? 0)
-        if phase == "ended" || phase == "closed" || (phase == "watching" && frameAge > 3) {
+        if phase == "waiting" {
+            pixels.image = nil
+            label.stringValue = "Waiting for the agent's desktop · Read only"
+        } else if phase == "ended" || phase == "closed" || (phase == "watching" && frameAge > 3) {
             pixels.image = nil
             label.stringValue = "Session unavailable · Close and reopen to view again · Read only"
         } else if phase == "watching", let count = state?["frames"] as? Int {
-            if count != frameCount, let data = try? read("frame.png", limit: 16*1024*1024), let image = NSImage(data: data) {
-                pixels.image = image; frameCount = count
+            if count != frameCount {
+                pixels.image = nil
+                if let data = try? read("frame.png", limit: 16*1024*1024), let image = NSImage(data: data) {
+                    pixels.image = image; frameCount = count
+                }
             }
             let at = Date(timeIntervalSince1970: state?["capturedAt"] as? Double ?? 0)
-            label.stringValue = "Read only · Updated " + DateFormatter.localizedString(from: at, dateStyle: .none, timeStyle: .medium)
+            label.stringValue = pixels.image == nil ? "Waiting for a displayable guest image · Read only" : "Read only · Updated " + DateFormatter.localizedString(from: at, dateStyle: .none, timeStyle: .medium)
         }
         becameFrontmost = becameFrontmost || NSWorkspace.shared.frontmostApplication?.processIdentifier == getpid()
         write("window.json", ["pid": getpid(), "windowId": panel.windowNumber, "visible": panel.isVisible,

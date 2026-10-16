@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0.dev1 — unreleased
+
+- Read-only Linux viewing on Mac over existing SSH: `view --host HOST --id NAME`
+  with an optional remote executable/state root. Reuses the image-only Mac panel;
+  no forwarding, remote viewer, listener, host-key acceptance or guest lifecycle action.
+- Linux `view --frame` returns one generation-checked, bounded PNG as JSON; no
+  remote capture file. Mac checks identity, provenance, dimensions and digest.
+- Busy agent actions clear/wait and retry only the pinned capture; lost SSH,
+  expiry and replacement end refresh. Native window clears undecodable frames.
+- Enforce private nonsymlink viewer state at every path component.
+
 ## 0.4.0.dev0 — unreleased
 
 - Optional Mac VM read-only viewer: `quietwing view --id NAME`, `--status`,

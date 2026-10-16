@@ -76,3 +76,18 @@ Acceptance observers default to host display `:0`, the current user's `~/.Xautho
 For installed-package acceptance, `DESKHELPER_TEST_COMMAND_JSON` can name the installed entry point (a JSON string array), `DESKHELPER_TEST_ADAPTER` supplies its on-disk adapter resource for the source hash, and `DESKHELPER_TEST_EVIDENCE_ROOT` places artifacts outside the installed package. For example, set the command to `["/path/to/venv/bin/quietwing"]` and run the same two stages. The test source defaults still invoke the adjacent adapter directly.
 
 See [INTEGRATION.md](INTEGRATION.md) for the portable current validation summary, including actual Codex/OpenCode MCP runs, installed-wheel acceptance, source provenance and cleanup. Detailed raw evidence is optional and ignored by the package repository.
+
+## Peek from a Mac
+
+A matching 0.4 development build can show this isolated desktop in QuietWing's
+nonactivating, read-only Mac window over existing SSH. On Mac, run
+`quietwing view --host user@linux-machine --id work --remote-command /absolute/path/to/quietwing`
+and include `--remote-state-root` if this Linux session uses a custom state root.
+No Linux viewer, VNC service, firewall change or X11 forwarding is required.
+Closing the preview leaves the session running; its fixed TTL is unchanged.
+See the [viewer guide](../docs/viewer.md).
+
+The Linux transport operation is `quietwing view --frame --id work
+--expect-generation UUID`. It returns one base64 PNG in the usual JSON envelope
+after generation, process and display verification under the lifetime lock.
+It writes no image on Linux and cannot start a desktop or deliver input.
