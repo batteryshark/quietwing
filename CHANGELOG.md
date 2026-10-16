@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — 0.4.2.dev0
+
+- Opt-in Mac SSH viewer `--follow` waits for an agent's verified Linux/Windows
+  attachment and follows a replacement in the same image-only window. Fixed
+  target identity, generation-pinned capture, bounded retry/backoff and image
+  clearing remain; no session acquisition, RDP reconnect or input forwarding.
+- Keep default pinned previews and computer-ctrl generation preconditions.
+  Close wins over in-flight discovery/capture and cancels preview retries.
+- Record multi-platform worker pooling as future research, outside this feature.
+
 ## 0.4.1 — 2026-10-16
 
 - Read ParaDesk live status over its existing local pipe during Windows readiness

@@ -1,4 +1,4 @@
-"""Generation-pinned capture broker; the native window receives image files only."""
+"""Read-only capture broker; the native window receives image files only."""
 from __future__ import annotations
 import fcntl, hashlib, json, os, re, stat, subprocess, sys, time, uuid
 from contextlib import contextmanager
@@ -13,6 +13,15 @@ except ImportError:
 
 HERE = Path(__file__).resolve().parent
 MAX_IMAGE = 16 * 1024 * 1024
+# Only availability/lifetime failures permit read-only rediscovery. Malformed
+# protocol, invalid pixels and identity/provenance failures end refresh.
+FOLLOW_RETRY = frozenset({
+    'session_unavailable', 'generation_changed', 'remote_unavailable', 'remote_timeout',
+    'SESSION_BUSY', 'BUSY', 'TIMEOUT', 'SESSION_NOT_FOUND', 'SESSION_NOT_RUNNING',
+    'SESSION_NOT_READY', 'SESSION_STALE', 'WORKER_UNAVAILABLE', 'REATTACH_REQUIRED',
+    'AUTHENTICATED_SESSION_REQUIRED', 'PROVIDER_UNAVAILABLE', 'SESSION_UNAVAILABLE',
+    'DESKTOP_UNAVAILABLE', 'ADAPTER_ERROR',
+})
 
 class ViewerError(vm.VMError):
     def __init__(self, code, message): self.code, self.message = code, message; super().__init__(message)
@@ -100,7 +109,9 @@ def snapshot(root):
     info, run = item
     try: value = read_json(run / 'state.json')
     except FileNotFoundError: value = {'state': 'starting'}
-    value.update(id=info['id'], generation=info['generation'], readOnly=True, viewerRun=str(run), brokerAlive=alive(run))
+    follow = info.get('follow') is True
+    value.update(id=info['id'], generation=value.get('generation') if follow else info['generation'],
+        follow=follow, readOnly=True, viewerRun=str(run), brokerAlive=alive(run))
     try: value['window'] = read_json(run / 'window.json')
     except FileNotFoundError: pass
     if not value['brokerAlive']: value['state'] = 'closed'
@@ -147,6 +158,8 @@ def close_viewer(root, expected=None):
     item = binding(root)
     if item is None: return {'state': 'closed', 'readOnly': True}
     info, run = item
+    if expected is not None and info.get('follow'):
+        raise ViewerError('invalid_arguments', 'A following preview is not generation-pinned; close it without --expect-generation')
     if expected is not None and info['generation'] != expected:
         raise ViewerError('generation_changed', 'Viewer belongs to a different generation')
     write_json(run / 'close.json', {'close': True})
@@ -159,7 +172,14 @@ def close_viewer(root, expected=None):
     (run / 'frame.png').unlink(missing_ok=True)
     return snapshot(root)
 
-def open_viewer(root, name, expected=None, source=None):
+def open_viewer(root, name, expected=None, source=None, follow=False):
+    if follow:
+        if not source or expected is not None:
+            raise ViewerError('invalid_arguments', '--follow requires an SSH target without --expect-generation')
+        # The broker discovers an existing attachment. Opening while absent only
+        # creates a waiting Mac preview, with no remote lifecycle operation.
+        ssh_remote.validate(source)
+        return launch_viewer(root, {'id': name, 'generation': None, 'source': source, 'follow': True})
     if source:
         current=ssh_remote.call(source,'status',name,expected)
         info={'id':name,'generation':current['session']['generation'],'source':source}
@@ -180,7 +200,9 @@ def launch_viewer(root,info):
     name=info['id']
     existing = binding(root)
     if existing and alive(existing[1]):
-        if existing[0]['generation'] != info['generation']:
+        if bool(existing[0].get('follow')) != bool(info.get('follow')):
+            raise ViewerError('viewer_mode_changed', 'Close the current Mac preview before changing its follow mode; the remote session is unaffected')
+        if not info.get('follow') and existing[0]['generation'] != info['generation']:
             raise ViewerError('viewer_generation_changed', 'Close the previous viewer before viewing the replacement session')
         return snapshot(root)
     app = app_path()
@@ -212,7 +234,7 @@ def command(args):
         with lock(root / 'lifecycle.lock'):
             if args.viewer_status: value = snapshot(root)
             elif args.close_viewer: value = close_viewer(root, args.expect_generation)
-            else: value = open_viewer(root, args.id, args.expect_generation, source)
+            else: value = open_viewer(root, args.id, args.expect_generation, source, args.follow)
     return {'ok': True, 'platform': 'macos', 'result': {'viewer': value}}
 
 def broker(name, token, root=None):
@@ -221,7 +243,10 @@ def broker(name, token, root=None):
     if item is None or item[0]['token'] != token: raise ViewerError('viewer_changed', 'Viewer launch binding changed')
     info, run = item
     with lock(run / 'broker.lock', False):
-        state = {'state': 'starting', 'frames': 0, 'readOnly': True, 'heartbeat': time.time()}
+        follow = info.get('follow') is True
+        state = {'state': 'waiting' if follow else 'starting', 'frames': 0, 'readOnly': True, 'heartbeat': time.time()}
+        if follow: state['generation'] = None
+        next_attempt, retry_delay = 0, 1
         def publish():
             state['heartbeat'] = time.time();write_json(run / 'state.json', state)
         publish()
@@ -230,15 +255,39 @@ def broker(name, token, root=None):
                 capture_output=True, check=True, timeout=10)
             while not (run / 'close.json').exists():
                 began = time.monotonic()
-                if state['state'] in ('starting', 'watching', 'waiting'):
+                if state['state'] in ('starting', 'watching', 'waiting') and began >= next_attempt:
                     try:
-                        state.update(capture_frame(info, run), state='watching', frames=state['frames'] + 1)
-                        state.pop('errorCode',None);state.pop('message',None)
+                        if follow and info['generation'] is None:
+                            # Rediscover only after a failure, never on every frame:
+                            # Windows status can extend its worker inactivity timer.
+                            current = ssh_remote.call(info['source'], 'status', info['id'])
+                            info['generation'] = current['session']['generation']
+                            publish()  # Separate status/frame deadlines must not starve the UI heartbeat.
+                        if (run / 'close.json').exists(): break
+                        details = capture_frame(info, run)
+                        # A close arriving during an in-flight query wins. Never
+                        # publish replacement pixels after the user closes.
+                        if (run / 'close.json').exists(): break
+                        state.update(details, state='watching', frames=state['frames'] + 1)
+                        if follow: state['generation'] = info['generation']
+                        retry_delay = 1
+                        state.pop('errorCode',None);state.pop('message',None);state.pop('retryIn',None)
                     except (OSError, vm.VMError, ValueError, KeyError) as error:
                         (run / 'frame.png').unlink(missing_ok=True)
                         code=getattr(error,'code','session_unavailable')
-                        state.update(state='waiting' if code=='SESSION_BUSY' else 'ended',
-                            message='Waiting for the pinned session' if code=='SESSION_BUSY' else 'Session ended or unavailable. Close and reopen to view it again.', errorCode=code)
+                        retry = follow and code in FOLLOW_RETRY
+                        if follow:
+                            if code != 'SESSION_BUSY': info['generation'] = None
+                            state['generation'] = info['generation']
+                            for key in ('capturedAt', 'remoteCapturedAt', 'width', 'height'): state.pop(key, None)
+                        state.update(state='waiting' if retry or code=='SESSION_BUSY' else 'ended',
+                            message=('Waiting for the agent to attach; no session will be started' if retry else
+                                'Waiting for the pinned session' if code=='SESSION_BUSY' else
+                                'Session ended or unavailable. Close and reopen to view it again.'), errorCode=code)
+                        if retry:
+                            state['retryIn'] = retry_delay
+                            next_attempt = time.monotonic() + retry_delay
+                            retry_delay = min(retry_delay * 2, 30)
                 publish()
                 while time.monotonic() - began < 1 and not (run / 'close.json').exists(): time.sleep(.1)
         finally:

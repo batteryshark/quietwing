@@ -31,6 +31,10 @@ Remote executable/state-root options select the existing agent target; use
 resumes, attaches, reconnects or signs in to a desktop. Windows keeps ParaDesk
 connected and hidden, including after helper stop, crash or rollback.
 
+The development branch adds SSH preview `--follow` to wait for an agent's next
+verified attachment in the same Mac window; [usage and limits](docs/viewer.md#leave-an-ssh-preview-open-across-agent-attachments).
+Possible cross-platform worker pools are recorded as [future work](docs/future-work.md).
+
 ## Pick your desktop
 
 | Host | Agent desktop | Everyday behavior |

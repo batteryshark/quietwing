@@ -106,11 +106,12 @@ class RemoteViewer(unittest.TestCase):
         def capture(source,name,generation):
             calls.append((name,generation))
             if len(calls)==1:raise remote.RemoteError('SESSION_BUSY','busy')
-            viewer.write_json(run/'close.json',{'close':True})
             return PNG,{'capturedAt':time.time(),'width':320,'height':240}
         states=[];original=viewer.write_json
         def record(path,value):
-            if path.name=='state.json':states.append(value['state'])
+            if path.name=='state.json':
+                states.append(value['state'])
+                if value.get('frames') == 1:original(run/'close.json',{'close':True})
             original(path,value)
         with patch.object(remote,'frame',side_effect=capture),patch.object(viewer.subprocess,'run'),patch.object(viewer,'write_json',side_effect=record):
             viewer.broker('work',token,root)
