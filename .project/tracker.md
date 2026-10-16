@@ -2,7 +2,7 @@
 
 Updated: 2026-10-15
 
-## 0.4.0 release (2026-10-15, publication preparation)
+## 0.4.0 release (2026-10-15, published)
 
 - User authorized remaining Mac checks, CI and publication. After automatic review
   required specific guest-credential approval, user explicitly authorized private
@@ -19,7 +19,12 @@ Updated: 2026-10-15
   no fresh remote native run or Windows access claimed for this version-only release.
 - Portable 93 passed/one Windows-only simulated skip. Clean archives, independent
   source rebuild/fresh wheel/source installs passed; all 34 resources match source
-  and the live-tested candidate. Exact-tag CI/draft asset review remain release gates.
+  and the live-tested candidate. Main release CI 38834233351 and exact-tag CI
+  38834328744 passed all seven jobs; draft workflow 38834328177 passed.
+- Published experimental https://github.com/batteryshark/quietwing/releases/tag/v0.4.0
+  at 33c6a90. Public unauthenticated downloads/checksums, source rebuild and fresh
+  installs passed; all 34 resources match. Own Mac venv uses the official wheel.
+  Wheel SHA256 df5e72e61a4109c585641892965a2f89e93711897f351263cf8564bceebeafb0.
 - Private evidence: evidence/release-0.4.0. Same signed-in guest and read-only
   preview retained; no host settings, guest disks/identity or policy changes.
 
@@ -216,6 +221,7 @@ Updated: 2026-10-15
 
 ## Next action
 
-Finish reviewed 0.4.0 archive validation and exact-tag CI, then publish the authorized
-GitHub release and verify its public assets. Retain the signed-in Mac guest/preview.
-Native viewer windows on Linux/Windows and game/GPU validation remain future work.
+0.4.0 is published and verified. Retain final main/consumer documentation CI in the
+private release evidence and the signed-in Mac guest/preview for inspection.
+Native viewer windows on Linux/Windows, explicit lifetimes and game/GPU validation
+remain future work. The original historical Windows obstruction is unidentified.

@@ -7,6 +7,15 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 
 ## 0.4.0 release validation
 
+[Published experimental v0.4.0](https://github.com/batteryshark/quietwing/releases/tag/v0.4.0)
+at release commit `33c6a90`. [Exact-tag CI](https://github.com/batteryshark/quietwing/actions/runs/38834328744)
+passed all seven jobs, including both fresh Mac viewer compilations; the
+[draft build](https://github.com/batteryshark/quietwing/actions/runs/38834328177)
+also passed. Public wheel/source downloads and SHA256SUMS were verified without
+authentication, independently rebuilt and fresh installed. All 34 runtime
+resources match reviewed source and the live-tested Mac candidate. No release
+assets or historical tags were replaced.
+
 The installed 0.4.0 release candidate passed fresh Mac acceptance on 2026-10-15.
 Codex and OpenCode each saved exact Unicode in TextEdit through six verified
 isolated MCP calls. Files, tool events, pinned generation and final images were
@@ -32,8 +41,7 @@ deferrals recorded below; those earlier failed attempts remain historical.
 Local portable checks: 93 passed and one Windows-only simulated case skipped.
 Clean release archives passed auditing, independent source rebuild and fresh
 wheel/source installs; all 34 runtime resources match the live-tested candidate
-and reviewed source. Exact-tag hosted CI and reviewed public asset checks are
-publication gates. Private evidence stays under evidence/release-0.4.0.
+and reviewed source. Exact-tag hosted CI and reviewed public asset checks passed, as linked above. Private evidence stays under evidence/release-0.4.0.
 
 ## Development acceptance history
 
