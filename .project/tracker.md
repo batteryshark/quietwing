@@ -29,8 +29,10 @@ Updated: 2026-10-15
   monitor. Mac VM ordinary-app reruns still deferred while guest idle-locked;
   native VM source unchanged. No lock/disconnect/physical outage induced on Windows.
 - Portable 93 passed/one Windows-only simulated case skipped; clean wheel/source,
-  rebuild/fresh install and all 34 runtime resources matched. Feature branch
-  codex/windows-ssh-viewer awaits review/CI. Default published release remains 0.3.1.
+  rebuild/fresh install and all 34 runtime resources matched. PR #3:
+  https://github.com/batteryshark/quietwing/pull/3; tested code 1bc2107 awaits final
+  CI and explicit merge authorization. Default published release remains 0.3.1;
+  its notes now include the completed native follow-up, with tag/assets unchanged.
 - Private evidence: evidence/windows-viewer-2026-10-15. Only Windows demo worker/
   saved editor and preview retained; same native child/login. Dedicated direct
   MCPs ended, other test bindings/tasks removed; Linux demo/preview retained.
@@ -186,7 +188,7 @@ Updated: 2026-10-15
 
 ## Next action
 
-Review Windows SSH viewer branch after final PR CI; merge requires explicit approval.
+Review/authorize Windows SSH viewer PR #3 after final CI; verify main CI after merge.
 Linux SSH viewer PR #2 main CI passed (38828432131); consumer main CI passed (38828448100).
 Repeat the extra Mac VM app workflows when the guest is unlocked.
 Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
