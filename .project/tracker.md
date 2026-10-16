@@ -20,8 +20,14 @@ Updated: 2026-10-16
   Windows provider/worker/login/install/settings and DreamStudio work untouched.
 - Future cross-platform worker pools recorded in docs/future-work.md; evaluate
   a separate scheduler/leases project and RDS backend later, no implementation now.
-- Two-harness and hosted-CI receipts pending. No new official release.
-  Private receipts: evidence/viewer-follow-2026-10-16. Next: finish validation/PR.
+- Actual Codex/OpenCode each ran installed Linux and Windows fixtures: all four
+  passed, 387 nonactivating window observations. Initial OpenCode runner expired
+  after Linux passed while waiting for inference; resumed only Windows, which
+  passed. No assertion failure or native desktop lifecycle claimed.
+- Feature CI 38932163143 passed all seven jobs, including fresh Mac viewer builds;
+  archive audit now requires the new source tests. No new official release.
+  Private receipts: evidence/viewer-follow-2026-10-16. Next: review/merge feature
+  PR after final CI; official release remains 0.4.1.
 
 ## 0.4.1 release (2026-10-16, published)
 

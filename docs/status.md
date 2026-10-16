@@ -20,7 +20,13 @@ The installed candidate's real panel also survived controlled Linux/Windows
 attachment and transport replacement in the same window, clearing pixels while
 waiting and stopping requests on close. These lifecycle/transport replies are
 local synthetic fixtures, not native Windows or Linux reconnect tests.
-Fresh wheel/source audits and independent source rebuild/install passed.
+Actual Codex/OpenCode each ran the installed Linux and Windows fixtures: four
+passes, 387 observations with nonkey/nonmain/nonfrontmost windows. The first
+OpenCode outer runner expired after the Linux pass while waiting for inference;
+resuming only its remaining Windows check passed. No assertion failed.
+Fresh wheel/source audits and independent source rebuild/install passed; all
+35 runtime resources match the independent rebuild. [Feature CI](https://github.com/batteryshark/quietwing/actions/runs/38932163143)
+passed all seven jobs, including fresh Mac viewer compilation.
 A separate real Windows peek uses only existing read-only status/frame operations;
 the Mac preview is left open in follow mode. No native RDP reconnect, worker
 reattachment, remote installation or session/settings change was exercised while
