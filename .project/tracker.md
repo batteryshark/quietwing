@@ -2,21 +2,26 @@
 
 Updated: 2026-10-16
 
-## 0.4.2 release preparation (2026-10-16)
+## 0.4.2 release (2026-10-16, published)
 
-- User authorized merges/publication. PR #4 merged as 7d49521; stacked #5 rebased
-  with the entire accepted tree unchanged, seven fresh jobs 38963532399 passed,
-  then merged as bf3a3f1. Consumer PR #2 merged as 84124c7.
-- Version/docs promoted to 0.4.2. Local portable checks: 126 tests, 123 pass and
-  three Windows-native Mac skips. Fresh wheel/source audits, clean installs and
-  independent rebuild passed; 37 resources match source/rebuild, 24 executable
-  backend resources exactly match the accepted dev1 wheel. Prior native and
-  two-harness acceptance applies; no fresh native rerun claimed.
-- Release work never accesses Windows, its workers, viewer or settings while
-  DreamStudio tests. No machine installation or automatic worker replacement.
-  Private receipts: evidence/release-0.4.2 and /private/tmp/quietwing-release-042.
-- Next: exact release-commit/tag CI, reviewed draft assets and authorized publish;
-  verify public downloads/checksums/fresh installs, then record publication.
+- Published experimental MIT https://github.com/batteryshark/quietwing/releases/tag/v0.4.2
+  at dd638e1. User-authorized PR #4 merged as 7d49521, #5 as bf3a3f1 and consumer
+  PR #2 as 84124c7. The stacked #5 rebase preserved the entire accepted tree;
+  seven fresh jobs 38963532399 passed before merge.
+- Release-commit CI 38963912167 and exact-tag CI 38964091707 passed all seven jobs;
+  draft workflow 38964115932 passed. Consumer merge CI 38963490737 passed seven.
+  Local portable: 126 tests, 123 pass/three Windows-native Mac skips. Fresh wheel/
+  source audit, anonymous public assets/checksums, clean installs and independent
+  rebuild passed. All 37 resources match tag/rebuild; 24 executable backend
+  resources match the native-tested dev1 candidate. Prior native/two-harness
+  acceptance applies; no fresh Windows native rerun is claimed.
+- Public wheel SHA256 24a6f92a3d04f51cdb7bf57b9de4ed3536d9f3110e3c58125d6c7e1ac339b5e3.
+  No Windows access, installation, lifecycle/viewer/input/settings change during
+  release while DreamStudio tests. Existing dev1 installation/worker work retained;
+  no automatic package/controller/worker update, PyPI upload or older-tag change.
+- Private receipts: evidence/release-0.4.2. Next: normal isolated use; coordinate
+  any future Windows package update with its owner after current work is saved.
+  Original-game compatibility remains DreamStudio's separate controls pilot.
 
 ## Bounded Windows held keys (0.4.2.dev1, 2026-10-16)
 
@@ -47,9 +52,9 @@ Updated: 2026-10-16
   edits. Main-desktop cctl install untouched; staged consumer tested separately.
 - DreamStudio lead notified ready with fresh-attach syntax and honest timing/
   cleanup limits. Its ordinary-controls pilot/legacy-debugger hold remains its
-  gate. No further Windows work planned. No official release publication.
+  gate. No further Windows work planned. Candidate later promoted to 0.4.2 above.
 - Reviews: QuietWing PR #5 (stacked on #4), consumer PR #2. Private receipts:
-  evidence/held-keys-2026-10-16. Next: final CI/review/merge; original-game pilot
+  evidence/held-keys-2026-10-16. PRs merged and promoted to 0.4.2 above; original-game pilot
   remains outside this helper acceptance.
 
 ## SSH viewer follow mode (0.4.2.dev0, 2026-10-16)
@@ -78,8 +83,8 @@ Updated: 2026-10-16
   passed. No assertion failure or native desktop lifecycle claimed.
 - Feature CI 38932163143 passed all seven jobs, including fresh Mac viewer builds;
   archive audit now requires the new source tests. No new official release.
-  Private receipts: evidence/viewer-follow-2026-10-16. Next: review/merge feature
-  PR after final CI; official release remains 0.4.1.
+  Private receipts: evidence/viewer-follow-2026-10-16. PR #4 merged;
+  the feature is included in official 0.4.2 above.
 
 ## 0.4.1 release (2026-10-16, published)
 

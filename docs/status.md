@@ -7,17 +7,22 @@ sole executable are `quietwing`. Computer-ctrl's integration is
 
 ## 0.4.2 release validation — 2026-10-16
 
-Version 0.4.2 promotes the accepted 0.4.2.dev1 candidate: opt-in SSH viewer
+[Published experimental v0.4.2](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2)
+at `dd638e1` promotes the accepted 0.4.2.dev1 candidate: opt-in SSH viewer
 follow mode and bounded Windows held keys. Its executable backend resources
 are byte-identical to the candidate that passed the native and actual
 Codex/OpenCode checks recorded below. The stacked held-key branch was rebased
 onto merged viewer work with its complete file tree unchanged before final CI.
 
-Release preparation passed all 126 portable tests eligible on Mac (123 passed,
-three Windows-only cases skipped), fresh archive audits, independent source
-rebuild and clean wheel/source installations. All 37 runtime resources match
+Portable checks ran 126 tests on Mac (123 passed, three Windows-only cases
+skipped). Fresh archive audits, independent source rebuild and clean wheel/source
+installations passed. All 37 runtime resources match
 source and the independent rebuild; all 24 executable backend resources match
-the native-tested candidate. Hosted cross-platform CI gates publication. It does not
+the native-tested candidate. [Release-commit CI](https://github.com/batteryshark/quietwing/actions/runs/38963912167)
+and [exact-tag CI](https://github.com/batteryshark/quietwing/actions/runs/38964091707)
+passed seven jobs each; the [draft build](https://github.com/batteryshark/quietwing/actions/runs/38964115932)
+passed. Reviewed notes/assets, anonymous public downloads/checksums and fresh
+public wheel/source rebuild/install checks passed. Release work did not
 access or update the occupied Windows machine, replace a worker or interrupt
 DreamStudio. No fresh native Windows acceptance is claimed for this version
 promotion. The prior candidate's installed Windows worker code remains in place.
