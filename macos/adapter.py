@@ -99,6 +99,9 @@ def parse(argv):
     parser.add_argument('--window-id', type=int)
     parser.add_argument('--display-id', type=int)
     parser.add_argument('--cwd')
+    parser.add_argument('--host', help='Show an isolated Linux desktop over existing SSH')
+    parser.add_argument('--remote-command', default='quietwing', help='One remote QuietWing executable path')
+    parser.add_argument('--remote-state-root', help='Private Linux session state root')
     viewer = parser.add_mutually_exclusive_group()
     viewer.add_argument('--close', dest='close_viewer', action='store_true', help='Close only the read-only viewer')
     viewer.add_argument('--status', dest='viewer_status', action='store_true', help='Inspect only viewer state')
@@ -133,11 +136,13 @@ def parse(argv):
     if has_literal_text:
         args.text = literal_text
     args.argv = executable
-    if args.command != 'view' and (args.close_viewer or args.viewer_status):
+    if args.command != 'view' and (args.close_viewer or args.viewer_status or args.host or args.remote_command != 'quietwing' or args.remote_state_root):
         raise Failure('invalid_arguments', '--close/--status are view options only')
+    if not args.host and (args.remote_command != 'quietwing' or args.remote_state_root):
+        raise Failure('invalid_arguments', 'Remote options require view --host')
     if args.command == 'view' and args.backend != 'vm':
         raise Failure('viewer_unsupported', 'Read-only viewing supports only the Mac VM backend')
-    if args.command != 'doctor' and (not args.id or not NAME.fullmatch(args.id)):
+    if args.command != 'doctor' and (not args.id or not (re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,47}',args.id) if args.host else NAME.fullmatch(args.id))):
         raise Failure('invalid_id', 'Use a 1–64 character session ID containing letters, digits, underscore or hyphen.')
     if args.expect_generation is not None:
         if args.command in ('doctor','start') or not args.expect_generation or len(args.expect_generation)>256:

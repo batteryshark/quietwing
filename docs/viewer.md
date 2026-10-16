@@ -1,6 +1,7 @@
-# Read-only Mac viewer
+# Read-only viewer on Mac
 
-Available in the 0.4 development build, for an already provisioned Mac VM.
+Available in the 0.4 development build, for a local Mac VM or an already running
+isolated Linux desktop over SSH. The preview window opens on your Mac.
 Use the QuietWing executable from the same environment that computer-ctrl uses.
 The viewer is optional; computer-ctrl's MCP interface and configuration do not change.
 
@@ -40,7 +41,49 @@ retained for troubleshooting. A crashed broker's window clears a stale image
 after three seconds and exits after fifteen seconds without a heartbeat.
 Frames can pause during capture or guest work; this is a preview, not a video
 stream. CPU, memory and screen space are still shared with the host.
-Windows and Linux viewing remain unsupported by this command.
+Windows viewing and a viewer window running on Linux itself remain unsupported.
+
+## Linux over SSH
+
+Use matching 0.4 development builds on Mac and Linux. Existing Linux prerequisite
+packages and an already trusted, noninteractive SSH login are required. The viewer
+does not install software or request login, change SSH configuration or accept
+new host keys. First start the Linux isolated session through its normal
+computer-ctrl workflow or explicit QuietWing start; viewing never acquires it.
+
+```sh
+quietwing view --host user@linux-machine --id work \
+  --remote-command /home/user/quietwing/venv/bin/quietwing
+# Use the same target options with --status or --close.
+```
+
+If the Linux target uses a nondefault `DESKHELPER_STATE_ROOT`, also pass
+`--remote-state-root /absolute/private/state`. The host, executable, state root
+and ID identify a separate preview. Mac VM and different Linux targets cannot
+reuse each other's preview. Standard SSH host aliases resolve through existing
+SSH config; command/path arguments are quoted literally. No X11/agent/port
+forwarding, persistent SSH master or new listener is created.
+
+Linux `view --frame --id work --expect-generation TOKEN` is the read-only
+transport leaf. It checks the same generation, process birth identities, private
+runtime and X server ownership as normal capture, under the existing lifetime
+locks. It returns one bounded PNG in a versioned JSON envelope with dimensions,
+time and SHA-256; it writes no remote frame file. The Mac verifies the envelope,
+generation, dimensions and digest before displaying it. Remote clock skew cannot
+make an old connection appear fresh: preview age is timed locally per completed
+capture. SSH carries only status/frame requests from the viewer; the image app
+has no network or input code.
+
+A long agent action can hold the Linux capture lock. The preview then clears and
+waits, retrying only read-only capture against the same generation. Stop, expiry,
+identity changes, invalid frames or lost SSH clear the image and end refresh;
+close and explicitly reopen after recovery. No input is replayed, session is
+restarted, or replacement generation followed. Viewing does not extend Linux's
+fixed TTL. Closing disconnects the preview and leaves Linux work running.
+The current frame is private on Mac under `viewers/linux-ssh/TARGET_HASH/NAME/TOKEN`
+and removed on close; small diagnostic metadata remains. Cadence depends on SSH
+and capture latency, roughly one frame per second on the accepted setup. This
+is not a video or remote-control client.
 
 ## Native UI regression
 

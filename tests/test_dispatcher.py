@@ -69,12 +69,12 @@ class DispatcherContract(unittest.TestCase):
         self.assertEqual(d['generation'], 'starting-123')
         self.assertFalse(any(d['capabilities'].values()))
 
-    def test_view_dispatch_is_mac_only_and_preserves_generation_flags(self):
+    def test_view_dispatch_excludes_windows_and_preserves_generation_flags(self):
         self.adapter('import json,sys\nprint(json.dumps({"ok":True,"platform":' + repr(PLATFORM) + ',"result":{"argv":sys.argv[1:]}}))\n')
-        args = ['view', '--id', 'work', '--status', '--expect-generation', 'live-123']
+        args = ['view', '--id', 'work', '--expect-generation', 'live-123', *(['--status'] if PLATFORM=='macos' else ['--frame'])]
         response = self.call(*args)
         value = json.loads(response.stdout)
-        if PLATFORM == 'macos':
+        if PLATFORM != 'windows':
             self.assertEqual(response.returncode, 0)
             self.assertEqual(value['result']['argv'], args)
         else:

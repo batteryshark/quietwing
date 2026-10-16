@@ -39,7 +39,10 @@ paths must be new files.
 
 The 0.4 development build adds a [read-only Mac viewer](viewer.md):
 run `quietwing build --viewer` once, then `quietwing view --id work` while the
-provisioned guest runs. Closing the viewer leaves the agent working. It does not
+provisioned guest runs. For Linux, use `view --host user@linux-machine --id work`
+and the remote executable/state-root options from the viewer guide. The window
+opens on Mac over existing SSH; viewing does not extend Linux TTL.
+Closing the viewer leaves the agent working. It does not
 start a guest, take keyboard focus or forward input. The ID must match the
 QuietWing ID in your target configuration, which can differ from the cctl name.
 
