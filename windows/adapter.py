@@ -162,12 +162,12 @@ def restrict_directory(path):
         if token:kernel.CloseHandle(token)
 
 def compile_worker():
-    digest=hashlib.sha256(b''.join((HERE/name).read_bytes() for name in ('Worker.cs','NativeSupport.cs','ProviderStatus.cs'))).hexdigest(); dest=state_root().parent/'cache'/'windows'/digest; exe=dest/'Worker.exe'
+    digest=hashlib.sha256(b''.join((HERE/name).read_bytes() for name in ('Worker.cs','NativeSupport.cs','ProviderStatus.cs','KeyHold.cs'))).hexdigest(); dest=state_root().parent/'cache'/'windows'/digest; exe=dest/'Worker.exe'
     if not exe.exists():
         dest.mkdir(parents=True,exist_ok=True)
         compiler=Path(os.environ['WINDIR'])/'Microsoft.NET'/'Framework64'/'v4.0.30319'/'csc.exe'
         temporary=dest/('Worker-'+uuid.uuid4().hex+'.exe')
-        p=subprocess.run([str(compiler),'/nologo','/target:winexe',f'/out:{temporary}','/r:System.Windows.Forms.dll','/r:System.Drawing.dll','/r:System.Web.Extensions.dll',str(HERE/'Worker.cs'),str(HERE/'NativeSupport.cs'),str(HERE/'ProviderStatus.cs')],capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
+        p=subprocess.run([str(compiler),'/nologo','/target:winexe',f'/out:{temporary}','/r:System.Windows.Forms.dll','/r:System.Drawing.dll','/r:System.Web.Extensions.dll',str(HERE/'Worker.cs'),str(HERE/'NativeSupport.cs'),str(HERE/'ProviderStatus.cs'),str(HERE/'KeyHold.cs')],capture_output=True,text=True,creationflags=subprocess.CREATE_NO_WINDOW)
         if p.returncode:
             temporary.unlink(missing_ok=True);raise Failure('BUILD_FAILED',p.stdout+p.stderr)
         try:
@@ -269,13 +269,13 @@ def stop(name, expected_generation=None):
         if not data['ok']:return data
         wait_file(folder/'stopped.json')
     else:
-        data={'ok':True,'platform':'windows','session':{'id':name,'generation':generation(meta),'capabilities':{'capture':False,'input':False,'keyboard':False,'pointer':False,'exec':False,'audio_capture':False,'audio_silent':False,'browser':False,'accessibility':False}},'result':{'workerAlreadyAbsent':True,'childPreserved':True}}
+        data={'ok':True,'platform':'windows','session':{'id':name,'generation':generation(meta),'capabilities':{'capture':False,'input':False,'keyboard':False,'key_hold':False,'pointer':False,'exec':False,'audio_capture':False,'audio_silent':False,'browser':False,'accessibility':False}},'result':{'workerAlreadyAbsent':True,'childPreserved':True}}
         (folder/'viewer-stop.flag').write_text('stop stale attachment',encoding='utf-8')
     wait_file(folder/'viewer-stopped.json');time.sleep(.25);delete_tasks(meta)
     (Path(meta['root'])/'binding.json').replace(Path(meta['root'])/'stopped-binding.json')
     data['session']['state']='stopped';data['session']['generation']=generation(meta)
     data['session'].setdefault('capabilities',{'audio_capture':False,'audio_silent':False,'browser':False,'accessibility':False})
-    for capability in ('capture','input','keyboard','pointer','exec'):data['session']['capabilities'][capability]=False
+    for capability in ('capture','input','keyboard','key_hold','pointer','exec'):data['session']['capabilities'][capability]=False
     data['result']['viewer']=read(folder/'viewer-stopped.json');return data
 
 def main(argv=None):
@@ -287,12 +287,13 @@ def main(argv=None):
     if args and args[0]=='input' and '--type' in args:
         i=args.index('--type')
         if i+1<len(args):args[i:i+2]=['--type='+args[i+1]]
-    parser=JsonParser();parser.add_argument('command',choices=['doctor','start','attach','status','exec','capture','input','stop','view']);parser.add_argument('--id');parser.add_argument('--expect-generation');parser.add_argument('--hide-viewer',action='store_true');parser.add_argument('--frame',action='store_true');parser.add_argument('--output');parser.add_argument('--type');parser.add_argument('--key');parser.add_argument('--click',nargs=2,type=int);parser.add_argument('--move',nargs=2,type=int);parser.add_argument('--button',type=int,choices=[1,2,3],default=1)
+    parser=JsonParser();parser.add_argument('command',choices=['doctor','start','attach','status','exec','capture','input','stop','view']);parser.add_argument('--id');parser.add_argument('--expect-generation');parser.add_argument('--hide-viewer',action='store_true');parser.add_argument('--frame',action='store_true');parser.add_argument('--output');parser.add_argument('--type');parser.add_argument('--key');parser.add_argument('--hold-ms',type=int,help='Hold a key/chord for 1-5000 ms and release in the same worker request; 0 keeps tap behavior');parser.add_argument('--click',nargs=2,type=int);parser.add_argument('--move',nargs=2,type=int);parser.add_argument('--button',type=int,choices=[1,2,3],default=1)
     a=parser.parse_args(args)
     if a.command!='doctor' and not a.id:raise Failure('INVALID_ARGUMENT','An explicit --id is required for session commands')
     if a.expect_generation is not None and a.command not in ('status','capture','input','exec','stop','view'):raise Failure('INVALID_ARGUMENT','--expect-generation is supported for status, capture, input, exec, and stop')
     if a.frame and a.command!='view':raise Failure('INVALID_ARGUMENT','--frame is a view option only')
     if a.command=='view' and (not a.frame or not a.expect_generation):raise Failure('INVALID_ARGUMENT','Windows view requires --frame and --expect-generation; it never opens a local window or attaches')
+    if a.hold_ms is not None and (a.command!='input' or a.key is None or not 0<=a.hold_ms<=5000 or any(v is not None for v in (a.type,a.click,a.move))):raise Failure('INVALID_ARGUMENT','--hold-ms requires input --key and an integer from 0 to 5000')
     if os.name!='nt':raise Failure('WRONG_PLATFORM','This adapter must run on Windows; use SSH as an outer transport if needed')
     if a.command=='doctor':
         path,s,audio,p=require_provider()
@@ -322,7 +323,11 @@ def main(argv=None):
         return data
     if sum(v is not None for v in [a.type,a.key,a.click,a.move])!=1:raise Failure('INVALID_ARGUMENT','input needs exactly one of --type, --key, --click, --move')
     if a.type is not None:payload={'kind':'type','text':a.type}
-    elif a.key is not None:payload={'kind':'key','key':a.key}
+    elif a.key is not None:
+        payload={'kind':'key','key':a.key}
+        if a.hold_ms is not None:
+            if a.hold_ms and read(folder/'ready.json').get('session',{}).get('capabilities',{}).get('key_hold') is not True:raise Failure('REATTACH_REQUIRED','Existing worker does not support key_hold; save owned work and explicitly stop/attach with the updated helper')
+            payload['holdMs']=a.hold_ms
     else:
         x,y=a.click if a.click else a.move;payload={'kind':'click' if a.click else 'move','x':x,'y':y,'button':a.button}
     return request(folder,{'action':'input',**payload,**guard})

@@ -28,7 +28,7 @@ assert all(e['target']==target for e in events)
 call('session',['stop'])
 ip=Path(prior['ipc']);original=adapter.read(ip/'parent.json');restored=adapter.read(ip/'viewer-stopped.json');assert not restored['restored'] and not restored['visible'] and not restored['minimized']
 assert adapter.process(app_pid) is None and adapter.process(prior['workerPid']) is None
-provider=adapter.provider()[1];assert all(provider.get(k)==v for k,v in prior['providerBefore'].items()) and adapter.native_state(provider['childSessionId'])==0
+provider=adapter.require_provider()[1];assert all(provider.get(k)==v for k,v in prior['providerBefore'].items()) and adapter.native_state(provider['childSessionId'])==0
 for n in ['parent.json','parent-observations.jsonl','viewer-stopped.json']:shutil.copyfile(ip/n,OUT/n)
 obs=[json.loads(s) for s in (ip/'parent-observations.jsonl').read_text().splitlines() if s.strip()]
 summary={'samples':len(obs),'cursors':list({(r['x'],r['y']) for r in obs}),'foregrounds':list({r['foreground'] for r in obs}),'viewerVisible':list({r['viewerVisible'] for r in obs}),'viewerMinimized':list({r['viewerMinimized'] for r in obs})}

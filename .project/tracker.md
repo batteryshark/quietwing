@@ -2,6 +2,40 @@
 
 Updated: 2026-10-16
 
+## Bounded Windows held keys (0.4.2.dev1, 2026-10-16)
+
+- Public input `--key KEY --hold-ms MS`, integer 1–5000 ms. Physical scan-code
+  chord, reverse release, periodic unchanged generation/provider/session/audio
+  guards, already-down refusal and explicit KEY_RELEASE_UNCONFIRMED on unsafe
+  cleanup. No persistent key-down state, action replay or host fallback.
+- `key_hold` capability and ready-file check prevent old workers silently tapping;
+  explicit owner-coordinated reattach required. computer-ctrl adds hold_ms,
+  repeat=1 and strict release receipts; unsupported direct-host/providers refuse.
+- Portable: 126 tests, 123 pass/three Windows-native skips on Mac; all seven
+  feature CI jobs 38958683602 passed, including actual C# fake-OS handler cases.
+  Consumer 152 tests and initial seven-job CI 38958688203 passed. Fresh packages,
+  source rebuild/install and 37 runtime resources match the native-tested wheel.
+- Lead-approved 20-minute helper window finished 16:18 EDT. Native 250 ms request
+  measured ~274 ms; CLI-client termination during 900 ms still released, same
+  worker survived; stale generation refused. Actual Codex/OpenCode normal MCP
+  editor workflows passed exact saved Unicode, native ~241/~249 ms for 220 ms
+  and release. All 693 parent samples kept pointer/focus and hidden viewer fixed.
+- Initial runner path error preceded input and cleaned up; initial OpenCode free
+  provider refused before tools, then authenticated OpenAI run passed. Raw
+  controller kill returned access denied after partial cleanup; fresh scoped
+  inventories confirmed no owned processes/listeners/tasks remain. No fail counted
+  as a pass. Guard/capture/input behavior did not fail in the accepted runs.
+- Tested wheel installed into the existing Windows QuietWing venv (0.4.1.dev0 →
+  0.4.2.dev1); all 37 installed resources match. Provider/login retained, no main
+  input/capture, original game/debugger, reconnect, settings or DreamStudio/guard
+  edits. Main-desktop cctl install untouched; staged consumer tested separately.
+- DreamStudio lead notified ready with fresh-attach syntax and honest timing/
+  cleanup limits. Its ordinary-controls pilot/legacy-debugger hold remains its
+  gate. No further Windows work planned. No official release publication.
+- Reviews: QuietWing PR #5 (stacked on #4), consumer PR #2. Private receipts:
+  evidence/held-keys-2026-10-16. Next: final CI/review/merge; original-game pilot
+  remains outside this helper acceptance.
+
 ## SSH viewer follow mode (0.4.2.dev0, 2026-10-16)
 
 - Opt-in Mac SSH `view --follow` discovers only an existing verified attachment

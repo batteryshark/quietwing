@@ -117,7 +117,7 @@ class ViewerCleanup(unittest.TestCase):
             compiler = Path(os.environ["WINDIR"]) / "Microsoft.NET/Framework64/v4.0.30319/csc.exe"
             build = subprocess.run([str(compiler), "/nologo", "/target:exe", "/main:ViewerProbe",
                 "/out:" + str(exe), "/r:System.Windows.Forms.dll", "/r:System.Drawing.dll",
-                "/r:System.Web.Extensions.dll", str(worker), str(HERE / "NativeSupport.cs"), str(HERE / "ProviderStatus.cs"), str(probe)],
+                "/r:System.Web.Extensions.dll", str(worker), str(HERE / "NativeSupport.cs"), str(HERE / "ProviderStatus.cs"), str(HERE / "KeyHold.cs"), str(probe)],
                 capture_output=True, text=True, timeout=30, creationflags=subprocess.CREATE_NO_WINDOW)
             self.assertEqual(build.returncode, 0, build.stdout + build.stderr)
             run = subprocess.run([str(exe), str(root / "cases")], capture_output=True, text=True,

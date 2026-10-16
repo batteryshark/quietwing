@@ -74,4 +74,24 @@ class GenerationTests(unittest.TestCase):
             with self.assertRaises(a.Failure):a.main(['input','--id','test','--frame','--type','x'])
         bound.assert_not_called()
 
+
+class HoldArguments(unittest.TestCase):
+    run_command=GenerationTests.run_command
+    def test_hold_is_pinned_and_forwarded_only_to_a_capable_worker(self):
+        with patch.object(a,'read',return_value={'session':{'capabilities':{'key_hold':True}}}):
+            payloads,_=self.run_command(['input','--id','test','--expect-generation','one','--key','CTRL+LEFT','--hold-ms','120'])
+        self.assertEqual(payloads,[{'action':'input','kind':'key','key':'CTRL+LEFT','holdMs':120,'expectGeneration':'one'}])
+    def test_existing_worker_cannot_silently_downgrade_hold_to_tap(self):
+        for ready in [{},{'session':{'capabilities':{'key_hold':False}}}]:
+            with self.subTest(ready=ready),patch.object(a,'read',return_value=ready),patch.object(a,'request') as request:
+                with self.assertRaises(a.Failure) as err:self.run_command(['input','--id','test','--key','ENTER','--hold-ms','100'])
+                self.assertEqual(err.exception.code,'REATTACH_REQUIRED');request.assert_not_called()
+    def test_invalid_holds_fail_before_any_binding_or_request(self):
+        for args in [['input','--key','A','--hold-ms','-1'],['input','--key','A','--hold-ms','5001'],['input','--key','A','--hold-ms','1.5'],['input','--type','hello','--hold-ms','100'],['status','--key','A','--hold-ms','100'],['input','--key','A','--click','1','2','--hold-ms','100']]:
+            with self.subTest(args=args),patch.object(a,'bound') as bound,patch.object(a,'request') as request,self.assertRaises(a.Failure):a.main([*args,'--id','test'])
+            bound.assert_not_called();request.assert_not_called()
+    def test_zero_retains_tap_semantics_and_needs_no_hold_capability(self):
+        payloads,_=self.run_command(['input','--id','test','--key','ENTER','--hold-ms','0'])
+        self.assertEqual(payloads,[{'action':'input','kind':'key','key':'ENTER','holdMs':0}])
+
 if __name__=='__main__':unittest.main()

@@ -5,6 +5,39 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## Development Windows held keys — 2026-10-16
+
+0.4.2.dev1 adds [bounded key/chord holds](held-keys.md) to supporting Windows
+workers; default taps and other platform input remain unchanged. Local portable
+checks ran 126 tests (123 pass, three Windows-only skips on Mac). [Feature CI](https://github.com/batteryshark/quietwing/actions/runs/38958683602)
+passed all seven jobs, including actual C# worker tests with fake native calls.
+Consumer regression ran 152 tests and its feature CI passed seven jobs.
+
+Within a lead-approved helper-only window, the installed candidate passed native
+250 ms hold (~274 ms observed), client termination during a 900 ms hold with
+worker-owned release, same-worker survival and stale-generation refusal. Actual
+Codex/OpenCode normal-MCP ordinary-editor runs each passed exact saved Unicode,
+verified release and ~241/~249 ms native down for a 220 ms request. All 693 parent
+observations kept pointer/focus fixed and ParaDesk hidden/nonminimized. Guard/
+delivery overhead makes this elapsed-time input, not frame-accurate game input.
+
+An early runner path error happened before input and cleaned up. OpenCode's
+first default free provider refused CLI use before tools; its authenticated
+OpenAI retry passed. A raw controller termination returned access denied during
+cleanup; subsequent scoped process/listener/task inventories were empty. These
+attempts are retained separately and not counted as successful acceptance.
+
+Fresh wheel/source audits, installs and independent source rebuild passed; all
+37 runtime resources match the native-tested wheel and its installation in the
+existing Windows helper venv. Its owner must freshly attach to get the new
+capability; old workers refuse holds. The native child stays signed in. No
+original game/debugger, main-desktop input/capture, RDP reconnect, host settings
+or DreamStudio/guard edits. All owned apps/workers/controllers/tasks/listeners
+were cleaned and the lead notified before the 20-minute window ended. The main
+Windows cctl install was left alone; the updated consumer was staged separately.
+No official release was published. Original-game compatibility remains its
+separate ordinary-controls pilot. Receipts: evidence/held-keys-2026-10-16.
+
 ## Development SSH preview follow mode — 2026-10-16
 
 0.4.2.dev0 adds opt-in Mac `view --host HOST --follow` for the same verified

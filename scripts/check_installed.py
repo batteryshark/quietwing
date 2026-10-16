@@ -15,7 +15,7 @@ assert not dist.requires
 entrypoints = {ep.name:ep.value for ep in dist.entry_points if ep.group == 'console_scripts'}
 assert entrypoints == {'quietwing':'quietwing.cli:entrypoint'}, entrypoints
 root = importlib.resources.files('quietwing')
-for name in ['cli.py','CONTRACT.md','session.schema.json','linux/adapter.py','windows/adapter.py','windows/Worker.cs','windows/ProviderStatus.cs','macos/VMHost.swift','macos/build_vm.py','macos/GuestBridge.swift']:
+for name in ['cli.py','CONTRACT.md','session.schema.json','linux/adapter.py','windows/adapter.py','windows/Worker.cs','windows/ProviderStatus.cs','windows/KeyHold.cs','macos/VMHost.swift','macos/build_vm.py','macos/GuestBridge.swift']:
     assert root.joinpath(name).is_file(), name
 command = pathlib.Path(sysconfig.get_path('scripts')) / ('quietwing.exe' if sys.platform == 'win32' else 'quietwing')
 version = subprocess.run([str(command),'--version'],capture_output=True,text=True,check=True)

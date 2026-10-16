@@ -1,6 +1,6 @@
 # QuietWing contract
 
-This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.4.2.dev0; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
+This project owns the creation/attachment, lifetime and control boundary of isolated OS work sessions. It is separate from computer-ctrl. Package version: 0.4.2.dev1; JSON envelope schemaVersion: 1. The helper runs on its target OS; SSH is an optional outer transport, not an additional listener.
 
 ## Commands
 
@@ -10,7 +10,7 @@ This project owns the creation/attachment, lifetime and control boundary of isol
 - `status --id NAME`: report live state and verified capabilities; revalidate process/session identity, not just a saved state file.
 - `exec --id NAME -- PROGRAM ARG...`: launch a generic application inside that session. Preserve arguments without shell interpolation. Record only owned resources for cleanup.
 - `capture --id NAME --output PATH`: capture only that session and return the image path, dimensions and capture time. Errors must not fall back to a parent screenshot.
-- `input --id NAME --type TEXT | --key KEY | --click X Y [--button N] | --move X Y`: deliver native input only to the verified isolated session. Text is data, including leading hyphens and shell metacharacters. Input must fail closed when session identity, ownership or permission checks fail.
+- `input --id NAME --type TEXT | --key KEY [--hold-ms MS] | --click X Y [--button N] | --move X Y`: deliver native input only to the verified isolated session. Text is data, including leading hyphens and shell metacharacters. Input must fail closed when session identity, ownership or permission checks fail. Windows workers advertising `key_hold: true` accept a bounded 1–5000 ms key/chord hold and release within the same request; omitted/zero remains a tap. Other backends do not support holds. Never silently downgrade a hold against an older worker. See [held keys](docs/held-keys.md).
 - `view --id NAME [--status | --close]`: optional Mac read-only preview of a local Mac VM or an isolated Linux or Windows desktop over SSH (`--remote-platform windows` for Windows). Open pins the existing live generation; it never starts/resumes a guest or forwards input. Status/close touch only preview files/processes. A failed capture clears the image. Optional Mac `view --host HOST --follow` waits for and follows verified generations of the same Linux/Windows target; it issues only status and generation-pinned frames, never acquires/restarts a session. It cannot be combined with `--expect-generation`; ordinary control preconditions remain unchanged. A busy Linux action may delay capture; a pinned preview retries only the same generation. Linux/Windows `view --frame --expect-generation TOKEN` returns one base64 PNG within the JSON envelope, without a remote viewer or standalone PNG. Windows frames do not reset its worker inactivity timer. See [viewer](docs/viewer.md).
 - `stop --id NAME`: stop only helper-owned resources. Do not log off a pre-existing Windows/Mac user session, stop a human app, or change global settings.
 
