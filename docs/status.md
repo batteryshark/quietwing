@@ -95,6 +95,22 @@ release tag or asset changes were made in this follow-up. No gaming/GPU or
 universal noninterference claim follows from these checks. Private evidence is
 retained under evidence/official-0.4.0-rollout-2026-10-15.
 
+## ParaDesk readiness snapshot follow-up — 2026-10-16
+
+A live ParaDesk 1.1 reconnect left its saved snapshot connected with no child,
+while fresh provider IPC status and a native WTS console probe agreed on the
+real authenticated child. Original doctor failed; a provider-owned refresh
+reapplying its existing view-only value corrected the snapshot. Settings bytes,
+provider/connection identity and native login were unchanged.
+
+Public doctor, native attach/status, fresh child-only capture and owned stop then
+passed with the original guards. The viewer stayed hidden after cleanup; no
+input, apps/games, reconnect or system policies changed. This was an operational
+recovery on the unchanged official 0.4.0 runtime, not a permanent race fix or a
+new two-harness acceptance claim. See the
+[bounded operator recovery](../windows/README.md#connected-provider-with-a-stale-child-snapshot).
+Private evidence: evidence/windows-provider-readiness-2026-10-16.
+
 ## Development acceptance history
 
 The following sections identify their tested development builds and historical

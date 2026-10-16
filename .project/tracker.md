@@ -1,6 +1,23 @@
 # QuietWing tracker
 
-Updated: 2026-10-15
+Updated: 2026-10-16
+
+## ParaDesk 1.1 snapshot recovery (2026-10-16)
+
+- Live mismatch reproduced: saved connected/no-child metadata, but fresh provider
+  IPC status and native WTS parent probe agreed on the authenticated child.
+  Original doctor failed. Upstream writes state at connection and does not
+  refresh it after login completion; status returns a fresh snapshot separately.
+- Bounded operator recovery reapplied the exact existing view-only value,
+  causing the provider itself to publish a fresh snapshot. Settings bytes,
+  provider identity and connection stayed unchanged; no direct state-file edit.
+- Public doctor passed afterward. Owned attach/status/child-only capture/stop
+  passed native relationship guards, retained login, left viewer hidden and
+  removed the worker. No apps/games/input, reconnect or system-policy changes.
+- Official 0.4.0 runtime/guards unchanged. The provider race can recur; documented
+  operator recovery is a workaround, not a permanent code fix. Private evidence:
+  evidence/windows-provider-readiness-2026-10-16. Next: consumer retries ordinary
+  doctor/attach; evaluate a provider-side post-login refresh in separate work.
 
 ## Official 0.4.0 remote rollout (2026-10-15, live acceptance complete)
 

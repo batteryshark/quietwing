@@ -52,3 +52,25 @@ via the normal private transient IPC response. Capture does not reset the worker
 inactivity timer. Use the [Mac viewer](../docs/viewer.md#windows-over-ssh) with
 `--remote-platform windows` and matching builds on both ends. Status/close of the
 Mac preview act locally; closing it leaves Windows applications and login intact.
+
+## Connected provider with a stale child snapshot
+
+Observed with ParaDesk 1.1: it can write `state.json` as connected before Windows
+finishes registering the child, leaving `childSessionId: -1` after sign-in.
+QuietWing 0.4.0 refuses that snapshot with `AUTHENTICATED_SESSION_REQUIRED`.
+ParaDesk's `--status --json` generates a fresh snapshot, but does not save it;
+see its [state writer and command handlers](https://github.com/sinpoce/ParaDesk/blob/v1.1.0/src/ParaDesk.App/Ui/AppContext.cs).
+
+An operator should compare the fresh provider response with the saved file and
+verify the live native parent/child relationship. An Active session alone is
+insufficient. With that identity confirmed, reapply the provider's **current**
+view-only value using `--view-only on` if already on, or `--view-only off` if
+already off. This schedules the provider's own snapshot refresh without a mode
+change or reconnect. Verify the same PID/connection and unchanged settings, then
+retry doctor/attach. Never use `toggle`, invent a child ID in the file, or relax
+native guards to force readiness.
+
+The live recovery passed doctor, native attach, isolated capture and owned stop
+without input, games or another sign-in. It retained the child and left ParaDesk
+hidden. This is an operator workaround; the provider's post-login snapshot race
+is not permanently fixed by QuietWing 0.4.0.
