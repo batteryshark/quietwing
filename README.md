@@ -6,6 +6,22 @@ QuietWing gives a computer-use agent somewhere else to open applications, click,
 type, and take screenshots. The agent works in a separate desktop while you keep
 your own pointer, focus, and audio.
 
+QuietWing is for getting work done on machines you already own, without
+interrupting your main desktop or first setting up a managed fleet of virtual
+machines. It is useful for one or a few agents working alongside you on your
+Mac, Linux or Windows machines.
+
+For independent workers at larger scale, a managed VM pool is a natural default:
+separate environments, repeatable images, snapshots/resets and explicit capacity
+management. QuietWing handles individual desktop lifetimes; it does not schedule
+a fleet. Multi-session servers are an option when their shared-resource density
+is a measured advantage, rather than a required next step for this project.
+
+The current Mac backend already uses a local macOS VM. Linux uses a private
+desktop and Windows uses an existing authenticated child session. These backends support
+everyday local work, with the setup requirements and isolation limits described
+below.
+
 It is an independent companion to
 [computer-ctrl](https://github.com/batteryshark/computer-ctrl). QuietWing owns
 desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
@@ -30,6 +46,10 @@ Remote executable/state-root options select the existing agent target; use
 `--ssh-identity` for an existing nondefault SSH key. Viewing never starts,
 resumes, attaches, reconnects or signs in to a desktop. Windows keeps ParaDesk
 connected and hidden, including after helper stop, crash or rollback.
+
+The development branch adds SSH preview `--follow` to wait for an agent's next
+verified attachment in the same Mac window; [usage and limits](docs/viewer.md#leave-an-ssh-preview-open-across-agent-attachments).
+Possible cross-platform worker pools are recorded as [future work](docs/future-work.md).
 
 ## Pick your desktop
 

@@ -107,6 +107,7 @@ def parse(argv):
     viewer = parser.add_mutually_exclusive_group()
     viewer.add_argument('--close', dest='close_viewer', action='store_true', help='Close only the read-only viewer')
     viewer.add_argument('--status', dest='viewer_status', action='store_true', help='Inspect only viewer state')
+    viewer.add_argument('--follow', action='store_true', help='Wait for and follow verified attachments on the same SSH target; never acquire a session')
     inputs = parser.add_mutually_exclusive_group()
     inputs.add_argument('--type', dest='text')
     inputs.add_argument('--key')
@@ -138,10 +139,12 @@ def parse(argv):
     if has_literal_text:
         args.text = literal_text
     args.argv = executable
-    if args.command != 'view' and (args.close_viewer or args.viewer_status or args.host or args.remote_command != 'quietwing' or args.remote_state_root or args.remote_platform != 'linux' or args.ssh_identity):
-        raise Failure('invalid_arguments', '--close/--status are view options only')
+    if args.command != 'view' and (args.close_viewer or args.viewer_status or args.follow or args.host or args.remote_command != 'quietwing' or args.remote_state_root or args.remote_platform != 'linux' or args.ssh_identity):
+        raise Failure('invalid_arguments', '--close/--status/--follow are view options only')
     if not args.host and (args.remote_command != 'quietwing' or args.remote_state_root or args.remote_platform != 'linux' or args.ssh_identity):
         raise Failure('invalid_arguments', 'Remote options require view --host')
+    if args.follow and (not args.host or args.expect_generation is not None):
+        raise Failure('invalid_arguments', '--follow requires view --host and cannot be combined with --expect-generation')
     if args.command == 'view' and args.backend != 'vm':
         raise Failure('viewer_unsupported', 'Read-only viewing supports only the Mac VM backend')
     if args.command != 'doctor' and (not args.id or not (re.fullmatch(r'[A-Za-z0-9_-]{1,64}' if args.remote_platform=='windows' else r'[A-Za-z0-9][A-Za-z0-9_.-]{0,47}',args.id) if args.host else NAME.fullmatch(args.id))):

@@ -18,4 +18,4 @@ graft scripts
 graft tests
 global-exclude *.pyc *.pyo .DS_Store
 
-include macos/test_remote_viewer.py linux/test_readonly_frames.py
+include macos/test_remote_viewer.py macos/test_viewer_follow.py linux/test_readonly_frames.py

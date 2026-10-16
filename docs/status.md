@@ -5,6 +5,33 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## Development SSH preview follow mode — 2026-10-16
+
+0.4.2.dev0 adds opt-in Mac `view --host HOST --follow` for the same verified
+Linux/Windows target. The image-only window waits across missing attachments,
+transport loss and generation replacement. It issues only status and pinned
+frames; session acquisition, authentication and control bindings remain explicit.
+Default pinned and local Mac VM previews retain their existing behavior.
+
+Portable checks: 120 tests, 118 pass/two Windows-native skips on Mac. The real
+Mac native UI fixture passed synthetic rendering, local event consumption,
+nonkey/nonmain behavior, unchanged foreground/cursor and stale-image clearing.
+The installed candidate's real panel also survived controlled Linux/Windows
+attachment and transport replacement in the same window, clearing pixels while
+waiting and stopping requests on close. These lifecycle/transport replies are
+local synthetic fixtures, not native Windows or Linux reconnect tests.
+Actual Codex/OpenCode each ran the installed Linux and Windows fixtures: four
+passes, 387 observations with nonkey/nonmain/nonfrontmost windows. The first
+OpenCode outer runner expired after the Linux pass while waiting for inference;
+resuming only its remaining Windows check passed. No assertion failed.
+Fresh wheel/source audits and independent source rebuild/install passed; all
+35 runtime resources match the independent rebuild. [Feature CI](https://github.com/batteryshark/quietwing/actions/runs/38932163143)
+passed all seven jobs, including fresh Mac viewer compilation.
+A separate real Windows peek uses only existing read-only status/frame operations;
+the Mac preview is left open in follow mode. No native RDP reconnect, worker
+reattachment, remote installation or session/settings change was exercised while
+DreamStudio works. Private receipts: evidence/viewer-follow-2026-10-16.
+
 ## 0.4.1 release validation — 2026-10-16
 
 [Published experimental v0.4.1](https://github.com/batteryshark/quietwing/releases/tag/v0.4.1)

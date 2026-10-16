@@ -51,7 +51,7 @@ def main():
     repository_checks()
     suites = [("tests", "test_*.py"), ("windows", "test_*.py")]
     if sys.platform != "win32":
-        suites.extend([("macos", "test_generation.py"), ("macos", "test_viewer.py"), ("macos", "test_remote_viewer.py"), ("linux", "test_readonly_frames.py")])
+        suites.extend([("macos", "test_generation.py"), ("macos", "test_viewer.py"), ("macos", "test_remote_viewer.py"), ("macos", "test_viewer_follow.py"), ("linux", "test_readonly_frames.py")])
     for directory, pattern in suites:
         subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", directory, "-p", pattern], cwd=ROOT, check=True)
     print("Portable checks passed; no native session was started.")

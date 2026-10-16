@@ -2,6 +2,35 @@
 
 Updated: 2026-10-16
 
+## SSH viewer follow mode (0.4.2.dev0, 2026-10-16)
+
+- Opt-in Mac SSH `view --follow` discovers only an existing verified attachment
+  at the same host/executable/state/key/ID. New frames remain generation-pinned;
+  availability errors clear pixels and back off 1–30 seconds. Protocol/capture/
+  boundary errors end refresh. No remote lifecycle/input calls or relaxed guards.
+  Default/local-VM pinned mode and computer-ctrl bindings remain unchanged.
+- Portable: 120 tests, 118 pass/two Windows-native skips on Mac. Native Mac
+  synthetic UI and installed Linux/Windows transport/lifecycle fixtures pass
+  same-window recovery, nonactivation, busy capture and close cancellation.
+  Native Windows/RDP and Linux desktop lifecycles were not changed or rerun.
+  Fresh package audits, wheel install and independent source rebuild/install pass.
+- Installed tested development wheel only in the existing Mac environment;
+  replaced only its old Mac preview with follow mode. Real existing Windows
+  status/frames display normally, same generation retained, never key/main/frontmost.
+  Windows provider/worker/login/install/settings and DreamStudio work untouched.
+- Future cross-platform worker pools recorded in docs/future-work.md; evaluate
+  a separate scheduler/leases project later, no implementation now. README positions
+  QuietWing for existing personal machines; VM pools are the default future scaling
+  direction, with RDS only if measured density benefits justify it.
+- Actual Codex/OpenCode each ran installed Linux and Windows fixtures: all four
+  passed, 387 nonactivating window observations. Initial OpenCode runner expired
+  after Linux passed while waiting for inference; resumed only Windows, which
+  passed. No assertion failure or native desktop lifecycle claimed.
+- Feature CI 38932163143 passed all seven jobs, including fresh Mac viewer builds;
+  archive audit now requires the new source tests. No new official release.
+  Private receipts: evidence/viewer-follow-2026-10-16. Next: review/merge feature
+  PR after final CI; official release remains 0.4.1.
+
 ## 0.4.1 release (2026-10-16, published)
 
 - Published experimental MIT https://github.com/batteryshark/quietwing/releases/tag/v0.4.1

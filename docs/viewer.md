@@ -24,7 +24,7 @@ the session, run its normal isolated workflow first, or explicitly use
 Do not rebuild the VM owner while it runs: `build --viewer` builds only the
 separate preview application and is safe with an existing guest.
 
-Each preview pins one VM generation and owner PID. On a stopped, replaced or
+By default, each preview pins one VM generation and owner PID. On a stopped, replaced or
 unavailable session, it clears its image and reports that the session is
 unavailable. Close and reopen explicitly after a new session starts. Automation
 can additionally pass `--expect-generation TOKEN` to open or close; a mismatch
@@ -42,6 +42,43 @@ after three seconds and exits after fifteen seconds without a heartbeat.
 Frames can pause during capture or guest work; this is a preview, not a video
 stream. CPU, memory and screen space are still shared with the host.
 The preview window currently runs on Mac; a native viewer window on Linux or Windows is not implemented.
+
+## Leave an SSH preview open across agent attachments
+
+Development 0.4.2 adds opt-in `--follow` for Linux and Windows SSH targets:
+
+```sh
+quietwing view --host user@windows-machine --remote-platform windows --id work --follow \
+  --remote-command 'C:\private\venv\Scripts\quietwing.exe' \
+  --remote-state-root 'C:\private\helper-state'
+```
+
+The same Mac window waits when the attachment disappears, clears old pixels,
+and resumes after an agent explicitly attaches a verified replacement. It can
+also open before an attachment exists. It never starts, resumes, attaches,
+reconnects RDP, signs in, or changes visibility on the remote machine. The host,
+remote executable, state root, SSH identity and logical ID stay fixed. Only the
+read-only preview follows; computer-ctrl never silently changes its control binding.
+
+Every new generation must pass the existing status/descriptor checks, and every
+frame is pinned to that generation and checked for isolated-image provenance.
+A replacement between status and capture clears and retries. Availability errors
+retry after 1, 2, 4, 8, 16, then at most 30 seconds; heartbeat updates continue
+while waiting. Invalid protocol, unsafe state, boundary/ownership failures and
+invalid images end refresh and require inspection. No input or operation is replayed.
+Healthy viewing sends frames only. Rediscovery uses ordinary status, which may
+extend a Windows worker's idle timer once it is found; frames do not. Linux's
+fixed TTL is unchanged.
+
+Use the same target options without `--follow` for `--status` or `--close`.
+Status reports `follow`, the current verified `generation` (null while
+rediscovering), and waiting/error information. Close affects only the Mac
+preview and cancels further retries; an already in-flight read-only request may
+finish within its existing bounded deadline. Closing never starts a new window.
+Changing an open preview between pinned and follow modes requires closing that
+Mac preview first. `--follow` cannot be combined with `--expect-generation`, and
+a following window cannot be closed with a generation precondition. Local Mac VM
+viewing remains generation-pinned. Published 0.4.1 does not yet include `--follow`.
 
 ## Linux over SSH
 
@@ -76,7 +113,7 @@ has no network or input code.
 
 A long agent action can hold the Linux capture lock. The preview then clears and
 waits, retrying only read-only capture against the same generation. Stop, expiry,
-identity changes, invalid frames or lost SSH clear the image and end refresh;
+identity changes, invalid frames or lost SSH clear a pinned preview and end refresh;
 close and explicitly reopen after recovery. No input is replayed, session is
 restarted, or replacement generation followed. Viewing does not extend Linux's
 fixed TTL. Closing disconnects the preview and leaves Linux work running.
@@ -124,7 +161,7 @@ The Mac uses the same image-only, nonactivating window as Linux and local VMs.
 Closing it removes the Mac PNG and leaves the attachment, its applications and
 the authenticated child running. A worker stop/crash, lost SSH, lock, disconnect
 or generation replacement clears the image and ends refresh; recovery requires
-explicit close/reopen. The preview never reveals the hidden ParaDesk window or
+explicit close/reopen in the default pinned mode; `--follow` above can wait for a verified replacement. The preview never reveals the hidden ParaDesk window or
 forwards keyboard, pointer, clipboard or audio. Remote capture latency determines
 refresh rate; it is a screenshot preview, not a video/game streaming client.
 Windows and Linux target state have separate private namespaces even with the
