@@ -2,6 +2,39 @@
 
 Updated: 2026-10-15
 
+## Windows read-only viewer and 0.3.1 follow-up (0.4.0.dev2, 2026-10-15)
+
+- User freed Windows and explicitly chose preview plus deferred checks. Existing
+  child was connected/authenticated; no sign-in, reconnect, settings/policy/RDP/
+  firewall/service change or global cctl modification. Work uses separate venvs.
+- Official unchanged 0.3.1 wheel passed native installed input/capture, normal
+  stop/crash/rollback, stale refusal and actual Codex/OpenCode ISE workflows:
+  seven/eleven verified tools, exact saved Unicode and final images, 1,708 parent
+  samples with ParaDesk hidden. Same provider/login retained; test workers removed.
+- Development Windows `view --frame --expect-generation` returns a bounded PNG
+  only through the bound child's guard; no standalone PNG or native viewer UI.
+  Mac `--remote-platform windows` uses literal encoded PowerShell over existing
+  SSH, optional existing-key selection, shared bounded transport and image panel.
+  Linux target identity and behavior retained; no input forwarding or auto-acquire.
+- Exact installed dev2 wheel passed native input/capture/stop/crash/rollback and
+  two actual Windows harnesses: seven tools each, exact files/images/generation,
+  282 nonactivating preview samples (18->54, 1->19 frames); 1,203 parent samples
+  kept ParaDesk hidden. Human pointer/focus activity allowed. Duplicate/stale/
+  close-retention/replacement/old-helper failure passed, with no automatic rebind.
+- A private worker copy with five-second idle threshold exited naturally despite
+  six frames (6.89 s); installed 30-minute timeout unchanged. Native panel fixture
+  passed 12 local event handlers, focus/clearing/close and real Windows pixels.
+- Shared Linux transport passed both actual harnesses: six tools each, exact
+  Unicode, 209 nonactivating preview samples, same generation/TTL. No Linux host
+  monitor. Mac VM ordinary-app reruns still deferred while guest idle-locked;
+  native VM source unchanged. No lock/disconnect/physical outage induced on Windows.
+- Portable 93 passed/one Windows-only simulated case skipped; clean wheel/source,
+  rebuild/fresh install and all 34 runtime resources matched. Feature branch
+  codex/windows-ssh-viewer awaits review/CI. Default published release remains 0.3.1.
+- Private evidence: evidence/windows-viewer-2026-10-15. Only Windows demo worker/
+  saved editor and preview retained; same native child/login. Dedicated direct
+  MCPs ended, other test bindings/tasks removed; Linux demo/preview retained.
+
 ## Linux read-only viewer over SSH (0.4.0.dev1, 2026-10-15)
 
 - PR #2 merged as 6586ff8 after explicit user authorization:
@@ -153,7 +186,8 @@ Updated: 2026-10-15
 
 ## Next action
 
-Linux SSH viewer PR #2 is merged; retain final main CI evidence privately.
+Review Windows SSH viewer branch after final PR CI; merge requires explicit approval.
+Linux SSH viewer PR #2 main CI passed (38828432131); consumer main CI passed (38828448100).
 Repeat the extra Mac VM app workflows when the guest is unlocked.
 Repeat native Windows and Codex/OpenCode acceptance when that desktop is available.
 Prioritize explicit lifetimes and separately validated native Linux/Windows viewer windows.

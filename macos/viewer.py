@@ -4,11 +4,11 @@ import fcntl, hashlib, json, os, re, stat, subprocess, sys, time, uuid
 from contextlib import contextmanager
 from pathlib import Path
 try:
-    from . import vm_adapter as vm, linux_remote
+    from . import vm_adapter as vm, ssh_remote
     from .runtime_paths import build_root
 except ImportError:
     import vm_adapter as vm
-    import linux_remote
+    import ssh_remote
     from runtime_paths import build_root
 
 HERE = Path(__file__).resolve().parent
@@ -29,7 +29,7 @@ def private_dir(path, create=False):
     return path
 
 def state_root(name, create=False, source=None):
-    pattern = r'[A-Za-z0-9][A-Za-z0-9_.-]{0,47}' if source else vm.NAME.pattern
+    pattern = (r'[A-Za-z0-9_-]{1,64}' if source and source.get('kind')=='windows-ssh' else r'[A-Za-z0-9][A-Za-z0-9_.-]{0,47}') if source else vm.NAME.pattern
     if not re.fullmatch(pattern, name): raise ViewerError('invalid_id', 'Invalid session ID')
     base = Path(os.environ.get('DESKHELPER_STATE_ROOT', str(Path.home() / '.local/state/deskhelper')))
     if not base.is_absolute(): raise ViewerError('unsafe_viewer_state', 'State root must be absolute')
@@ -40,9 +40,9 @@ def state_root(name, create=False, source=None):
         raise ViewerError('unsafe_viewer_state', 'State parent must be owned, not a symlink or writable by others')
     parts=['viewers','macos-vm',name]
     if source:
-        linux_remote.validate(source)
+        ssh_remote.validate(source)
         digest=hashlib.sha256(json.dumps(source,sort_keys=True).encode()).hexdigest()
-        parts=['viewers','linux-ssh',digest,name]
+        parts=['viewers',source['kind'],digest,name]
     for part in parts:
         base = base / part
         if not create and not base.exists(): return None
@@ -125,7 +125,7 @@ def capture_frame(info, run):
     incoming = run / ('incoming-' + uuid.uuid4().hex + '.png')
     try:
         if info.get('source'):
-            data,details=linux_remote.frame(info['source'],info['id'],info['generation'])
+            data,details=ssh_remote.frame(info['source'],info['id'],info['generation'])
             fd=os.open(incoming,os.O_CREAT|os.O_EXCL|os.O_WRONLY|os.O_NOFOLLOW,0o600)
             with os.fdopen(fd,'wb') as stream:stream.write(data)
             incoming.replace(run/'frame.png')
@@ -161,7 +161,7 @@ def close_viewer(root, expected=None):
 
 def open_viewer(root, name, expected=None, source=None):
     if source:
-        current=linux_remote.call(source,'status',name,expected)
+        current=ssh_remote.call(source,'status',name,expected)
         info={'id':name,'generation':current['session']['generation'],'source':source}
         return launch_viewer(root,info)
 
@@ -205,7 +205,7 @@ def launch_viewer(root,info):
 
 def command(args):
     if args.backend != 'vm': raise ViewerError('viewer_unsupported', 'Viewer currently supports the Mac VM backend only')
-    source = linux_remote.target(args.host,args.remote_command,args.remote_state_root) if args.host else None
+    source = ssh_remote.target(args.host,args.remote_command,args.remote_state_root,args.remote_platform,args.ssh_identity) if args.host else None
     root = state_root(args.id, not (args.viewer_status or args.close_viewer), source)
     if root is None: value = {'state': 'closed', 'readOnly': True}
     else:

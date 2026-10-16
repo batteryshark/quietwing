@@ -61,4 +61,17 @@ class GenerationTests(unittest.TestCase):
             self.assertIs(a.stop('test','a'*32),response)
         wait.assert_not_called()
 
+    def test_frame_requires_explicit_generation_and_frame_mode_before_binding(self):
+        for argv in [['view','--id','test'],['view','--id','test','--frame'],['view','--id','test','--expect-generation','one']]:
+            with self.subTest(argv=argv),patch.object(a,'bound') as bound,patch.object(a,'attach') as attach:
+                with self.assertRaises(a.Failure):a.main(argv)
+            bound.assert_not_called();attach.assert_not_called()
+    def test_frame_is_only_a_generation_pinned_worker_request(self):
+        payloads,_=self.run_command(['view','--id','test','--frame','--expect-generation','one'])
+        self.assertEqual(payloads,[{'action':'frame','expectGeneration':'one'}])
+    def test_frame_flag_cannot_apply_to_other_operations(self):
+        with patch.object(a,'bound') as bound:
+            with self.assertRaises(a.Failure):a.main(['input','--id','test','--frame','--type','x'])
+        bound.assert_not_called()
+
 if __name__=='__main__':unittest.main()

@@ -263,10 +263,12 @@ def main(argv=None):
     if args and args[0]=='input' and '--type' in args:
         i=args.index('--type')
         if i+1<len(args):args[i:i+2]=['--type='+args[i+1]]
-    parser=JsonParser();parser.add_argument('command',choices=['doctor','start','attach','status','exec','capture','input','stop']);parser.add_argument('--id');parser.add_argument('--expect-generation');parser.add_argument('--hide-viewer',action='store_true');parser.add_argument('--output');parser.add_argument('--type');parser.add_argument('--key');parser.add_argument('--click',nargs=2,type=int);parser.add_argument('--move',nargs=2,type=int);parser.add_argument('--button',type=int,choices=[1,2,3],default=1)
+    parser=JsonParser();parser.add_argument('command',choices=['doctor','start','attach','status','exec','capture','input','stop','view']);parser.add_argument('--id');parser.add_argument('--expect-generation');parser.add_argument('--hide-viewer',action='store_true');parser.add_argument('--frame',action='store_true');parser.add_argument('--output');parser.add_argument('--type');parser.add_argument('--key');parser.add_argument('--click',nargs=2,type=int);parser.add_argument('--move',nargs=2,type=int);parser.add_argument('--button',type=int,choices=[1,2,3],default=1)
     a=parser.parse_args(args)
     if a.command!='doctor' and not a.id:raise Failure('INVALID_ARGUMENT','An explicit --id is required for session commands')
-    if a.expect_generation is not None and a.command not in ('status','capture','input','exec','stop'):raise Failure('INVALID_ARGUMENT','--expect-generation is supported for status, capture, input, exec, and stop')
+    if a.expect_generation is not None and a.command not in ('status','capture','input','exec','stop','view'):raise Failure('INVALID_ARGUMENT','--expect-generation is supported for status, capture, input, exec, and stop')
+    if a.frame and a.command!='view':raise Failure('INVALID_ARGUMENT','--frame is a view option only')
+    if a.command=='view' and (not a.frame or not a.expect_generation):raise Failure('INVALID_ARGUMENT','Windows view requires --frame and --expect-generation; it never opens a local window or attaches')
     if os.name!='nt':raise Failure('WRONG_PLATFORM','This adapter must run on Windows; use SSH as an outer transport if needed')
     if a.command=='doctor':
         path,s,audio,p=require_provider()
@@ -279,6 +281,7 @@ def main(argv=None):
     folder,meta=bound(a.id)
     # The worker enforces this token at the action boundary in its immutable IPC generation.
     guard={'expectGeneration':a.expect_generation} if a.expect_generation is not None else {}
+    if a.command=='view':return request(folder,{'action':'frame',**guard})
     if a.command=='status':
         data=request(folder,{'action':'status',**guard})
         if data['ok']:

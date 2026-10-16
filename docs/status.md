@@ -5,6 +5,49 @@ is the first experimental MIT-licensed GitHub release. The package, import, and
 sole executable are `quietwing`. Computer-ctrl's integration is
 [merged](https://github.com/batteryshark/computer-ctrl/pull/1).
 
+## 0.4.0.dev2: Windows viewing on Mac over SSH
+
+The optional Mac preview can now show an already attached Windows child with
+`view --host user@windows-machine --remote-platform windows --id NAME`. Matching
+0.4.0.dev2 builds are installed in dedicated Mac/Windows/Linux environments.
+The existing ParaDesk child stayed signed in and hidden; no reconnect, login,
+firewall, credential policy, RDP port, service or global computer-ctrl change.
+See the [viewer guide](viewer.md#windows-over-ssh).
+
+- Exact installed wheel passed Windows native input/capture, normal stop, owned
+  worker crash, attach rollback and stale-generation checks. Cleanup kept
+  ParaDesk hidden and retained the same authenticated native child throughout.
+- Actual Codex and OpenCode each saved exact Unicode through seven verified
+  isolated MCP calls. Saved files, native editor/worker identity, generation and
+  final captures were independently checked. Across 282 Mac preview samples,
+  the panel stayed nonkey/nonmain and never became foreground; frames advanced
+  18->54 and 1->19. All 1,203 Windows parent samples kept ParaDesk hidden and
+  unminimized. Human cursor/focus activity was allowed, not required to stay fixed.
+- Duplicate/stale open-close, closing without stopping the worker, explicit
+  reopen and old-helper failure passed. Stop cleared the old image; replacement
+  was refused until explicit close/reopen. An old helper ended/cleared its own
+  separate preview without fallback. No physical network outage, Windows lock or
+  provider disconnect was induced during this follow-up.
+- Six frames did not keep a worker copy alive with its timeout shortened to five
+  seconds. It exited naturally in 6.89 s, left ParaDesk hidden and cleaned up.
+  Only that private copy's duration changed; installed 30-minute timeout was not
+  changed or waited out. Preview frames do not reset that inactivity timer.
+- Shared-transport Linux regression passed actual Codex/OpenCode: six verified
+  tools and exact saved Unicode each; 209 nonactivating Mac preview samples,
+  frames 55->89 and 147->163, same private Linux generation/TTL. No Linux human
+  desktop capture, input or pointer/focus monitor. Mac VM ordinary-app reruns
+  remain deferred until its guest is unlocked; VM native source is unchanged.
+- Current native Mac panel passed all 12 local input handlers, nonactivation,
+  controlled unchanged foreground/cursor, invalid/waiting/ended image clearing
+  and close cleanup, with synthetic pixels and a real isolated Windows frame.
+- Portable checks: 93 passed, one Windows-only fake-OS case skipped locally.
+  Clean archives, source rebuild/fresh install and all 34 runtime resources
+  matched the reviewed source. Windows hosted CI runs the fake-OS C# cases.
+- Only the new Windows demo attachment/editor and normal private Linux session
+  are retained; transient acceptance workers/tasks and dedicated direct MCP
+  processes ended. Native login remains alive. Raw evidence is ignored under
+  evidence/windows-viewer-2026-10-15. Published 0.3.1 assets are unchanged.
+
 ## 0.4.0.dev1: Linux viewing on Mac over SSH
 
 The same read-only Mac window can display an existing isolated Linux desktop.
@@ -77,6 +120,15 @@ remain unsupported. See the [viewer guide](viewer.md).
 and the [release workflow](https://github.com/batteryshark/quietwing/actions/runs/38805847684)
 passed. Official archives were checksum-verified, fresh installed, and rebuilt
 from the source download with all 29 runtime resources matching.
+
+The later 2026-10-15 live follow-up passed against the unchanged official 0.3.1
+wheel (SHA-256 `468e0e45947a59a7b7055aa89ec10bf60f80c4be62a8de3cdb830ca390d6a5a0`).
+Native installed input/capture, normal stop, owned-worker crash, attach rollback,
+stale-generation refusal and actual Codex/OpenCode ordinary ISE workflows passed.
+The harnesses used seven and eleven successful isolated tool calls respectively,
+with independently verified exact Unicode and final images. All 1,708 parent
+samples kept ParaDesk hidden/unminimized; cleanup preserved the same signed-in
+child. This closes the native-testing deferral recorded at publication below.
 
 Version 0.3.1 removes the explicit show-window operation from the Windows viewer
 observer's cleanup. Stop, worker exit (including idle exit/crash), and attach

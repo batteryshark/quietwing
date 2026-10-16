@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0.dev2 — unreleased
+
+- Read-only Windows viewing on Mac over existing SSH, selected explicitly with
+  `--remote-platform windows`. Reuses the image-only Mac window without input,
+  audio, forwarding, ParaDesk startup/reconnect or system configuration changes.
+- Windows `view --frame` captures only through an existing generation-pinned
+  child worker. Bounded PNG/JSON stays in memory and normal transient IPC; preview
+  frames do not reset worker inactivity. No standalone remote image is retained.
+- Share bounded SSH/protocol validation between Linux and Windows while keeping
+  existing Linux target identities and command behavior unchanged.
+
 ## 0.4.0.dev1 — unreleased
 
 - Read-only Linux viewing on Mac over existing SSH: `view --host HOST --id NAME`
@@ -28,6 +39,9 @@
   12 simulated Windows cleanup cases, and update native acceptance expectations.
 - Windows machine remains occupied: no fresh native or Codex/OpenCode acceptance
   for 0.3.1. Earlier 0.3.0 live evidence is historical, not validation of this fix.
+- Later 2026-10-15 follow-up against the unchanged official wheel passed native
+  input/capture/stop/crash/rollback and actual Codex/OpenCode editor workflows.
+  The authenticated child stayed connected and hidden; publication deferral closed.
 - No login, reconnect, firewall, credential policy, RDP or service changes.
 
 ## 0.3.0 — 2026-10-15

@@ -40,7 +40,9 @@ paths must be new files.
 The 0.4 development build adds a [read-only Mac viewer](viewer.md):
 run `quietwing build --viewer` once, then `quietwing view --id work` while the
 provisioned guest runs. For Linux, use `view --host user@linux-machine --id work`
-and the remote executable/state-root options from the viewer guide. The window
+and the remote executable/state-root options from the viewer guide. For an
+already attached Windows child, add `--remote-platform windows`; an existing
+nondefault SSH key can be selected with `--ssh-identity /absolute/path/to/key`. The window
 opens on Mac over existing SSH; viewing does not extend Linux TTL.
 Closing the viewer leaves the agent working. It does not
 start a guest, take keyboard focus or forward input. The ID must match the
@@ -59,7 +61,7 @@ or worker exit; reveal it only deliberately through ParaDesk's own UI.
 | --- | --- | --- |
 | Mac | Save the whole VM session, stop its owner, release RAM. Guest apps remain in saved memory. | No automatic idle save/stop. |
 | Linux | End owned apps and release display/audio resources. Keep retained session files. | Fixed 30-minute TTL from creation, even while active. `--ttl` can set a longer bounded run, up to 86400 seconds. |
-| Windows | End owned apps/workers without showing the viewer. Keep its current visibility and the authenticated child alive. | Worker exits and closes owned apps after 30 minutes without requests; not configurable yet. |
+| Windows | End owned apps/workers without showing the viewer. Keep its current visibility and the authenticated child alive. | Worker exits and closes owned apps after 30 minutes without activity other than preview frames; not configurable yet. |
 
 Save Linux and Windows documents before stopping or going idle. Linux's TTL is
 not refreshed by activity. Its cctl `acquire_args` can set `--ttl` and
