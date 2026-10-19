@@ -47,8 +47,12 @@ class RepositoryArtwork(unittest.TestCase):
 
     def test_exact_repository_art_only(self):
         self.assertEqual(self.repository["REPOSITORY_ART"], ART)
+        # Synthetic payloads keep this test usable in sdists, which omit artwork.
+        payloads = (b"synthetic image", b"x" * (2 * 1024 * 1024 + 1))
         for name in ART:
-            self.repository["repository_member"](name, (ROOT / name).read_bytes())
+            for data in payloads:
+                with self.subTest(name=name, size=len(data)):
+                    self.repository["repository_member"](name, data)
         for name in ["assets/other.png", "private.png", "assets/nested/workstack-mark.png",
                      "assets/../assets/workstack-mark.png"]:
             with self.subTest(name=name), self.assertRaises(ValueError):
