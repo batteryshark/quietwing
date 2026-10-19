@@ -1,6 +1,5 @@
-# Curated source-distribution tests/reports; never recurse into local evidence.
-include ACCEPTANCE.md VALIDATION.md
-include linux/INTEGRATION.md macos/INTEGRATION_RESULTS.md windows/INTEGRATION.md
+# Curated source-distribution tests; never recurse into local evidence or artwork.
+include ACCEPTANCE.md
 include linux/acceptance.py linux/generation_acceptance.py linux/integration_acceptance.py
 include windows/acceptance.py windows/generation_acceptance.py windows/integration_acceptance.py
 include windows/reconnect_acceptance.py windows/package_acceptance.py windows/editor_acceptance.py
@@ -8,8 +7,7 @@ include windows/harness_prepare.py windows/harness_verify.py windows/test_adapte
 include tests/MetalGuestProbe.swift tests/verify_vm_boundary.py
 include windows/cleanup_test_controller.py
 
-include LICENSE README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md THIRD_PARTY.md AGENTS.md
-include .project/tracker.md
+include LICENSE README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md THIRD_PARTY.md RIGHTS.md AGENTS.md
 include macos/test_generation.py macos/test_viewer.py
 include macos/test_guards.py
 graft docs
@@ -17,6 +15,7 @@ graft examples
 graft scripts
 graft tests
 global-exclude *.pyc *.pyo .DS_Store
+prune assets
 
 include macos/test_remote_viewer.py macos/test_viewer_follow.py linux/test_readonly_frames.py
 

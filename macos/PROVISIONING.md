@@ -2,7 +2,7 @@
 
 This one-time workflow requires Apple Silicon and Apple's existing command-line tools. The validated host is macOS 27.0.1 with SDK 27 and Swift 6.4. Earlier hosts/toolchains are untested. The source uses current-process ScreenCaptureKit capture (an API introduced in macOS 14.4) and VM save/restore (macOS 14.0); those API versions are necessary lower bounds, not a claim that this package has been built or accepted on those releases. The build uses the installed compiler's default deployment target. It creates user-owned VM files and a guest-local account/LaunchAgent. It does not create host accounts, enable Sharing, request host TCC, change firewall policy, or reboot the host. The default is 2 vCPU, 4 GiB RAM and a sparse 64 GiB disk. Allow space for the Apple restore download (about 25 GiB for the tested version) plus the guest disk.
 
-Activate the Python environment where the companion is installed. These commands use its `deskhelper` and `python3`. Select a **new** ID, not an existing installed guest:
+Activate the Python environment where QuietWing is installed. These commands use its `quietwing` and `python3`. Select a **new** ID, not an existing installed guest:
 
 ```sh
 export DESKHELPER_VM_ID=mac-agent

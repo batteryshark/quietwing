@@ -1,6 +1,6 @@
 # QuietWing
 
-Before changing code, read `.project/tracker.md` and `CONTRACT.md`. For adapter
+Before changing code, read `CONTRIBUTING.md` and `CONTRACT.md`. For adapter
 changes, read that platform's README and setup guide. The descriptor schema is
 `session.schema.json`; the current support/validation limits are `docs/status.md`.
 
@@ -16,4 +16,5 @@ The sole package/import/command name is `quietwing`; add no legacy aliases.
 
 Retain existing native state/cache identities. Keep credentials, VM storage,
 snapshots, machine inventories and private captures out of Git and packages.
-Update `.project/tracker.md` with evidence, decisions, and next action at handoff.
+Keep public behavior and limits current in the linked guides and `docs/status.md`.
+Keep private operational evidence and handoff records outside the product tree.

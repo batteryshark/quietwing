@@ -93,4 +93,4 @@ Historical native reports retain their original package/source identities.
 - Optional computer-ctrl provider with generation-pinned input, separate
   controller/artifact paths, and no host-desktop fallback.
 - Installed-wheel native lifecycle and real Codex/OpenCode workflows on all
-  three OSes. See [validation](VALIDATION.md).
+  three OSes in historical acceptance. See [support and limits](docs/status.md).

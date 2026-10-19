@@ -9,6 +9,19 @@ import tomllib
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
+# Repository branding is not package content. Archive audits still reject images.
+REPOSITORY_ART = frozenset({
+    "assets/workstack-mark.png",
+    "assets/workstack-mark-full.png",
+    "assets/workstack-mark-32.png",
+})
+
+
+def repository_member(name, data):
+    if name in REPOSITORY_ART:
+        return
+    from check_distribution import safe_member
+    safe_member(name, data)
 
 
 def constant(path, name):
@@ -26,12 +39,11 @@ def repository_checks():
     assert project["version"] == constant(ROOT / "__init__.py", "__version__") == constant(ROOT / "cli.py", "VERSION")
     assert not project.get("dependencies"), "Runtime package must remain dependency-free"
     if (ROOT / ".git").exists():
-        from check_distribution import safe_member
         files = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=ROOT).decode().split("\0")
         for name in filter(None, files):
             path = ROOT / name
             if path.is_file():
-                safe_member(name, path.read_bytes())
+                repository_member(name, path.read_bytes())
     for path in (ROOT / "examples").glob("*.toml"):
         data = tomllib.loads(path.read_text())
         for target in data["sessions"].values():

@@ -67,7 +67,7 @@ This is **same-user session separation, not a security sandbox**. An explicitly 
 
 ## Validation
 
-`acceptance.py stage1` and `stage2` exercise public adapter commands pinned to the returned generation. Run them in separate SSH invocations, setting the same fresh `DESKHELPER_TEST_ID` and `DESKHELPER_TEST_RUN` for both. Stage 1 leaves a bounded owned session for stage 2; failures still have a TTL. The tests use Mousepad and Xmessage, known test strings, owned screenshots, a generated tone through verified private audio, and host pointer/focus/routing metadata only. They never capture human windows. `generation_acceptance.py` independently exercises ID replacement, refusal of all stale operations and an actual native input operation overlapping TTL expiry. See `evidence/RESULTS.md` and `evidence/GENERATION_RESULTS.md` for measured runs and limits.
+`acceptance.py stage1` and `stage2` exercise public adapter commands pinned to the returned generation. Run them only on an explicitly authorized target in separate SSH invocations, setting the same fresh `DESKHELPER_TEST_ID` and `DESKHELPER_TEST_RUN` for both. Stage 1 leaves a bounded owned session for stage 2; failures still have a TTL. The tests use Mousepad and Xmessage, known test strings, owned screenshots, a generated tone through verified private audio, and host pointer/focus/routing metadata only. They never capture human windows. `generation_acceptance.py` independently exercises ID replacement, refusal of all stale operations and an actual native input operation overlapping TTL expiry. Keep generated results outside the repository.
 
 The runtime adapter is one standard-library Python file plus its installed external tool dependencies (`doctor` lists them). It locates its supervisor through `Path(__file__).resolve()` and starts it with the current Python executable. Installed packaging must preserve the adapter as a real on-disk Python resource, rather than an ephemeral extraction that disappears after a command. Private state is stored outside package resources. Acceptance scripts and screenshots are development evidence, not runtime dependencies.
 
@@ -75,7 +75,7 @@ Acceptance observers default to host display `:0`, the current user's `~/.Xautho
 
 For installed-package acceptance, `DESKHELPER_TEST_COMMAND_JSON` can name the installed entry point (a JSON string array), `DESKHELPER_TEST_ADAPTER` supplies its on-disk adapter resource for the source hash, and `DESKHELPER_TEST_EVIDENCE_ROOT` places artifacts outside the installed package. For example, set the command to `["/path/to/venv/bin/quietwing"]` and run the same two stages. The test source defaults still invoke the adjacent adapter directly.
 
-See [INTEGRATION.md](INTEGRATION.md) for the portable current validation summary, including actual Codex/OpenCode MCP runs, installed-wheel acceptance, source provenance and cleanup. Detailed raw evidence is optional and ignored by the package repository.
+See [support and limits](../docs/status.md) for current capabilities and lifecycle restrictions. Keep acceptance output and raw evidence private.
 
 ## Peek from a Mac
 

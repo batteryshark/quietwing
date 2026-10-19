@@ -1,130 +1,116 @@
 # QuietWing
 
-**Separate desktops for agents. Keep using your computer.**
+<img src="assets/workstack-mark.png" alt="QuietWing comic mascot" width="256">
 
-QuietWing gives a computer-use agent somewhere else to open applications, click,
-type, and take screenshots. The agent works in a separate desktop while you keep
-your own pointer, focus, and audio.
+QuietWing gives a computer-use agent a separate desktop on a machine you own,
+so it can open applications, click, type, and take screenshots while you keep
+using your own desktop. The agent's windows and input stay in its work instance,
+with a lifecycle you can inspect and stop. QuietWing is experimental; the current
+release is [0.4.2](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2).
 
-QuietWing is for getting work done on machines you already own, without
-interrupting your main desktop or first setting up a managed fleet of virtual
-machines. It is useful for one or a few agents working alongside you on your
-Mac, Linux or Windows machines.
+Use it when an agent needs a graphical application for a longer task and you
+still need your computer. It handles the desktop underneath the agent:
 
-For independent workers at larger scale, a managed VM pool is a natural default:
-separate environments, repeatable images, snapshots/resets and explicit capacity
-management. QuietWing handles individual desktop lifetimes; it does not schedule
-a fleet. Multi-session servers are an option when their shared-resource density
-is a measured advantage, rather than a required next step for this project.
+- Separate application windows and input let you keep working without sharing
+  the agent's pointer and keyboard focus.
+- Work survives the controlling CLI or SSH connection closing. Mac guests can
+  save and resume their running applications; Linux and Windows have explicit
+  expiry and cleanup rules.
+- Generation-bound commands refuse a replaced desktop, so a stale controller
+  can't send input to a new instance with the same name.
+- An optional read-only Mac preview lets you watch a local Mac guest or a remote
+  Linux/Windows target without forwarding clicks, keys, or audio.
+- A versioned JSON CLI works with your own scripts or with
+  [computer-ctrl](https://github.com/batteryshark/computer-ctrl), which supplies
+  CLI and MCP tools for the agent. QuietWing doesn't require a particular harness.
 
-The current Mac backend already uses a local macOS VM. Linux uses a private
-desktop and Windows uses an existing authenticated child session. These backends support
-everyday local work, with the setup requirements and isolation limits described
-below.
+## What a separate desktop means
 
-It is an independent companion to
-[computer-ctrl](https://github.com/batteryshark/computer-ctrl). QuietWing owns
-desktop lifetime and native capture/input. Computer-ctrl supplies the agent's
-MCP tools, images, and automation workflow. QuietWing also works directly from
-the command line, without computer-ctrl or a particular agent harness.
+The backends use different OS facilities and have different requirements:
 
-**Status: experimental. Release: 0.4.2.** QuietWing adds an optional
-[read-only preview on Mac](docs/viewer.md) for a local Mac VM or an isolated
-Linux/Windows desktop over existing SSH. The window opens without taking keyboard
-focus and never forwards input or audio. Closing it leaves the agent working.
-See [current validation and limits](docs/status.md) for release acceptance and
-historical results. Version 0.4.1 fixes the ParaDesk stale-login snapshot race in
-QuietWing by verifying live provider status; see the [Windows adapter](windows/README.md#live-provider-readiness).
-
-```sh
-quietwing view --id minimal
-quietwing view --host user@linux-machine --id work
-quietwing view --host user@windows-machine --remote-platform windows --id work
-```
-
-Remote executable/state-root options select the existing agent target; use
-`--ssh-identity` for an existing nondefault SSH key. Viewing never starts,
-resumes, attaches, reconnects or signs in to a desktop. Windows keeps ParaDesk
-connected and hidden, including after helper stop, crash or rollback.
-
-Version 0.4.2 adds SSH preview `--follow` to wait for an agent's next verified
-attachment in the same Mac window; [usage and limits](docs/viewer.md#leave-an-ssh-preview-open-across-agent-attachments).
-It also adds [bounded Windows held keys](docs/held-keys.md), gated by the live
-worker capability. Existing workers need an explicit reattachment after their
-owned work is saved; installation alone does not replace a running worker.
-Possible cross-platform worker pools are recorded as [future work](docs/future-work.md).
-
-## Pick your desktop
-
-| Host | Agent desktop | Everyday behavior |
+| Target | Agent's workspace | Setup and lifetime |
 | --- | --- | --- |
-| Apple Silicon Mac | macOS VM using Apple's Virtualization.framework | Resume a provisioned guest; save memory and release RAM on stop. Tested with 2 vCPU, 4 GiB RAM, no audio devices. |
-| Linux | Private Xvfb with its own HOME/XDG, D-Bus, and PulseAudio null sink | Start/adopt an owned desktop; stop its apps when finished. Software rendering on the tested host. |
-| Windows | Existing authenticated ParaDesk child session | Attach and hide its connected viewer. Stop owned apps/workers while preserving the Windows login. |
+| Apple Silicon Mac | A macOS VM on Apple's Virtualization.framework, with a separate guest account/disk and an offscreen view. No audio devices or host home/project share. | Provision the guest first. Stop saves VM memory and releases RAM; start resumes it. |
+| Linux | A private Xvfb display, HOME/XDG directories, D-Bus session, and PulseAudio null sink under your existing user. | Install the native tools first. Stop or fixed TTL expiry ends owned apps; session files remain. |
+| Windows | An existing authenticated ParaDesk child session, with its connected viewer hidden during control. | Sign in locally first. Attach verifies the child; stop ends owned apps/workers and preserves the login and viewer visibility. |
 
-Windows needs an already signed-in child. Minimized/disconnected viewers are
-unsupported. Mac needs explicit guest provisioning first. Package installation
-alone does not prepare either desktop.
+Linux and Windows retain the user's filesystem and device permissions. Their
+desktop separation is not a security sandbox for untrusted programs. The Mac
+guest has a separate OS boundary, a private helper transfer directory, and NAT
+networking. Shared machine resources still need consideration. Read the
+[security model](SECURITY.md) before granting an agent access.
 
-## Install
+## Install and prepare a target
 
-Python 3.11+ is required; there are no Python runtime dependencies.
-Download the wheel and SHA256SUMS from the [v0.4.2 release](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2).
-For a private environment on Mac/Linux:
+QuietWing needs Python 3.11+ and has no Python runtime dependencies. Download
+the wheel and `SHA256SUMS` from the
+[v0.4.2 release](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2)
+and verify the checksum before installing. On Mac/Linux:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install https://github.com/batteryshark/quietwing/releases/download/v0.4.2/quietwing-0.4.2-py3-none-any.whl
-.venv/bin/quietwing --version
-.venv/bin/quietwing doctor
+.venv/bin/python -m pip install /path/to/quietwing-0.4.2-py3-none-any.whl
 ```
 
 Windows uses `.venv\Scripts\python.exe` and `.venv\Scripts\quietwing.exe`.
-Alternatively, install a reviewed wheel with
-`python -m pip install /path/to/quietwing-VERSION-py3-none-any.whl`, or use
-`uv tool install .` from a checkout. To develop from a checkout, install with `python -m pip install .`.
-This setup does not require a PyPI release.
+For source installation, use `python -m pip install .` from a reviewed checkout;
+pip may fetch build requirements. Native tools are separate prerequisites:
 
-Native tools are separate prerequisites:
+- [Mac setup and guest provisioning](macos/PROVISIONING.md) requires Apple
+  Silicon, Apple's Swift tools, space for the guest, and an explicitly completed
+  guest Setup Assistant and bridge bootstrap.
+- [Linux setup](linux/README.md) requires Xvfb/X11, xauth, xdotool, D-Bus,
+  PulseAudio, FFmpeg, and Mesa; xfwm4 is an optional window manager.
+- [Windows setup](windows/SETUP.md) requires a supported Windows edition,
+  .NET Framework tools, and a separately installed ParaDesk provider with an
+  authenticated, connected, non-minimized child viewer.
 
-- [Mac setup and guest provisioning](macos/PROVISIONING.md)
-- [Linux prerequisites and private desktop](linux/README.md)
-- [Windows setup and ParaDesk](windows/SETUP.md)
+The wheel includes native source, built with existing compilers into private
+cache/state directories. It includes no VM image or credentials. Installing the
+package doesn't provision a guest, create a Windows login, or grant desktop
+permissions. Use the platform guide before running lifecycle commands.
 
-The wheel includes native source; existing compilers build into a private cache.
-It contains no VM disk, credentials, snapshots, or machine state. Installation
-does not change host firewall, login policy, RDP ports, Sharing, accounts, or startup.
+## Use the desktop
 
-## First use
-
-Run on the controlled machine, directly or through SSH. Use a provisioned Mac ID;
-Linux can create a fresh ID.
+Run QuietWing on the controlled machine, directly or over existing SSH. Put the
+installed executable on your PATH, or use its full path. For a prepared Mac guest
+named `work`, or a new Linux ID:
 
 ```sh
 quietwing doctor
 quietwing start --id work
 quietwing describe --id work
-quietwing exec --id work -- PROGRAM ARGUMENTS
-quietwing capture --id work --output /absolute/new-capture.png
-quietwing input --id work --type 'Hello — café 日本語'
-quietwing stop --id work
 ```
 
-Windows uses `quietwing attach --id work --hide-viewer` instead of start, with
-`DESKHELPER_PARADESK_DATA` set to its prepared ParaDesk directory. There is one
-command, `quietwing`. No `deskhelper` alias is installed. See the
-[upgrade guide](docs/upgrading.md) for an existing 0.2 setup.
+On Windows, set `DESKHELPER_PARADESK_DATA` to the prepared provider data directory
+and acquire with `quietwing attach --id work --hide-viewer` instead of `start`.
+QuietWing won't sign in or reconnect a disconnected viewer for you.
 
-Scripts should bind capture, input, exec, status, and stop to acquisition's
-generation using `--expect-generation TOKEN`. Replaced sessions are refused
-before delivery. Normal output is JSON; errors exit nonzero. The
-[versioned interface](CONTRACT.md) is the source of truth.
+Acquisition returns a generation token. Pass that same token to subsequent
+commands; replace `TOKEN` below with the returned `session.generation`:
 
-## Connect computer-ctrl
+```sh
+quietwing exec --id work --expect-generation TOKEN -- PROGRAM ARGUMENTS
+quietwing capture --id work --expect-generation TOKEN --output /absolute/new-capture.png
+quietwing input --id work --expect-generation TOKEN --type 'Hello from the agent desktop'
+quietwing stop --id work --expect-generation TOKEN
+```
 
-Install both projects on the controlled machine. Use a computer-ctrl build
-containing [the merged QuietWing integration](https://github.com/batteryshark/computer-ctrl/pull/1).
-In a private cctl configuration:
+Choose a program installed in the target environment and a new capture filename
+in an existing writable directory. `exec` launches asynchronously; a successful
+launch doesn't mean the application's task has finished. Normal output is JSON;
+failures exit nonzero. The [CLI contract](CONTRACT.md) and
+[daily-use guide](docs/daily-use.md) cover binding, recovery, and cleanup.
+
+Save Linux/Windows documents before stopping. Linux's default 30-minute TTL runs
+from creation even during activity. Windows workers close owned apps after
+30 minutes without activity other than preview frames. Mac has no automatic idle
+stop; a clean stop saves guest memory, while crash recovery can require login.
+
+## Connect an agent through computer-ctrl
+
+Install [computer-ctrl](https://github.com/batteryshark/computer-ctrl) and
+QuietWing on the controlled machine. In a private cctl configuration:
 
 ```toml
 [sessions.work]
@@ -133,41 +119,43 @@ id = "work"
 acquire = "start"
 ```
 
-Launch the agent's MCP server with `cctl --session work mcp`. Its first ordinary
-control action acquires the target. Windows uses `acquire = "attach"`. The
-[examples](examples/) cover each backend. [Daily use](docs/daily-use.md) explains
-automatic acquisition, lifetimes, stopping, SSH, and progress viewing.
+Configure the agent's MCP command as `cctl --session work mcp`, with `CCTL_CONFIG`
+pointing to that file. The first control action acquires the target and pins its
+generation. Windows uses `acquire = "attach"` and provider settings; the
+[platform examples](examples/) include those options. Remote use is
+`cctl --host user@machine --session work mcp`, with configuration on that machine.
+QuietWing adds no network listener.
 
-## Peek at the agent
+Closing the agent or MCP connection leaves the work instance alive within its
+lifetime limits. Use `cctl --session work session stop` when finished. See
+[daily use](docs/daily-use.md) for explicit restart/rebind and residual state.
 
-Ask for a fresh screenshot, run `cctl --session work screenshot`, or use
-`quietwing capture`. These capture the isolated desktop. A common live viewer and
-show/hide command are not implemented yet. Mac stays offscreen; Linux has no
-viewer by default; Windows retains ParaDesk's active connection.
+## Watch progress and understand the limits
 
-## Scope
+On Mac, build the optional preview once with `quietwing build --viewer`, then
+run `quietwing view --id work` for an already running local guest. It also shows
+isolated Linux/Windows desktops over SSH. Closing the preview leaves the agent
+working; viewing never starts or reconnects a desktop. The
+[viewer guide](docs/viewer.md) covers remote options and follow mode.
 
-QuietWing provides session identity, lifecycle, app launch, pixels, and native
-input. Accessibility trees, browser DOM/CDP, window management, audio/video,
-and game compatibility are separate work. The computer-ctrl adapter supports a
-subset of its normal tools. See [status and limitations](docs/status.md).
+There is no native preview window on Linux or Windows, common takeover button,
+or agent pause panel. Screenshots and native mouse/keyboard input are the core
+control surface. The computer-ctrl adapter lacks accessibility trees, browser
+DOM/CDP, window management, drag/scroll, and audio/video tools. Windows
+[held keys](docs/held-keys.md) require a live worker advertising `key_hold`;
+installing 0.4.2 alone doesn't replace an older running worker. Support and
+platform-specific limits are in [status](docs/status.md).
 
-Windows/Linux apps retain their user's file/device permissions: separate desktops
-are not a security sandbox. Mac uses a separate guest with no host home/project
-folder shared. Read the [security model](SECURITY.md) before granting access.
+## Reference and development
 
-## Develop
+Start with [daily use](docs/daily-use.md), the [CLI contract](CONTRACT.md), and
+the [descriptor schema](session.schema.json). For implementation and packaging,
+see [architecture](docs/architecture.md), [contributing](CONTRIBUTING.md), and
+[releases](docs/releases.md). Portable checks are `python scripts/check.py`;
+native acceptance requires a separately authorized target and the
+[acceptance plan](ACCEPTANCE.md).
 
-```sh
-python scripts/check.py
-python -m pip install build
-python -m build
-python scripts/check_distribution.py dist
-```
-
-Default checks never start a desktop or request permissions. See
-[contributing](CONTRIBUTING.md), [architecture](docs/architecture.md),
-[releases](docs/releases.md), and [validation evidence](VALIDATION.md).
-
-MIT licensed. External tools and operating systems retain their own terms;
-see [third-party dependencies](THIRD_PARTY.md).
+Owned source and documentation are [MIT licensed](LICENSE). The comic artwork
+is AI-generated and offered under MIT to the extent applicable, without an
+exclusive-copyright claim. See [rights](RIGHTS.md) and
+[third-party terms](THIRD_PARTY.md) for the scope and external prerequisites.

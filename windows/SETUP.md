@@ -106,7 +106,7 @@ Use the supplied companion wheel in its own venv; no cctl installation is requir
 
 ```powershell
 python -m venv "$root\helper-venv"
-& "$root\helper-venv\Scripts\python.exe" -m pip install --no-index --no-deps C:\path\quietwing-0.4.1-py3-none-any.whl
+& "$root\helper-venv\Scripts\python.exe" -m pip install --no-index --no-deps C:\path\quietwing-0.4.2-py3-none-any.whl
 $helper = "$root\helper-venv\Scripts\quietwing.exe"
 $env:DESKHELPER_PARADESK_DATA = "$root\data"
 $env:DESKHELPER_STATE_ROOT = "$root\helper-state"
