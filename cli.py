@@ -26,6 +26,7 @@ def descriptor(response):
     generation = session.get('generation') if state in ('running', 'attached', 'starting') else None
     caps = {k: v for k, v in session.get('capabilities', {}).items() if type(v) is bool}
     caps.setdefault('key_hold', False)
+    caps.setdefault('pointer_drag', False)
     if state not in ('running', 'attached'):
         caps = {k: False for k in caps}
     return {'schemaVersion': 1, 'id': session['id'], 'platform': platform,

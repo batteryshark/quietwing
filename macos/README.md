@@ -17,6 +17,18 @@ python3 cli.py stop --id minimal
 
 Wait for `session.phase: running` after start. `status` and `attach` use a live owner socket; verified `exec`/Unicode capabilities additionally require a fresh nonce response from the guest bridge. There is no fallback to the host desktop. Capture paths must be new files. Mouse buttons are 1 left, 2 middle, 3 right. Key syntax includes `cmd+a`, `cmd+shift+g`, `ctrl+c`, `enter`, `escape`, arrows and navigation keys. ASCII uses US physical keyboard codes; Unicode uses only the guest clipboard followed by guest Cmd+V. TextEdit/app editing preferences may transform text normally.
 
+VM owners advertising `pointer_drag: true` accept
+`quietwing input --id minimal --drag X0 Y0 X1 Y1 --button 1` (add
+`--expect-generation TOKEN` when bound). Both endpoints use screenshot pixels,
+0 ≤ x < 1024 and 0 ≤ y < 768, exactly like click/move. The owner constructs all
+events before pressing, moves in 20 steps over about 350 ms, then releases within
+the same synchronous request. No host event posting, persistent button state or
+GuestBridge update is involved. Caller disconnection does not interrupt release;
+owner/VM crashes cannot promise completion. Verify the effect in a fresh capture;
+an unknown outcome is not permission to replay. Old owners refuse: save/stop the
+guest, install the updated package, run `quietwing build`, then resume and explicitly
+rebind cctl. Scroll is not implemented.
+
 `stop` pauses and saves the entire owned VM memory/session, then exits its owner. `start` restores the same desktop without login; this was measured with an unsaved TextEdit document and the same guest bridge process/instance. Controller exit alone leaves the guest running. Stop retains the disk and encrypted, host-bound snapshot; it does not uninstall the guest. RAM is released while stopped. A crash cannot promise unsaved work: cold boot presents guest login, using the separate guest-local account. Snapshots are consumed before resuming disk mutation, never replayed automatically after a failed resume.
 
 State is private under `~/.local/state/deskhelper/macos-vm/NAME` (or `DESKHELPER_STATE_ROOT/macos-vm/NAME`). It holds disk/platform files, socket/lock, snapshot, generated guest-local credential and a single helper transfer directory. Keep credentials out of source, evidence, and command arguments. Ordinary boot/restore does not need the IPSW installation cache. No host home/project directory is shared. Guest NAT is enabled, with no inbound listener/port-forward. The guest bridge's LaunchAgent exists **inside the guest only**; no host autostart is installed.

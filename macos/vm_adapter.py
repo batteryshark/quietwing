@@ -152,8 +152,9 @@ def _command(args):
         payload['output']=str(Path(args.output).absolute())
         return request(args.id,payload)
     if args.command=='input':
-        if all(getattr(args,k) is None for k in ('text','key','click','move')):raise VMError('input requires text, key, click or move')
-        payload.update({k:getattr(args,k) for k in ('text','key','click','move') if getattr(args,k) is not None});payload['button']=args.button
+        if all(getattr(args,k,None) is None for k in ('text','key','click','move','drag')):raise VMError('input requires text, key, click, move or drag')
+        if getattr(args,'drag',None) is not None and session.get('capabilities',{}).get('pointer_drag') is not True:raise VMError('VM owner does not support pointer_drag; save/stop, build and resume with the updated owner')
+        payload.update({k:getattr(args,k) for k in ('text','key','click','move','drag') if getattr(args,k,None) is not None});payload['button']=args.button
         if args.text is not None and any(ord(c)>127 for c in args.text):
             if len(args.text.encode('utf-16-le'))>8192:raise VMError('Text exceeds 4096 UTF16 units')
             pasted=request(args.id,{'op':'bridge','bridge_op':'clipboard','text':args.text,'instance':generation})

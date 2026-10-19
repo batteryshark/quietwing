@@ -40,8 +40,15 @@ work before explicit reattachment to load new worker code. Timing includes
 delivery overhead; no frame-accurate game input or general game/GPU compatibility
 is promised. See [held keys](held-keys.md).
 
+Development Mac VM owners advertising `pointer_drag` support bounded guest-only
+press/move/release through computer-ctrl's `drag`, with the same screenshot/zoom
+coordinate mapping as click. Save/stop, rebuild and resume to load the new owner;
+older owners and other platforms refuse. Scroll remains unsupported. Native
+validation for this development change is recorded below; no cross-platform or
+game compatibility follows from it.
+
 The computer-ctrl adapter lacks accessibility, DOM/CDP, window management,
-drag/scroll, and audio/video tools. Linux applications can record the private
+scroll, and audio/video tools. Linux applications can record the private
 null monitor through `exec`, but QuietWing has no dedicated recording command.
 Application singleton IPC and explicit device routes need their own checks.
 
@@ -66,6 +73,24 @@ preview frames. Stop preserves the native login/provider and current viewer
 visibility. Uninstalling the package doesn't sign out that child. Save documents
 before stop or expiry. [Daily use](daily-use.md) explains recovery; commands
 aren't automatically replayed after a timeout.
+
+## Development Mac drag validation — 2026-10-19
+
+Portable checks passed (133 tests, three Windows-native skips on Mac), as did
+local NSEvent tests for left/middle/right event sequences, interpolation, endpoint
+bounds and release. Native sources built successfully; fresh wheel/source archives
+passed audit and the installed-package check passed. Consumer coverage includes
+frame scaling/zoom, generation refusal, old-worker refusal and release receipts.
+
+The installed cctl direct-MCP adapter's left-button drag moved a disposable TextEdit window using a
+half-size screenshot's coordinates and visibly selected text in the existing Mac
+guest. Both actions confirmed release. The owned test window closed and the VM
+saved/stopped, with its owner exited. The VM stayed offscreen/nonkey/nonmain and
+reported no host input. Its idle-locked resume required an explicitly authorized
+guest-local unlock; idle lock can require that again. No host settings changed.
+Middle/right button identity is covered by local event tests, not live guest gestures.
+Scroll is deferred. These are bounded native/scripted MCP checks, not new
+autonomous Codex/OpenCode workflows; those two-harness reruns remain deferred.
 
 ## Release history
 

@@ -9,6 +9,44 @@ import Darwin
 struct VMFailure: Error { let code:String; let message:String }
 func failure(_ c:String,_ m:String)->VMFailure { VMFailure(code:c,message:m) }
 func encoded(_ v:[String:Any])->Data { (try? JSONSerialization.data(withJSONObject:v,options:[.sortedKeys])) ?? Data("{}".utf8) }
+// All events are constructed before pressing. Delivery is synchronous on the owner
+// actor: no lifecycle/input request can interleave and a disconnected caller cannot
+// strand a button. Events go to the owned view, never NSApp/global event posting.
+@MainActor func guestDrag(_ request:[String:Any],windowNumber:Int,
+    deliver:(NSEvent)->Void,pause:(UInt32)->Void = {usleep($0)}) throws -> Int {
+    guard let xy=request["drag"] as? [Double],xy.count==4,xy.allSatisfy({$0.isFinite}),
+        xy[0]>=0,xy[0]<1024,xy[1]>=0,xy[1]<768,
+        xy[2]>=0,xy[2]<1024,xy[3]>=0,xy[3]<768 else {
+        throw failure("invalid_input","Drag requires two bounded guest points")
+    }
+    let button=request["button"] as? Int ?? 1
+    guard [1,2,3].contains(button) else{throw failure("invalid_input","Invalid drag button")}
+    let down:NSEvent.EventType=button==3 ? .rightMouseDown:button==2 ? .otherMouseDown:.leftMouseDown
+    let dragged:NSEvent.EventType=button==3 ? .rightMouseDragged:button==2 ? .otherMouseDragged:.leftMouseDragged
+    let up:NSEvent.EventType=button==3 ? .rightMouseUp:button==2 ? .otherMouseUp:.leftMouseUp
+    let began=ProcessInfo.processInfo.systemUptime
+    func event(_ type:NSEvent.EventType,_ fraction:Double,_ offset:Double) throws -> NSEvent {
+        let location=NSPoint(x:xy[0]+(xy[2]-xy[0])*fraction,y:768-(xy[1]+(xy[3]-xy[1])*fraction))
+        guard let e=NSEvent.mouseEvent(with:type,location:location,modifierFlags:[],timestamp:began+offset,
+            windowNumber:windowNumber,context:nil,eventNumber:0,clickCount:1,pressure:type==up ? 0:1)
+            else{throw failure("event_failed","Could not build guest drag event")}
+        // AppKit's mouse factory defaults buttonNumber to zero even for non-left
+        // event types. Preserve the window-local event and identify the button.
+        if button != 1 {
+            guard let raw=e.cgEvent else{throw failure("event_failed","Could not identify drag button")}
+            raw.setIntegerValueField(.mouseEventButtonNumber,value:button==3 ? 1:2)
+            guard let identified=NSEvent(cgEvent:raw) else{throw failure("event_failed","Could not build identified drag event")}
+            return identified
+        }
+        return e
+    }
+    let press=try event(down,0,0),release=try event(up,1,0.35)
+    let moves=try (1...20).map{try event(dragged,Double($0)/20,0.05+Double($0)*0.015)}
+    deliver(press);defer{deliver(release)}
+    pause(50_000)
+    for e in moves{pause(15_000);deliver(e)}
+    return moves.count+2
+}
 final class QuietPanel:NSPanel {
     override var canBecomeKey:Bool { false }
     override var canBecomeMain:Bool { false }
@@ -60,12 +98,12 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
         write(status(),"host-status.json")
     }
     func status()->[String:Any] {
-        var value:[String:Any] = ["id":id,"backend":"apple-virtualization","build":"vmhost-r7-generation-guard","controller_disconnects":controllerDisconnects,"instance":instance,"generation":instance,"pid":pid,"started_at":began.timeIntervalSince1970,"phase":phase,
+        var value:[String:Any] = ["id":id,"backend":"apple-virtualization","build":"vmhost-r8-guest-drag","controller_disconnects":controllerDisconnects,"instance":instance,"generation":instance,"pid":pid,"started_at":began.timeIntervalSince1970,"phase":phase,
         "cpu_count":2,"memory_bytes":4294967296,"disk_virtual_bytes":68719476736,"audio_devices":0,"audio_isolated":true,"save_restore_supported":canSaveRestore,"network":"NAT, no forwarding or host listener",
         "screen_capture_preflight":CGPreflightScreenCaptureAccess(),"capture_mode":"ScreenCaptureKit currentProcess (no TCC consent)","host_input_posted":false,"host_frontmost_pid_before":frontBefore,"host_frontmost_pids_seen":foregroundSeen.sorted(),
         "host_became_frontmost":foregroundSeen.contains(pid),"host_cursor_before":[cursorBefore.x,cursorBefore.y],"host_cursor_current":[CGEvent(source:nil)?.location.x ?? -1,CGEvent(source:nil)?.location.y ?? -1],"controller_exit_stops_guest":false,"captures_completed":captures,
         "input_mode":"direct guest USB events through owned VZVirtualMachineView",
-        "capabilities":["capture":phase == "running","input":phase == "running","keyboard":phase == "running","pointer":phase == "running","exec":false,"audio":false,"audio_capture":false,"audio_silent":true,"browser":false,"accessibility":false]]
+        "capabilities":["capture":phase == "running","input":phase == "running","keyboard":phase == "running","pointer":phase == "running","pointer_drag":phase == "running","exec":false,"audio":false,"audio_capture":false,"audio_silent":true,"browser":false,"accessibility":false]]
         if let machine {value["vm_state"]=machine.state.rawValue};if let installer {value["install_fraction"]=installer.progress.fractionCompleted}
         if let lastError {value["last_error"]=lastError};if let panel {value["window_id"]=panel.windowNumber;value["window_offscreen"] = !NSScreen.screens.contains(where:{$0.frame.intersects(panel.frame)});value["window_key"]=panel.isKeyWindow;value["window_main"]=panel.isMainWindow}
         if let lastInputAt {value["last_input_at"]=lastInputAt};return value
@@ -252,13 +290,30 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
             for modifier in pieces.dropLast(){switch modifier{case "cmd","command","meta":flags.insert(.command);case "ctrl","control":flags.insert(.control);case "alt","option":flags.insert(.option);case "shift":flags.insert(.shift);default:throw failure("invalid_key","Unknown modifier")}}
             let last=pieces.last ?? "";let named:[String:UInt16] = ["enter":36,"return":36,"tab":48,"space":49,"escape":53,"esc":53,"backspace":51,"delete":117,"up":126,"down":125,"left":123,"right":124,"home":115,"end":119]
             guard let code=named[last] ?? keyCode(last) else{throw failure("invalid_key","Unsupported key")};sendKey(code:code,characters:last.count==1 ? last:"",modifiers:flags);sent=1
+        } else if request["drag"] != nil {
+            sent=try guestDrag(request,windowNumber:panel.windowNumber){e in
+                switch e.type {
+                case .leftMouseDown:view.mouseDown(with:e)
+                case .leftMouseDragged:view.mouseDragged(with:e)
+                case .leftMouseUp:view.mouseUp(with:e)
+                case .rightMouseDown:view.rightMouseDown(with:e)
+                case .rightMouseDragged:view.rightMouseDragged(with:e)
+                case .rightMouseUp:view.rightMouseUp(with:e)
+                case .otherMouseDown:view.otherMouseDown(with:e)
+                case .otherMouseDragged:view.otherMouseDragged(with:e)
+                case .otherMouseUp:view.otherMouseUp(with:e)
+                default:break
+                }
+            }
         } else if let xy=(request["click"] ?? request["move"]) as? [Double],xy.count==2,xy.allSatisfy({$0.isFinite}),xy[0]>=0,xy[0]<1024,xy[1]>=0,xy[1]<768 {
             let location=NSPoint(x:xy[0],y:768-xy[1]);let click=request["click"] != nil;let button=request["button"] as? Int ?? 1
             if click {let down:NSEvent.EventType=button==3 ? .rightMouseDown:button==2 ? .otherMouseDown:.leftMouseDown;let up:NSEvent.EventType=button==3 ? .rightMouseUp:button==2 ? .otherMouseUp:.leftMouseUp
                 for type in [down,up] {guard let e=NSEvent.mouseEvent(with:type,location:location,modifierFlags:[],timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:panel.windowNumber,context:nil,eventNumber:0,clickCount:1,pressure:type==down ? 1:0) else{throw failure("event_failed","Could not build mouse event")};if button==3 {type==down ? view.rightMouseDown(with:e):view.rightMouseUp(with:e)}else if button==2{type==down ? view.otherMouseDown(with:e):view.otherMouseUp(with:e)}else{type==down ? view.mouseDown(with:e):view.mouseUp(with:e)}}
             }else if let e=NSEvent.mouseEvent(with:.mouseMoved,location:location,modifierFlags:[],timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:panel.windowNumber,context:nil,eventNumber:0,clickCount:0,pressure:0){view.mouseMoved(with:e)};sent=1
-        }else{throw failure("invalid_input","Provide text, key, or bounded click/move coordinates")}
-        lastInputAt=Date().timeIntervalSince1970;return ["events_submitted":sent,"destination":"owned VZVirtualMachineView","host_global_events":false,"guest_effect_requires_capture_verification":true]
+        }else{throw failure("invalid_input","Provide text, key, or bounded click/move/drag coordinates")}
+        lastInputAt=Date().timeIntervalSince1970;var result:[String:Any] = ["events_submitted":sent,"destination":"owned VZVirtualMachineView","host_global_events":false,"guest_effect_requires_capture_verification":true]
+        if request["drag"] != nil{result["released"]=true}
+        return result
     }
     func sendKey(code:UInt16,characters:String,modifiers:NSEvent.ModifierFlags) {
         let keys:[(NSEvent.ModifierFlags,UInt16)]=[(.command,55),(.shift,56),(.option,58),(.control,59)]

@@ -113,6 +113,7 @@ def parse(argv):
     inputs.add_argument('--key')
     inputs.add_argument('--click', nargs=2, type=float)
     inputs.add_argument('--move', nargs=2, type=float)
+    inputs.add_argument('--drag', nargs=4, type=float, metavar=('X0', 'Y0', 'X1', 'Y1'), help='Guest-only bounded press, move and release (VM backend)')
     parser.add_argument('--button', type=int, choices=[1, 2, 3], default=1)
     normalized = list(argv)
     executable = []
@@ -139,6 +140,8 @@ def parse(argv):
     if has_literal_text:
         args.text = literal_text
     args.argv = executable
+    if args.drag is not None and (args.command != 'input' or args.backend != 'vm'):
+        raise Failure('invalid_arguments', '--drag requires input with the VM backend')
     if args.command != 'view' and (args.close_viewer or args.viewer_status or args.follow or args.host or args.remote_command != 'quietwing' or args.remote_state_root or args.remote_platform != 'linux' or args.ssh_identity):
         raise Failure('invalid_arguments', '--close/--status/--follow are view options only')
     if not args.host and (args.remote_command != 'quietwing' or args.remote_state_root or args.remote_platform != 'linux' or args.ssh_identity):
