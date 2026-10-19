@@ -15,7 +15,24 @@ python3 cli.py capture --id minimal --output /absolute/new-file.png
 python3 cli.py stop --id minimal
 ```
 
-Wait for `session.phase: running` after start. `status` and `attach` use a live owner socket; verified `exec`/Unicode capabilities additionally require a fresh nonce response from the guest bridge. There is no fallback to the host desktop. Capture paths must be new files. Mouse buttons are 1 left, 2 middle, 3 right. Key syntax includes `cmd+a`, `cmd+shift+g`, `ctrl+c`, `enter`, `escape`, arrows and navigation keys. ASCII uses US physical keyboard codes; Unicode uses only the guest clipboard followed by guest Cmd+V. TextEdit/app editing preferences may transform text normally.
+Wait for `session.phase: running` after start. `status` and `attach` use a live owner socket; verified `exec`/Unicode capabilities additionally require a fresh nonce response from the guest bridge. There is no fallback to the host desktop. Capture paths must be new files. Mouse buttons are 1 left, 2 middle, 3 right. Key syntax includes `cmd+a`, `cmd+shift+g`, `ctrl+c`, `enter`, `escape`, `left/right/up/down`, `home/end/pageup/pagedown`, and standalone `cmd/shift/option/control`. Modifiers are left-side USB keys.
+
+Development owners (`vmhost-r9-guest-keyboard`) advertise `key_hold` and accept
+`quietwing input --id minimal --expect-generation TOKEN --key Space --hold-ms 300`.
+Durations are integers 1–5000 ms; omitted/zero taps use a 30-ms down interval.
+The owner yields between USB reports, retains an input/lifecycle exclusion gate
+through reverse release, and completes the bounded request if its caller leaves.
+No persistent down state, host posting, autorepeat synthesis or frame-accurate
+timing is promised. See [held keys](../docs/held-keys.md).
+
+With a live bridge, ASCII **and** Unicode text use one generation-bound guest
+clipboard/Cmd+V transaction, up to 4096 UTF16 units. This avoids the former
+unpaced ASCII key burst and US-layout dependence. It changes only the guest
+clipboard, does not restore its previous contents, and does not certify the
+focused app's value (`verified: false`). Applications may transform/reject paste;
+verify the resulting content. Before bridge readiness, short ASCII bootstrap/login
+text uses paced US keys (128 UTF16 units maximum). A failed/ambiguous paste is
+never retried as key events. No guest bridge binary update is needed.
 
 VM owners advertising `pointer_drag: true` accept
 `quietwing input --id minimal --drag X0 Y0 X1 Y1 --button 1` (add
@@ -27,7 +44,7 @@ GuestBridge update is involved. Caller disconnection does not interrupt release;
 owner/VM crashes cannot promise completion. Verify the effect in a fresh capture;
 an unknown outcome is not permission to replay. Old owners refuse: save/stop the
 guest, install the updated package, run `quietwing build`, then resume and explicitly
-rebind cctl. Scroll is not implemented.
+rebind cctl. The same upgrade sequence loads keyboard changes. Scroll is not implemented.
 
 `stop` pauses and saves the entire owned VM memory/session, then exits its owner. `start` restores the same desktop without login; this was measured with an unsaved TextEdit document and the same guest bridge process/instance. Controller exit alone leaves the guest running. Stop retains the disk and encrypted, host-bound snapshot; it does not uninstall the guest. RAM is released while stopped. A crash cannot promise unsaved work: cold boot presents guest login, using the separate guest-local account. Snapshots are consumed before resuming disk mutation, never replayed automatically after a failed resume.
 

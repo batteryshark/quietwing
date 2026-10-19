@@ -73,6 +73,54 @@ class GenerationBoundary(unittest.TestCase):
                 self.assertEqual(request.call_count,len(replies))
                 self.assertEqual(request.call_args.args[1]['instance'],'fixed-owner')
 
+    def test_hold_capability_and_generation(self):
+        ready=self.response();ready['session']['capabilities']['key_hold']=True
+        for replies in ([self.response(False)],[ready,self.response(False)]):
+            with patch.object(vm_adapter,'request',side_effect=replies) as request:
+                result=vm_adapter.command(self.args('input','--key','shift+left','--hold-ms','300'))
+                self.assertEqual(result['error']['code'],'generation_changed')
+                self.assertEqual(request.call_count,len(replies))
+                self.assertEqual(request.call_args.args[1]['instance'],'fixed-owner')
+        done=self.response();done['session']['phase']='stopped';done['result']={'released':True,'heldMs':300}
+        with patch.object(vm_adapter,'request',side_effect=[ready,done]) as request:
+            self.assertTrue(vm_adapter.command(self.args('input','--key','Space','--hold-ms','300'))['ok'])
+            self.assertEqual(request.call_args.args[1],dict(op='input',instance='fixed-owner',key='Space',hold_ms=300,button=1))
+        with patch.object(vm_adapter,'request',return_value=self.response()) as request:
+            with self.assertRaisesRegex(vm_adapter.VMError,'does not support key_hold'):
+                vm_adapter.command(self.args('input','--key','Space','--hold-ms','300'))
+            self.assertEqual(request.call_count,1)
+
+    def test_paste_is_one_owner_guarded_transaction_and_never_replayed(self):
+        ready=self.response();ready['session']['capabilities']['text_paste']=True
+        for text in ('a'*1000, '--help ; $(literal) café 日本語'):
+            with patch.object(vm_adapter,'request',side_effect=[ready,self.response(False)]) as request,patch.object(vm_adapter,'live_bridge',return_value='guest'):
+                result=vm_adapter.command(self.args('input','--type',text))
+                self.assertFalse(result['ok']);self.assertEqual(request.call_count,2)
+                self.assertEqual(request.call_args.args[1],dict(op='bridge',bridge_op='type_text',text=text,instance='fixed-owner'))
+        with patch.object(vm_adapter,'request',return_value=ready) as request:
+            with self.assertRaisesRegex(vm_adapter.VMError,'4096'):
+                vm_adapter.command(self.args('input','--type','x'*4097))
+            self.assertEqual(request.call_count,1)
+
+    def test_invalid_hold_cli_never_reaches_transport(self):
+        for rest in (['--key','Space','--hold-ms','-1'],['--key','a','--hold-ms','5001'],
+                     ['--type','a','--hold-ms','300'],['--key','a','--hold-ms','1.5'],
+                     ['--key','a','--hold-ms','300','--backend','native']):
+            with self.subTest(rest=rest),self.assertRaises(adapter.Failure):self.args('input',*rest)
+
+    def test_bootstrap_fallback_only_before_paste_and_without_live_bridge(self):
+        ready=self.response();ready['session']['capabilities']['text_paste']=True
+        done=self.response();done['session']['phase']='stopped'
+        for unavailable in (vm_adapter.VMError('No live verified guest GUI bridge'),FileNotFoundError('bridge-id')):
+            with patch.object(vm_adapter,'request',side_effect=[ready,done]) as request,patch.object(vm_adapter,'live_bridge',side_effect=unavailable):
+                result=vm_adapter.command(self.args('input','--type','Bootstrap'))
+                self.assertTrue(result['ok']);self.assertEqual(request.call_args.args[1]['text'],'Bootstrap')
+                self.assertEqual(request.call_args.args[1]['op'],'input')
+        with patch.object(vm_adapter,'request',side_effect=[ready,vm_adapter.VMError('unknown paste outcome')]) as request,patch.object(vm_adapter,'live_bridge',return_value='guest'):
+            with self.assertRaisesRegex(vm_adapter.VMError,'unknown paste outcome'):
+                vm_adapter.command(self.args('input','--type','never replay'))
+            self.assertEqual(request.call_count,2)
+
     def test_drag_cli_refuses_ambiguous_or_native_requests(self):
         for rest in (['--drag','1','2','3'],['--drag','1','2','3','4','--click','5','6'],
                      ['--drag','1','2','3','4','--backend','native'],['--drag','1','2','3','4','--button','4']):

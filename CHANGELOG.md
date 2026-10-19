@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Development macOS VM keyboard: bounded key/chord holds with owner-side release,
+  correct left-device modifier reports and paced asynchronous USB delivery.
+- Route ASCII and Unicode text through one generation-bound guest-only paste
+  transaction; retain short paced US-key bootstrap input when no bridge is live.
+- Keep scroll deferred; native and two-harness validation limits are in status.
+
 ## 0.4.2 — 2026-10-16
 
 - Add Windows `input --key KEY --hold-ms MS` (1–5000 ms), native scan-code chords,

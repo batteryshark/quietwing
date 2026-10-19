@@ -111,6 +111,7 @@ def parse(argv):
     inputs = parser.add_mutually_exclusive_group()
     inputs.add_argument('--type', dest='text')
     inputs.add_argument('--key')
+    parser.add_argument('--hold-ms', type=int, default=0, help='Bounded guest key/chord hold, 1–5000 ms; zero is a tap')
     inputs.add_argument('--click', nargs=2, type=float)
     inputs.add_argument('--move', nargs=2, type=float)
     inputs.add_argument('--drag', nargs=4, type=float, metavar=('X0', 'Y0', 'X1', 'Y1'), help='Guest-only bounded press, move and release (VM backend)')
@@ -140,6 +141,8 @@ def parse(argv):
     if has_literal_text:
         args.text = literal_text
     args.argv = executable
+    if not 0 <= args.hold_ms <= 5000 or (args.hold_ms and (args.command != 'input' or args.backend != 'vm' or args.key is None)):
+        raise Failure('invalid_arguments', '--hold-ms requires a VM input key and 0–5000 ms')
     if args.drag is not None and (args.command != 'input' or args.backend != 'vm'):
         raise Failure('invalid_arguments', '--drag requires input with the VM backend')
     if args.command != 'view' and (args.close_viewer or args.viewer_status or args.follow or args.host or args.remote_command != 'quietwing' or args.remote_state_root or args.remote_platform != 'linux' or args.ssh_identity):

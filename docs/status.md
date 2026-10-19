@@ -34,8 +34,8 @@ surface once the backend is ready. Mac exec/Unicode readiness also needs
 its guest bridge. Generation preconditions refuse replaced instances before an
 action; they don't constrain the authority of a program launched inside one.
 
-Windows `key_hold` supports bounded 1–5000 ms key/chord holds only when the live
-worker advertises it. Other backends and older workers refuse holds. Save owned
+Windows and development Mac VM `key_hold` support bounded 1–5000 ms key/chord holds only when the live
+worker advertises it. Linux and older workers refuse holds. Save owned
 work before explicit reattachment to load new worker code. Timing includes
 delivery overhead; no frame-accurate game input or general game/GPU compatibility
 is promised. See [held keys](held-keys.md).
@@ -91,6 +91,32 @@ guest-local unlock; idle lock can require that again. No host settings changed.
 Middle/right button identity is covered by local event tests, not live guest gestures.
 Scroll is deferred. These are bounded native/scripted MCP checks, not new
 autonomous Codex/OpenCode workflows; those two-harness reruns remain deferred.
+
+## Development Mac keyboard validation — 2026-10-19
+
+`vmhost-r9-guest-keyboard` adds bounded held keys, proper device-specific modifier
+reports, and asynchronous USB pacing behind an input/lifecycle exclusion gate.
+The former ASCII path submitted an entire unpaced key burst; live-bridge text now
+uses the existing guest-only clipboard and one owner-guarded paste transaction,
+for ASCII and Unicode alike (4096 UTF16 units). Bridge-less US-key bootstrap text
+is paced and limited to 128 units. There is no host clipboard/input path, silent
+hold downgrade, paste replay or general focused-field read-back claim.
+
+Installed cctl CLI checks in the existing saved Mac guest observed 300-ms Space,
+all four arrows, all four modifiers and Shift+Left in a disposable native app
+polling guest HID key state across multiple ticks; all keys were released.
+Cmd+N created new Terminal and TextEdit windows. A 1,000-character mixed ASCII
+payload typed through cctl into a new plain TextEdit document was saved and read
+back exactly, including punctuation and literal shell metacharacters. A stale
+generation hold refused before delivery. Test windows closed; protected apps/data
+remained and the VM saved/stopped. Host load retained headroom; the owner stayed
+offscreen/nonkey/nonmain and reported no host input or activation.
+
+Portable tests, local NSEvent tests and native build/package checks cover the
+new paths. These are bounded native/CLI checks, not two new autonomous harness
+workflows; those reruns remain deferred. The disposable Safari local-page check
+showed a blank body, so no browser/game compatibility is claimed. Scroll remains
+deferred. No Linux/Windows behavior change or cross-platform native claim follows.
 
 ## Release history
 

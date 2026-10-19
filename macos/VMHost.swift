@@ -47,6 +47,45 @@ func encoded(_ v:[String:Any])->Data { (try? JSONSerialization.data(withJSONObje
     for e in moves{pause(15_000);deliver(e)}
     return moves.count+2
 }
+// Prebuild both edges. Modifiers use flagsChanged, not ordinary keyDown/up.
+// The owner guards this whole async operation against lifecycle/other input.
+// Yield between reports: blocking its main actor can coalesce USB key state.
+@MainActor func guestKey(code:UInt16,characters:String,modifiers:NSEvent.ModifierFlags,
+    holdMS:Int,windowNumber:Int,deliver:(NSEvent)->Void,
+    pause:(UInt32) async -> Void = {try? await Task.sleep(nanoseconds:UInt64($0)*1000)}) async throws {
+    guard (0...5000).contains(holdMS) else{throw failure("invalid_input","hold_ms must be 0–5000")}
+    let keys:[(NSEvent.ModifierFlags,UInt16)]=[(.command,55),(.shift,56),(.option,58),(.control,59)]
+    var active:NSEvent.ModifierFlags=[],press=[NSEvent](),release=[NSEvent]()
+    func event(_ key:UInt16,_ type:NSEvent.EventType,_ flags:NSEvent.ModifierFlags,_ text:String="") throws -> NSEvent {
+        // VZ's keyboard tracks left/right USB modifiers from the device-specific
+        // bits, not just AppKit's aggregate command/shift flags. Match real left
+        // modifier reports without consulting or adopting the host keyboard.
+        var raw=flags.rawValue
+        for (flag,bit):(NSEvent.ModifierFlags,UInt) in [(.command,0x8),(.shift,0x2),(.option,0x20),(.control,0x1)] where flags.contains(flag){raw |= bit}
+        guard let e=NSEvent.keyEvent(with:type,location:.zero,modifierFlags:NSEvent.ModifierFlags(rawValue:raw),
+            timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:windowNumber,context:nil,
+            characters:text,charactersIgnoringModifiers:text.lowercased(),isARepeat:false,keyCode:key)
+            else{throw failure("event_failed","Could not build guest keyboard event")}
+        return e
+    }
+    for (flag,key) in keys where modifiers.contains(flag){active.insert(flag);press.append(try event(key,.flagsChanged,active))}
+    let standalone=keys.first(where:{$0.1==code})
+    if let (flag,_) = standalone {
+        guard modifiers.isEmpty else{throw failure("invalid_key","Standalone modifier cannot be a chord target")}
+        press.append(try event(code,.flagsChanged,flag));release.append(try event(code,.flagsChanged,[]))
+    }else{
+        press.append(try event(code,.keyDown,modifiers,characters))
+        release.append(try event(code,.keyUp,modifiers,characters))
+    }
+    for (flag,key) in keys.reversed() where modifiers.contains(flag){active.remove(flag);release.append(try event(key,.flagsChanged,active))}
+    for e in press.dropLast(){deliver(e);await pause(10_000)}
+    deliver(press.last!)
+    // Even a tap must survive USB/report scheduling. No synthetic autorepeat.
+    await pause(UInt32(holdMS == 0 ? 30:holdMS)*1000)
+    // No throwing/cancellable work after press; caller disconnection cannot
+    // cancel this owner task. Reverse release runs before clearing its busy gate.
+    for e in release{deliver(e);await pause(10_000)}
+}
 final class QuietPanel:NSPanel {
     override var canBecomeKey:Bool { false }
     override var canBecomeMain:Bool { false }
@@ -69,7 +108,7 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
     var phase="starting";var lastError:String?;var machine:VZVirtualMachine?;var installer:VZMacOSInstaller?
     var panel:QuietPanel!;var view:VZVirtualMachineView!;var timer:Timer?;var lockFD:Int32 = -1
     var frontBefore:pid_t = -1;var foregroundSeen=Set<pid_t>();var lastInputAt:Double?;var captures=0;var controllerDisconnects=0;var cursorBefore=CGPoint.zero
-    var bridgeBusy=false
+    var bridgeBusy=false;var inputBusy=false
     var listener:Int32 = -1;var shouldInstall:Bool;var canSaveRestore=false;var terminating=false;var startupTask:Task<Void,Never>?
     init(root:URL,id:String,install:Bool) {self.root=root;self.id=id;self.shouldInstall=install}
     func file(_ name:String)->URL {root.appendingPathComponent(name)}
@@ -98,12 +137,12 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
         write(status(),"host-status.json")
     }
     func status()->[String:Any] {
-        var value:[String:Any] = ["id":id,"backend":"apple-virtualization","build":"vmhost-r8-guest-drag","controller_disconnects":controllerDisconnects,"instance":instance,"generation":instance,"pid":pid,"started_at":began.timeIntervalSince1970,"phase":phase,
+        var value:[String:Any] = ["id":id,"backend":"apple-virtualization","build":"vmhost-r9-guest-keyboard","controller_disconnects":controllerDisconnects,"instance":instance,"generation":instance,"pid":pid,"started_at":began.timeIntervalSince1970,"phase":phase,
         "cpu_count":2,"memory_bytes":4294967296,"disk_virtual_bytes":68719476736,"audio_devices":0,"audio_isolated":true,"save_restore_supported":canSaveRestore,"network":"NAT, no forwarding or host listener",
         "screen_capture_preflight":CGPreflightScreenCaptureAccess(),"capture_mode":"ScreenCaptureKit currentProcess (no TCC consent)","host_input_posted":false,"host_frontmost_pid_before":frontBefore,"host_frontmost_pids_seen":foregroundSeen.sorted(),
         "host_became_frontmost":foregroundSeen.contains(pid),"host_cursor_before":[cursorBefore.x,cursorBefore.y],"host_cursor_current":[CGEvent(source:nil)?.location.x ?? -1,CGEvent(source:nil)?.location.y ?? -1],"controller_exit_stops_guest":false,"captures_completed":captures,
         "input_mode":"direct guest USB events through owned VZVirtualMachineView",
-        "capabilities":["capture":phase == "running","input":phase == "running","keyboard":phase == "running","pointer":phase == "running","pointer_drag":phase == "running","exec":false,"audio":false,"audio_capture":false,"audio_silent":true,"browser":false,"accessibility":false]]
+        "capabilities":["capture":phase == "running","input":phase == "running","keyboard":phase == "running","key_hold":phase == "running","text_paste":phase == "running","pointer":phase == "running","pointer_drag":phase == "running","exec":false,"audio":false,"audio_capture":false,"audio_silent":true,"browser":false,"accessibility":false]]
         if let machine {value["vm_state"]=machine.state.rawValue};if let installer {value["install_fraction"]=installer.progress.fractionCompleted}
         if let lastError {value["last_error"]=lastError};if let panel {value["window_id"]=panel.windowNumber;value["window_offscreen"] = !NSScreen.screens.contains(where:{$0.frame.intersects(panel.frame)});value["window_key"]=panel.isKeyWindow;value["window_main"]=panel.isMainWindow}
         if let lastInputAt {value["last_input_at"]=lastInputAt};return value
@@ -195,13 +234,14 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
             if op != "status",request["instance"] as? String != instance {throw failure("instance_changed","Expected VM owner instance is required and must match")}
             if let expected=request["instance"] as? String,expected != instance {throw failure("instance_changed","VM host instance changed")}
             if terminating && op != "status"{throw failure("terminating","VM owner is shutting down; wait for socket and lock release")}
-            if bridgeBusy && ["start","stop","bridge"].contains(op){throw failure("guest_operation_in_progress","Wait for the accepted guest operation before lifecycle changes")}
+            if bridgeBusy && ["start","stop","bridge","input"].contains(op){throw failure("guest_operation_in_progress","Wait for the accepted guest operation before lifecycle/input changes")}
+            if inputBusy && ["start","stop","bridge","input"].contains(op){throw failure("guest_operation_in_progress","Wait for the accepted input and release before lifecycle/input changes")}
             var result:[String:Any]=[:]
             switch op {
             case "status":result=status()
             case "start":guard FileManager.default.fileExists(atPath:file("installed.json").path),machine?.state == .stopped else{throw failure("not_stopped","Installed guest must be stopped before boot")};try await boot();result=status()
             case "capture":result=try await capture(request)
-            case "input":result=try input(request)
+            case "input":inputBusy=true;defer{inputBusy=false};result=try await input(request)
             case "bridge":
                 guard phase=="running",machine?.state == .running else{throw failure("not_running","Guest must be running")}
                 bridgeBusy=true;defer{bridgeBusy=false};result=try await guestOperation(request)
@@ -251,15 +291,23 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
         throw failure("guest_bridge_timeout","Guest bridge did not acknowledge the nonce; operation is not automatically retried")
     }
     func guestOperation(_ request:[String:Any]) async throws->[String:Any] {
-        guard let op=request["bridge_op"] as? String,["exec","clipboard"].contains(op) else{throw failure("invalid_bridge_operation","Only guest exec or clipboard is supported")}
+        guard let op=request["bridge_op"] as? String,["exec","clipboard","type_text"].contains(op) else{throw failure("invalid_bridge_operation","Only guest exec, clipboard or type_text is supported")}
+        if op=="type_text"{guard let text=request["text"] as? String,text.utf16.count<=4096 else{throw failure("text_too_long","Maximum 4096 UTF16 units")}}
         let status=try await guestExchange(["op":"status"])
         guard status["ok"] as? Bool==true,let state=status["result"] as? [String:Any],state["virtualized"] as? Bool==true,state["graphical_session"] as? Bool==true,state["vm_owner_instance"] as? String==instance,let guest=status["guest_instance"] as? String else{throw failure("guest_generation_changed","Guest generation/owner does not match this VM")}
-        var payload:[String:Any]=["op":op,"guest_instance":guest,"vm_owner_instance":instance]
+        var payload:[String:Any]=["op":op=="type_text" ? "clipboard":op,"guest_instance":guest,"vm_owner_instance":instance]
         if op=="exec"{payload["argv"]=request["argv"];payload["cwd"]=request["cwd"]}else{payload["text"]=request["text"]}
         let response=try await guestExchange(payload)
         guard response["guest_instance"] as? String==guest else{throw failure("guest_generation_changed","Guest bridge changed before mutation")}
         guard response["ok"] as? Bool==true else{throw failure("guest_bridge_rejected","Guest rejected the generation-bound operation")}
-        var result=response["result"] as? [String:Any] ?? [:];result["guest_instance"]=guest;return result
+        var result=response["result"] as? [String:Any] ?? [:];result["guest_instance"]=guest
+        if op=="type_text"{
+            // Keep bridgeBusy through paste/consumption; no input or lifecycle
+            // interleaving between staging the guest clipboard and its chord.
+            result.merge(try await input(["key":"cmd+v"])){_,new in new}
+            try? await Task.sleep(nanoseconds:200_000_000);result["text_entry"]="guest-clipboard";result["verified"]=false
+        }
+        return result
     }
     func capture(_ request:[String:Any]) async throws->[String:Any] {
         guard let output=request["output"] as? String,output.hasPrefix("/") else{throw failure("invalid_output","An absolute output path is required")}
@@ -277,19 +325,28 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
         let bytes=data as Data;let written=bytes.withUnsafeBytes{Darwin.write(fd,$0.baseAddress,$0.count)};guard written==bytes.count else{throw failure("write_failed","Incomplete PNG write")}
         captures+=1;return ["path":output,"width":image.width,"height":image.height,"captured_at":Date().timeIntervalSince1970,"window_id":target.windowID,"only_owned_guest_view":true]
     }
-    func input(_ request:[String:Any]) throws->[String:Any] {
+    func input(_ request:[String:Any]) async throws->[String:Any] {
         guard phase=="running",machine?.state == .running else{throw failure("guest_not_running","Guest must be running")}
         guard panel != nil,!panel.isKeyWindow,!panel.isMainWindow,!NSScreen.screens.contains(where:{$0.frame.intersects(panel.frame)}) else{throw failure("window_isolation_lost","VM window is not confined offscreen")}
         var sent=0
+        let began=ProcessInfo.processInfo.systemUptime
+        var hold=0
+        if let value=request["hold_ms"] {
+            guard let number=value as? NSNumber,CFGetTypeID(number) != CFBooleanGetTypeID(),
+                number.doubleValue.isFinite,number.doubleValue.rounded()==number.doubleValue,
+                (0...5000).contains(number.doubleValue) else{throw failure("invalid_input","hold_ms must be an integer from 0–5000")}
+            hold=number.intValue
+        }
+        guard (0...5000).contains(hold),hold==0 || request["key"] is String else{throw failure("invalid_input","A bounded hold requires a key")}
         if let text=request["text"] as? String {
-            guard text.utf16.count<=4096 else{throw failure("text_too_long","Maximum 4096 UTF16 units")}
+            guard text.utf16.count<=128 else{throw failure("text_too_long","US-key bootstrap input is limited to 128 UTF16 units; use a live guest bridge for longer text")}
             guard text.allSatisfy({keyCode(String($0)) != nil}) else{throw failure("unsupported_text","Text contains unsupported US-keyboard characters; no events sent")}
-            for char in text {let s=String(char);guard let code=keyCode(s) else{throw failure("unsupported_text","Only US keyboard characters supported by this input path")};let shift=s.rangeOfCharacter(from:CharacterSet.uppercaseLetters) != nil || "~!@#$%^&*()_+{}|:\"<>?".contains(s);sendKey(code:code,characters:s,modifiers:shift ? .shift:[]);sent+=1}
+            for char in text {let s=String(char);guard let code=keyCode(s) else{throw failure("unsupported_text","Only US keyboard characters supported by this input path")};let shift=s.rangeOfCharacter(from:CharacterSet.uppercaseLetters) != nil || "~!@#$%^&*()_+{}|:\"<>?".contains(s);try await sendKey(code:code,characters:s,modifiers:shift ? .shift:[]);sent+=1}
         } else if let key=request["key"] as? String {
-            let pieces=key.lowercased().split(separator:"+").map(String.init);var flags:NSEvent.ModifierFlags=[]
+            let pieces=key.lowercased().split(separator:"+",omittingEmptySubsequences:false).map(String.init);var flags:NSEvent.ModifierFlags=[]
             for modifier in pieces.dropLast(){switch modifier{case "cmd","command","meta":flags.insert(.command);case "ctrl","control":flags.insert(.control);case "alt","option":flags.insert(.option);case "shift":flags.insert(.shift);default:throw failure("invalid_key","Unknown modifier")}}
-            let last=pieces.last ?? "";let named:[String:UInt16] = ["enter":36,"return":36,"tab":48,"space":49,"escape":53,"esc":53,"backspace":51,"delete":117,"up":126,"down":125,"left":123,"right":124,"home":115,"end":119]
-            guard let code=named[last] ?? keyCode(last) else{throw failure("invalid_key","Unsupported key")};sendKey(code:code,characters:last.count==1 ? last:"",modifiers:flags);sent=1
+            let last=pieces.last ?? "";let named:[String:UInt16] = ["enter":36,"return":36,"tab":48,"space":49,"escape":53,"esc":53,"backspace":51,"delete":117,"up":126,"down":125,"left":123,"right":124,"home":115,"end":119,"pageup":116,"pagedown":121,"cmd":55,"command":55,"meta":55,"shift":56,"alt":58,"option":58,"ctrl":59,"control":59]
+            guard let code=named[last] ?? keyCode(last) else{throw failure("invalid_key","Unsupported key")};try await sendKey(code:code,characters:last.count==1 ? last:"",modifiers:flags,holdMS:hold);sent=1
         } else if request["drag"] != nil {
             sent=try guestDrag(request,windowNumber:panel.windowNumber){e in
                 switch e.type {
@@ -313,17 +370,13 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
         }else{throw failure("invalid_input","Provide text, key, or bounded click/move/drag coordinates")}
         lastInputAt=Date().timeIntervalSince1970;var result:[String:Any] = ["events_submitted":sent,"destination":"owned VZVirtualMachineView","host_global_events":false,"guest_effect_requires_capture_verification":true]
         if request["drag"] != nil{result["released"]=true}
+        if hold>0{result["heldMs"]=hold;result["elapsedMs"]=Int(ceil((ProcessInfo.processInfo.systemUptime-began)*1000));result["released"]=true}
         return result
     }
-    func sendKey(code:UInt16,characters:String,modifiers:NSEvent.ModifierFlags) {
-        let keys:[(NSEvent.ModifierFlags,UInt16)]=[(.command,55),(.shift,56),(.option,58),(.control,59)]
-        var active:NSEvent.ModifierFlags=[]
-        func keyEvent(_ key:UInt16,_ type:NSEvent.EventType,_ flags:NSEvent.ModifierFlags,_ text:String="") {
-            if let event=NSEvent.keyEvent(with:type,location:.zero,modifierFlags:flags,timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:panel.windowNumber,context:nil,characters:text,charactersIgnoringModifiers:text.lowercased(),isARepeat:false,keyCode:key){type == .keyDown ? view.keyDown(with:event):view.keyUp(with:event)}
+    func sendKey(code:UInt16,characters:String,modifiers:NSEvent.ModifierFlags,holdMS:Int=0) async throws {
+        try await guestKey(code:code,characters:characters,modifiers:modifiers,holdMS:holdMS,windowNumber:panel.windowNumber){event in
+            switch event.type{case .flagsChanged:view.flagsChanged(with:event);case .keyDown:view.keyDown(with:event);case .keyUp:view.keyUp(with:event);default:break}
         }
-        for (flag,key) in keys where modifiers.contains(flag){active.insert(flag);keyEvent(key,.keyDown,active)}
-        keyEvent(code,.keyDown,modifiers,characters);keyEvent(code,.keyUp,modifiers,characters)
-        for (flag,key) in keys.reversed() where modifiers.contains(flag){active.remove(flag);keyEvent(key,.keyUp,active)}
     }
     func keyCode(_ character:String)->UInt16? {
         let keys:[String:UInt16] = ["a":0,"s":1,"d":2,"f":3,"h":4,"g":5,"z":6,"x":7,"c":8,"v":9,"b":11,"q":12,"w":13,"e":14,"r":15,"y":16,"t":17,"1":18,"2":19,"3":20,"4":21,"6":22,"5":23,"=":24,"9":25,"7":26,"-":27,"8":28,"0":29,
