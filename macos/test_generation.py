@@ -12,7 +12,7 @@ class GenerationBoundary(unittest.TestCase):
         if not ok:value['error']={'code':'instance_changed','message':'changed'}
         return value
     def test_every_stale_operation_stops_before_action(self):
-        for verb,rest in [('status',[]),('capture',['--output','/tmp/no-image']),('input',['--type','ignored']),('exec',['--','/bin/echo','ignored']),('stop',[])]:
+        for verb,rest in [('windows',[]),('processes',[]),('windows',['--action','close','--window-id','123']),('processes',['--action','terminate','--pid','234','--target','token']),('status',[]),('capture',['--output','/tmp/no-image']),('input',['--type','ignored']),('exec',['--','/bin/echo','ignored']),('stop',[])]:
             with self.subTest(verb=verb),patch.object(vm_adapter,'request',return_value=self.response(False)) as request,patch.object(vm_adapter,'bridge_exchange') as bridge:
                 result=vm_adapter.command(self.args(verb,*rest))
                 self.assertFalse(result['ok']);self.assertEqual(result['error']['code'],'generation_changed')
@@ -125,5 +125,19 @@ class GenerationBoundary(unittest.TestCase):
         for rest in (['--drag','1','2','3'],['--drag','1','2','3','4','--click','5','6'],
                      ['--drag','1','2','3','4','--backend','native'],['--drag','1','2','3','4','--button','4']):
             with self.subTest(rest=rest),self.assertRaises(adapter.Failure):self.args('input',*rest)
+
+    def test_guest_targets_are_one_owner_guarded_bridge_request(self):
+        for verb,rest in [('windows',['--action','focus','--window-id','123']),('processes',['--action','terminate','--pid','234','--target','literal-token'])]:
+            with patch.object(vm_adapter,'request',side_effect=[self.response(),self.response(False)]) as request:
+                result=vm_adapter.command(self.args(verb,*rest))
+                self.assertFalse(result['ok']);self.assertEqual(request.call_count,2)
+                payload=request.call_args.args[1]
+                self.assertEqual(payload['op'],'bridge');self.assertEqual(payload['bridge_op'],verb)
+                self.assertEqual(payload['instance'],'fixed-owner')
+                if verb=='processes':self.assertEqual(payload['target'],'literal-token')
+
+    def test_guest_target_cli_refuses_unidentified_or_native_mutations(self):
+        for verb,rest in [('windows',['--action','close']),('windows',['--action','quit','--pid','10']),('processes',['--action','terminate','--pid','10']),('processes',['--action','terminate','--pid','1','--target','t']),('windows',['--backend','native']),('processes',['--backend','native'])]:
+            with self.subTest(verb=verb,rest=rest),self.assertRaises(adapter.Failure):self.args(verb,*rest)
 
 if __name__=='__main__':unittest.main()

@@ -8,7 +8,7 @@ from pathlib import Path
 
 VERSION = '0.4.2'
 PLATFORMS = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}
-COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build', 'view'}
+COMMANDS = {'doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'describe', 'build', 'view', 'windows', 'processes'}
 
 
 def fail(platform, code, message, exit_code=2):
@@ -50,7 +50,7 @@ def main(argv):
     if not argv or argv in (['-h'], ['--help']):
         print('QuietWing ' + VERSION + '\n'
               'Usage: quietwing COMMAND [OPTIONS]\n\n'
-              'Commands: doctor, describe, start, attach, status, exec, capture, input, stop, view, build\n'
+              'Commands: doctor, describe, start, attach, status, exec, capture, input, stop, view, build, windows, processes\n'
               'Session commands use --id NAME. Run COMMAND --help for adapter options.\n'
               'Run this helper on the target OS, directly or through SSH.\n'
               'Only verified isolated sessions are controllable; there is no host-desktop fallback.')

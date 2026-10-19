@@ -47,7 +47,11 @@ older owners and other platforms refuse. Scroll remains unsupported. Native
 validation for this development change is recorded below; no cross-platform or
 game compatibility follows from it.
 
-The computer-ctrl adapter lacks accessibility, DOM/CDP, window management,
+Development Mac bridges add guest-only window list/focus/close and guest-user
+process list/targeted SIGTERM/graceful quit through computer-ctrl. See
+[Mac targets](../macos/README.md#guest-window-and-process-targets) for permissions,
+300-second tokens and dispatch-only receipts. Other backends/old bridges refuse.
+The adapter still lacks accessibility trees, DOM/CDP, general window geometry,
 scroll, and audio/video tools. Linux applications can record the private
 null monitor through `exec`, but QuietWing has no dedicated recording command.
 Application singleton IPC and explicit device routes need their own checks.
@@ -118,7 +122,33 @@ workflows; those reruns remain deferred. The disposable Safari local-page check
 showed a blank body, so no browser/game compatibility is claimed. Scroll remains
 deferred. No Linux/Windows behavior change or cross-platform native claim follows.
 
-## Release history
+## Development Mac guest targets — 2026-10-19
+
+The guest bridge lists guest-user executable/argv/PID/birth identities and AX
+windows (app/title/PID), retaining expiring exact element references and process
+tokens. The owner pins all reads/actions to both owner and guest generations.
+Guest Accessibility is checked without prompting; it was explicitly granted
+inside the available guest for native validation. No host permission/input path
+was used. Audio remains disabled; the [audio assessment](guest-audio.md) documents
+the public nil/discard sink and the lack of a supported host PCM capture sink.
+
+Portable checks passed (139 tests, three Windows-native skips). A local compiled
+synthetic target-ledger test also verified owner-generation invalidation, exact
+PID and expiry without invoking desktop/process APIs. Installed cctl
+adapter calls in the existing guest listed windows/processes, focused an exact
+Terminal window and a disposable TextEdit file, closed that exact file window,
+and terminated an identified disposable sleep process. Graceful quit requested a
+save review in a separately launched TextEdit instance restoring prior documents;
+it was cancelled, then only that newly created instance was terminated. The
+pre-existing TextEdit instance and documents remained. This illustrates why quit
+receipts are not completion claims and app launch is not document ownership.
+Unknown targets and stale owner generation refused; no host fallback/replay.
+The guest saved/stopped with its owner exited; its owner reported offscreen,
+nonkey/nonmain operation and no host input/activation. These are bounded native
+adapter checks, not two new autonomous harness workflows; those reruns remain
+deferred. No Linux/Windows native behavior claim follows.
+
+## Release history (published)
 
 [v0.4.2](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2) adds SSH
 preview follow mode and Windows held keys. Earlier releases added the Mac viewer

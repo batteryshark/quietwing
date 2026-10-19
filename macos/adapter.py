@@ -89,7 +89,7 @@ def save_binding(name, uid, session_id):
 
 def parse(argv):
     parser = Parser(description='Guarded Mac separate-user adapter; setup and live acceptance are incomplete.')
-    parser.add_argument('command', choices=['doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'view'])
+    parser.add_argument('command', choices=['doctor', 'start', 'attach', 'status', 'exec', 'capture', 'input', 'stop', 'view', 'windows', 'processes'])
     parser.add_argument('--id')
     parser.add_argument('--expect-generation', help='Require the exact live VM owner generation; never retarget a replacement')
     parser.add_argument('--backend', choices=['vm','native'], default='vm')
@@ -97,6 +97,9 @@ def parse(argv):
     parser.add_argument('--session-id', type=int, help='Explicit graphical security session ID for attach')
     parser.add_argument('--output')
     parser.add_argument('--window-id', type=int)
+    parser.add_argument('--action', default='list', choices=['list','focus','close','quit','terminate'])
+    parser.add_argument('--pid', type=int)
+    parser.add_argument('--target', help='Process target token from a recent guest process listing')
     parser.add_argument('--display-id', type=int)
     parser.add_argument('--cwd')
     parser.add_argument('--host', help='Show an isolated Linux or Windows desktop over existing SSH')
@@ -141,6 +144,16 @@ def parse(argv):
     if has_literal_text:
         args.text = literal_text
     args.argv = executable
+    if args.command in ('windows','processes'):
+        if args.backend != 'vm':
+            raise Failure('unsupported_operation', 'Guest targets require the VM backend')
+        if args.command == 'windows':
+            if args.action not in ('list','focus','close') or args.pid is not None or args.target is not None or (args.action == 'list' and args.window_id is not None) or (args.action != 'list' and (args.window_id is None or args.window_id <= 0)):
+                raise Failure('invalid_arguments', 'windows needs list, or focus/close with an exact --window-id')
+        elif args.action not in ('list','quit','terminate') or args.window_id is not None or (args.action == 'list' and (args.pid is not None or args.target is not None)) or (args.action != 'list' and (args.pid is None or args.pid <= 1 or not args.target)):
+            raise Failure('invalid_arguments', 'processes needs list, or quit/terminate with exact --pid and --target')
+    elif args.action != 'list' or args.pid is not None or args.target is not None:
+        raise Failure('invalid_arguments', 'Target options require windows or processes')
     if not 0 <= args.hold_ms <= 5000 or (args.hold_ms and (args.command != 'input' or args.backend != 'vm' or args.key is None)):
         raise Failure('invalid_arguments', '--hold-ms requires a VM input key and 0–5000 ms')
     if args.drag is not None and (args.command != 'input' or args.backend != 'vm'):

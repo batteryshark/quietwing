@@ -291,15 +291,19 @@ final class FrameCollector:NSObject,SCStreamOutput,SCStreamDelegate,@unchecked S
         throw failure("guest_bridge_timeout","Guest bridge did not acknowledge the nonce; operation is not automatically retried")
     }
     func guestOperation(_ request:[String:Any]) async throws->[String:Any] {
-        guard let op=request["bridge_op"] as? String,["exec","clipboard","type_text"].contains(op) else{throw failure("invalid_bridge_operation","Only guest exec, clipboard or type_text is supported")}
+        guard let op=request["bridge_op"] as? String,["exec","clipboard","type_text","windows","processes"].contains(op) else{throw failure("invalid_bridge_operation","Unsupported guest bridge operation")}
         if op=="type_text"{guard let text=request["text"] as? String,text.utf16.count<=4096 else{throw failure("text_too_long","Maximum 4096 UTF16 units")}}
         let status=try await guestExchange(["op":"status"])
         guard status["ok"] as? Bool==true,let state=status["result"] as? [String:Any],state["virtualized"] as? Bool==true,state["graphical_session"] as? Bool==true,state["vm_owner_instance"] as? String==instance,let guest=status["guest_instance"] as? String else{throw failure("guest_generation_changed","Guest generation/owner does not match this VM")}
         var payload:[String:Any]=["op":op=="type_text" ? "clipboard":op,"guest_instance":guest,"vm_owner_instance":instance]
-        if op=="exec"{payload["argv"]=request["argv"];payload["cwd"]=request["cwd"]}else{payload["text"]=request["text"]}
+        if op=="exec"{payload["argv"]=request["argv"];payload["cwd"]=request["cwd"]}
+        else if ["windows","processes"].contains(op){
+            guard state["guest_targets"] as? Bool==true else{throw failure("guest_targets_unavailable","Update the guest bridge before using targets")}
+            for key in ["action","window_id","pid","target"] {payload[key]=request[key]}
+        }else{payload["text"]=request["text"]}
         let response=try await guestExchange(payload)
         guard response["guest_instance"] as? String==guest else{throw failure("guest_generation_changed","Guest bridge changed before mutation")}
-        guard response["ok"] as? Bool==true else{throw failure("guest_bridge_rejected","Guest rejected the generation-bound operation")}
+        guard response["ok"] as? Bool==true else{let error=response["error"] as? [String:Any];throw failure("guest_bridge_rejected",error?["message"] as? String ?? "Guest rejected the generation-bound operation")}
         var result=response["result"] as? [String:Any] ?? [:];result["guest_instance"]=guest
         if op=="type_text"{
             // Keep bridgeBusy through paste/consumption; no input or lifecycle

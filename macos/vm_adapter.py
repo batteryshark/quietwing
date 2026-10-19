@@ -175,6 +175,8 @@ def _command(args):
     elif args.command=='exec':
         if not args.argv:raise VMError('exec requires -- PROGRAM ARG...')
         return request(args.id,{'op':'bridge','bridge_op':'exec','argv':args.argv,'cwd':args.cwd,'instance':generation})
+    elif args.command in ('windows','processes'):
+        return request(args.id,{'op':'bridge','bridge_op':args.command,'action':args.action,'window_id':args.window_id,'pid':args.pid,'target':args.target,'instance':generation})
     response=request(args.id,payload,timeout=75 if args.command=='stop' else 20)
     if args.command=='stop' and response.get('ok'):
         lock_path=directory(args.id)/'owner.lock'
@@ -203,6 +205,7 @@ def command(args):
     capabilities=session.setdefault('capabilities',{})
     capabilities.update(audio_capture=False,browser=False,accessibility=False)
     capabilities.update(exec=False,unicode_text=False,guest_bridge_live=False)
+    capabilities.update(guest_processes=False,guest_windows=False)
     if response.get('ok') and session.get('phase')=='running':
         try:
             bridge=bridge_exchange(args.id,{'op':'status'},timeout=2)
@@ -210,6 +213,7 @@ def command(args):
             live=bridge.get('ok') and state.get('virtualized') and state.get('graphical_session') and state.get('vm_owner_instance')==session.get('instance')
             if live:
                 capabilities.update(exec=True,unicode_text=True,guest_bridge_live=True)
+                capabilities.update(guest_processes=state.get('guest_targets') is True,guest_windows=state.get('guest_targets') is True and state.get('window_control') is True)
                 session['guest']={k:state[k] for k in ('instance','pid','uid','os_version','metal_device','audio_device_count','default_output_device','vm_owner_instance') if k in state}
         except (OSError,VMError,ValueError):pass
     if (ROOT/'VM_RESULTS.md').is_file():session['acceptance_evidence']=str(ROOT/'VM_RESULTS.md')
