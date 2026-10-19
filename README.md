@@ -5,14 +5,16 @@
 Some agent work needs the machine you've already set up: its installed software
 and dependencies, connected hardware, or local data. Moving that work into a VM
 can mean rebuilding the environment, and maintaining more VMs adds work as you
-take on more tasks. Running the agent on your normal desktop ties up the pointer
-and keyboard focus you need for your own work.
+take on more tasks. Giving an agent access to your everyday machine carries
+risk, but sometimes the convenience is worth it. You still need to get your own
+work done without the agent tying up your pointer and keyboard focus.
 
 QuietWing gives a computer-use agent a separate desktop on a machine you own,
 so it can open applications, click, type, and take screenshots while you keep
-using your own desktop. The agent's windows and input stay in its work instance,
-with a lifecycle you can inspect and stop. QuietWing is experimental; the current
-release is [0.4.2](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2).
+using your own desktop. The agent's windows and input stay in its work instance;
+you can check progress through status and screenshots, or the optional read-only
+Mac viewer, and stop the instance when you're done. QuietWing is experimental;
+the current release is [0.4.2](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2).
 
 Linux uses Xvfb under your existing user; Windows uses an authenticated ParaDesk
 child session in the existing OS. Neither needs a separate VM for each task.
