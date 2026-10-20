@@ -148,6 +148,25 @@ nonkey/nonmain operation and no host input/activation. These are bounded native
 adapter checks, not two new autonomous harness workflows; those reruns remain
 deferred. No Linux/Windows native behavior claim follows.
 
+## Guest Safari rendering diagnosis — 2026-10-20
+
+On the available macOS 27.0.1/Apple Paravirtual Metal guest, synthetic plain HTML,
+CSS animation, canvas and WebGL content were missing from both QuietWing capture
+and independent guest `screencapture`; silent video remained visible. Fresh Safari
+processes with **GPU Process: DOM Rendering** enabled restored the content in both
+methods. An ON/OFF/ON comparison reproduced the dependency. Reloading the original
+process was insufficient. See the [guest-only workaround](../macos/README.md#safari-loads-a-page-but-its-body-is-blank),
+including how to preserve another caller's Safari windows. The native preview
+displayed the same working frames but shares QuietWing's capture pipeline; it is
+not a third independent rendering test. No capture implementation change was made.
+
+The temporary guest Screen Recording grant was revoked, task-owned windows,
+processes and preview were closed, and the guest saved with protected state
+retained. No host settings/input or new browser installation was used; audio
+devices remained absent. This is synthetic-page diagnosis, not application/game
+acceptance or two new autonomous harness workflows. Other guest/OS versions and
+WebKit's underlying defect remain unvalidated.
+
 ## Release history (published)
 
 [v0.4.2](https://github.com/batteryshark/quietwing/releases/tag/v0.4.2) adds SSH

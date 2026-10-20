@@ -131,3 +131,49 @@ The default remains zero audio devices and no recording. See
 [the assessment](../docs/guest-audio.md) for the SDK's silent-output option and
 why direct file/buffer capture is not implemented. Do not replace the silent
 configuration with a host-speaker sink.
+
+## Safari loads a page but its body is blank
+
+On the validated macOS 27.0.1 guest with Apple Paravirtual Metal, Safari's
+ordinary document paint can be absent even when source loads and JavaScript
+executes. Find highlights and a video element may still paint. This was reproduced
+with synthetic local pages, including plain HTML without CSS or JavaScript.
+Both the guest's own `screencapture` and QuietWing's ScreenCaptureKit frame showed
+the same missing content: this is a guest WebKit rendering-path problem, not
+evidence that QuietWing drops browser layers. The native read-only preview uses
+the same QuietWing frames and is **not** an independent framebuffer capture.
+
+Tested guest-only workaround:
+
+1. In **guest Safari**, open Settings → Advanced and enable **Show features for
+   web developers** (if not already enabled).
+2. Open **Feature Flags**, search for `GPU`, and enable **GPU Process: DOM
+   Rendering**. Leave **GPU Process: Canvas Rendering** enabled. Do not reset all
+   feature flags or change host settings.
+3. Use a **fresh Safari application process**. Reloading a page in the already
+   running process was insufficient. If all its windows are yours, save work and
+   quit/reopen Safari. Do not quit a shared or uncertain Safari instance.
+   Instead, guest-only `exec` can launch a separate instance without restoring
+   previous windows:
+
+   ```sh
+   quietwing exec --id minimal --expect-generation "$GEN" -- \
+     /usr/bin/open -n -a Safari --args -ApplePersistenceIgnoreState YES
+   ```
+
+   List guest windows again, identify the **new PID/window**, and focus/navigate
+   only that window. Close only your own windows afterwards; a launch receipt is
+   not ownership of existing windows.
+
+An ON/OFF/ON comparison using fresh Safari processes restored/reproduced/restored
+ordinary page paint. With the flag enabled, text, a CSS-animated div, 2D canvas,
+WebGL context/clear and silent video were visible in both capture methods. This
+is a bounded workaround for this guest/OS combination, not general browser,
+WebGPU, application or game acceptance, nor identification of WebKit's internal
+defect. No QuietWing capture change or new browser installation is required.
+
+Independent guest `screencapture` needs **guest** Screen Recording permission for
+its responsible launcher (GuestBridge when invoked via `exec`). That permission
+is not needed for normal QuietWing capture; grant it only with authorization and
+revoke a temporary grant after diagnosis. Never grant host Screen Recording or
+move the owned VM view onscreen as a workaround. Keep audio devices disabled.
