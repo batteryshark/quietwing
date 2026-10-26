@@ -154,7 +154,9 @@ working; viewing never starts or reconnects a desktop. The
 There is no native preview window on Linux or Windows, common takeover button,
 or agent pause panel. Screenshots and native mouse/keyboard input are the core
 control surface. The computer-ctrl adapter lacks accessibility trees, browser
-DOM/CDP, window management, scroll, and audio/video tools. Development Mac VM
+DOM/CDP, general window geometry, scroll, and audio/video tools. Development Mac
+bridges support [guest window and process targets](macos/README.md#guest-window-and-process-targets).
+Development Mac VM
 owners support bounded drag. Windows and development Mac VM
 [held keys](docs/held-keys.md) require a live worker advertising `key_hold`;
 installing 0.4.2 alone doesn't replace an older running worker. Support and
